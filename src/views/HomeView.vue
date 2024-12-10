@@ -4,6 +4,36 @@ import { amenities } from "@/data/amenities";
 
 const isLoaded = ref(false);
 
+const specialOffers = [
+  {
+    id: 1,
+    title: "Honeymoon Package",
+    description: "Special rates for honeymooners with romantic dinner",
+    image:
+      "https://www.theanvayabali.com/wp-content/uploads/2023/02/Romantic-Dinner.jpg",
+    price: "IDR 8,500,000",
+    validUntil: "31 March 2024",
+  },
+  {
+    id: 2,
+    title: "Spa Package",
+    description: "Relaxing spa treatment for two",
+    image:
+      "https://www.theanvayabali.com/wp-content/uploads/2023/02/Sakanti_Spa_Bed_21050x700.jpg",
+    price: "IDR 2,500,000",
+    validUntil: "31 March 2024",
+  },
+  {
+    id: 3,
+    title: "Weekend Getaway",
+    description: "Special weekend rates with breakfast",
+    image:
+      "https://www.theanvayabali.com/wp-content/uploads/2023/02/Swimming-Pool.jpg",
+    price: "IDR 3,500,000",
+    validUntil: "31 March 2024",
+  },
+];
+
 onMounted(() => {
   isLoaded.value = true;
 });
@@ -23,6 +53,22 @@ onMounted(() => {
         alt="The Anvaya Logo"
         class="w-48 opacity-0 scale-95 animate-[logoFadeIn_0.8s_ease-out_0.3s_forwards]"
       />
+    </div>
+
+    <!-- Weather Widget -->
+    <div
+      class="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-anvaya-gray/20"
+    >
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-medium text-anvaya-blue">Current Weather</h3>
+          <p class="text-gray-600">Kuta, Bali</p>
+        </div>
+        <div class="flex items-center">
+          <i class="mdi mdi-weather-sunny text-3xl text-anvaya-blue mr-2"></i>
+          <span class="text-2xl font-medium">29°C</span>
+        </div>
+      </div>
     </div>
 
     <!-- Amenities Grid -->
@@ -65,6 +111,55 @@ onMounted(() => {
             ]"
           ></div>
         </router-link>
+      </div>
+    </div>
+
+    <!-- Special Offers -->
+    <div class="mt-12">
+      <h2 class="text-xl font-medium text-anvaya-blue mb-4">Special Offers</h2>
+      <div class="overflow-x-auto pb-4">
+        <div class="flex space-x-4">
+          <div
+            v-for="offer in specialOffers"
+            :key="offer.id"
+            class="flex-shrink-0 w-80 bg-white rounded-xl overflow-hidden shadow-sm border border-anvaya-gray/20 group hover:shadow-md transition-all duration-300"
+          >
+            <!-- Image Section -->
+            <div class="relative h-48 overflow-hidden">
+              <img
+                :src="offer.image"
+                :alt="offer.title"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+              ></div>
+              <div class="absolute bottom-0 left-0 right-0 p-4">
+                <p class="text-white/90 text-sm">
+                  Valid until {{ offer.validUntil }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Content Section -->
+            <div class="p-4">
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="font-medium text-anvaya-blue text-lg">
+                  {{ offer.title }}
+                </h3>
+                <span class="text-anvaya-blue font-medium">{{
+                  offer.price
+                }}</span>
+              </div>
+              <p class="text-sm text-gray-600">{{ offer.description }}</p>
+              <button
+                class="mt-4 w-full py-2.5 bg-anvaya-blue/10 text-anvaya-blue rounded-lg hover:bg-anvaya-blue/20 transition-colors font-medium"
+              >
+                View Details
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
