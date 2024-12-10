@@ -41,11 +41,13 @@ async function handleSubmit() {
   errorMessage.value = "";
 
   try {
-    const result = await reservationStore.submitReservation(reservation.value);
-    if (result.success) {
+    const success = await reservationStore.createReservation(reservation.value);
+    if (success) {
       // Show success message
+      reservationStore.isReservationModalOpen = false;
     } else {
-      errorMessage.value = result.message;
+      errorMessage.value =
+        reservationStore.error || "Failed to create reservation";
     }
   } catch (error) {
     errorMessage.value = "An error occurred. Please try again.";

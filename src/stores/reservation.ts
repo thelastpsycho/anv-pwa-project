@@ -6,6 +6,7 @@ export const useReservationStore = defineStore("reservation", {
     reservations: [] as TableReservation[],
     isLoading: false,
     error: null as string | null,
+    isReservationModalOpen: false,
   }),
 
   actions: {

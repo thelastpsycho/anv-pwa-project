@@ -7,6 +7,9 @@ export interface TableReservation {
   email: string;
   phone: string;
   specialRequests?: string;
+  id?: string;
+  status?: string;
+  createdAt?: string;
 }
 
 export interface ValidationErrors {
