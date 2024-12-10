@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
-import { amenities } from "@/data/amenities";
 import { specialOffers } from "@/data/specialOffers";
 
 const isLoaded = ref(false);
