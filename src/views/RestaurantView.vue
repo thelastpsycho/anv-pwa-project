@@ -55,6 +55,7 @@
               View Menu
             </a>
             <button
+              @click="handleReserveClick({ id: venue.id, name: venue.name })"
               class="flex-1 py-2.5 bg-anvaya-blue text-white rounded-lg hover:bg-anvaya-blue/90 transition-colors font-medium"
             >
               Reserve Table
@@ -63,17 +64,32 @@
         </div>
       </div>
     </div>
+
+    <TableReservationModal
+      v-if="selectedVenue"
+      :venue-id="selectedVenue.id"
+      :venue-name="selectedVenue.name"
+      :is-open="!!selectedVenue"
+      @close="selectedVenue = null"
+      @success="handleReservationSuccess"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import PageHeader from "@/components/PageHeader.vue";
 import { diningVenues } from "@/data/dining";
 import KunyitLogo from "@/assets/Kunyit Restaurant.svg";
 import SandsLogo from "@/assets/Sands Restaurant.svg";
+import TableReservationModal from "@/components/TableReservationModal.vue";
+import { useAuthStore } from "@/stores/auth";
 
+const router = useRouter();
+const authStore = useAuthStore();
 const isLoaded = ref(false);
+const selectedVenue = ref<{ id: number; name: string } | null>(null);
 
 onMounted(() => {
   setTimeout(() => {
@@ -85,5 +101,20 @@ onMounted(() => {
 const logos: { [key: string]: string } = {
   "Kunyit Restaurant": KunyitLogo,
   "Sands Restaurant": SandsLogo,
+};
+
+const handleReserveClick = (venue: { id: number; name: string }) => {
+  if (!authStore.isAuthenticated) {
+    // Redirect to login if not authenticated
+    router.push("/profile");
+    return;
+  }
+  selectedVenue.value = venue;
+};
+
+const handleReservationSuccess = () => {
+  // Show success message
+  alert("Reservation confirmed! Check your email for details.");
+  selectedVenue.value = null;
 };
 </script>
