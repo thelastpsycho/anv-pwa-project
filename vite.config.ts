@@ -12,12 +12,14 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ["vue", "vue-router", "pinia", "@vueuse/core"],
+    exclude: ["@rollup/rollup-linux-x64-gnu"],
   },
   build: {
     rollupOptions: {
       input: {
         main: fileURLToPath(new URL("./index.html", import.meta.url)),
       },
+      external: ["@rollup/rollup-linux-x64-gnu"],
     },
   },
   plugins: [

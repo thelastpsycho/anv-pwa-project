@@ -1,10 +1,11 @@
 [build]
-  command = "npm install --platform=linux --arch=x64 && npm run build"
+  command = "npm install @rollup/rollup-linux-x64-gnu && npm run build"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "18"
   NPM_VERSION = "10"
+  ROLLUP_SKIP_NODE_RESOLUTION = "true"
 
 [[redirects]]
   from = "/*"
