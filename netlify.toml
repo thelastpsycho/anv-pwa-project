@@ -1,0 +1,19 @@
+[build]
+  command = "npm install --platform=linux --arch=x64 && npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_VERSION = "10"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[dev]
+  framework = "vite"
+  targetPort = 5173
+
+[functions]
+  node_bundler = "esbuild" 
