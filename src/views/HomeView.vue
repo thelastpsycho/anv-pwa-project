@@ -50,6 +50,45 @@ onMounted(async () => {
 onMounted(() => {
   isLoaded.value = true;
 });
+
+const menuItems = [
+  {
+    id: "activities",
+    title: "Activities",
+    icon: "mdi mdi-compass-outline",
+    route: "activities",
+  },
+  {
+    id: "dining",
+    title: "Dining",
+    icon: "mdi mdi-silverware",
+    route: "restaurant",
+  },
+  {
+    id: "wellness",
+    title: "Wellness",
+    icon: "mdi mdi-flower-tulip-outline",
+    route: "wellness",
+  },
+  {
+    id: "information",
+    title: "Information",
+    icon: "mdi mdi-information-outline",
+    route: "faq",
+  },
+  {
+    id: "whatson",
+    title: "What's On",
+    icon: "mdi mdi-calendar-blank-outline",
+    route: "events",
+  },
+  {
+    id: "around",
+    title: "Around Us",
+    icon: "mdi mdi-map-marker-outline",
+    route: "around",
+  },
+];
 </script>
 
 <template>
@@ -60,77 +99,65 @@ onMounted(() => {
     ]"
   >
     <!-- Logo Section -->
-    <div class="flex justify-center mb-6 p-4">
+    <!-- <div class="flex justify-center p-3 -mt-6">
       <img
         src="https://www.theanvayabali.com/wp-content/themes/wcl/images/logo-theanvaya.svg"
         alt="The Anvaya Logo"
-        class="w-48 opacity-0 scale-95 animate-[logoFadeIn_0.8s_ease-out_0.3s_forwards]"
+        class="w-36 opacity-0 scale-95 animate-[logoFadeIn_0.8s_ease-out_0.3s_forwards]"
       />
-    </div>
+    </div> -->
 
     <!-- Weather Section -->
     <div
-      class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-lg max-w-sm mx-auto mb-8"
+      class="bg-white/80 backdrop-blur-sm p-2.5 rounded-lg shadow-sm max-w-xs mx-auto mb-6"
     >
       <div v-if="weather" class="flex items-center justify-between">
-        <div>
-          <h2 class="text-xl font-medium text-anvaya-blue">Kuta, Bali</h2>
-          <p class="text-3xl font-bold text-anvaya-blue">
+        <div class="flex items-center gap-3">
+          <p class="text-2xl font-medium text-anvaya-blue">
             {{ Math.round(weather.current_weather.temperature) }}°C
           </p>
-          <p class="text-gray-600">{{ weatherDescription }}</p>
+          <div class="flex flex-col">
+            <span class="text-xs font-medium text-anvaya-blue/80"
+              >Kuta, Bali</span
+            >
+            <span class="text-xs text-gray-500">{{ weatherDescription }}</span>
+          </div>
         </div>
-        <i class="mdi mdi-weather-sunny text-5xl text-anvaya-blue"></i>
+        <i class="mdi mdi-weather-sunny text-2xl text-anvaya-blue/80"></i>
       </div>
-      <div v-else class="text-center text-gray-600">Loading weather...</div>
+      <div v-else class="text-center text-gray-600 text-sm">
+        Loading weather...
+      </div>
     </div>
 
     <!-- Amenities Grid -->
-    <div class="mt-8">
+    <div class="mt-8 px-2">
       <div
-        class="grid grid-cols-2 gap-4 opacity-0 animate-[cardsFadeIn_0.8s_ease-out_0.6s_forwards]"
+        class="grid grid-cols-3 gap-3 opacity-0 animate-[cardsFadeIn_0.8s_ease-out_0.6s_forwards]"
       >
         <router-link
-          v-for="item in amenities"
+          v-for="item in menuItems"
           :key="item.id"
-          :to="{ name: 'details', params: { id: item.id } }"
-          class="group relative overflow-hidden rounded-2xl aspect-square focus:outline-none focus:ring-2 focus:ring-anvaya-blue/50"
+          :to="{ name: item.route }"
+          class="group relative overflow-hidden rounded-2xl aspect-square bg-gradient-to-br from-white to-anvaya-gray/5 shadow-sm border border-anvaya-gray/10 p-4 flex flex-col items-center justify-center gap-3 hover:shadow-md transition-all duration-300"
         >
-          <!-- Background Image -->
-          <img
-            :src="item.image"
-            :alt="item.title"
-            class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          />
-
-          <!-- Gradient Overlay -->
           <div
-            class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent transition-opacity duration-300"
-          ></div>
-
-          <!-- Content -->
-          <div class="absolute inset-0 p-4 flex flex-col justify-end">
-            <div class="flex items-center space-x-2 mb-1">
-              <i :class="[item.icon, 'text-white text-xl']"></i>
-              <h3 class="text-white font-medium">{{ item.title }}</h3>
-            </div>
-            <p class="text-white/80 text-sm">{{ item.description }}</p>
+            class="w-12 h-12 flex items-center justify-center rounded-xl bg-white shadow-sm group-hover:scale-110 transition-transform duration-300"
+          >
+            <i :class="[item.icon, 'text-2xl text-anvaya-blue']"></i>
           </div>
-
-          <!-- Hover Effect -->
-          <div
-            :class="[
-              'absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300',
-              `bg-gradient-to-tr ${item.color}`,
-            ]"
-          ></div>
+          <h3
+            class="text-xs font-medium text-center text-anvaya-blue/80 group-hover:text-anvaya-blue transition-colors"
+          >
+            {{ item.title }}
+          </h3>
         </router-link>
       </div>
     </div>
 
     <!-- Special Offers -->
     <div class="mt-12">
-      <h2 class="text-xl font-medium text-anvaya-blue mb-4">Special Offers</h2>
+      <h2 class="text-xl font-medium text-anvaya-blue mb-4">TRENDING</h2>
       <div class="overflow-x-auto pb-4">
         <div class="flex space-x-4">
           <div
@@ -149,27 +176,34 @@ onMounted(() => {
                 class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
               ></div>
               <div class="absolute bottom-0 left-0 right-0 p-4">
-                <p class="text-white/90 text-sm">
-                  Valid until {{ offer.validUntil }}
-                </p>
+                <div class="flex items-center gap-2">
+                  <span class="text-white/90 text-sm">
+                    <i
+                      :class="[
+                        offer.type === 'activity'
+                          ? 'mdi mdi-calendar-clock'
+                          : 'mdi mdi-tag-outline',
+                        'mr-1',
+                      ]"
+                    ></i>
+                    {{ offer.validUntil }}
+                  </span>
+                </div>
               </div>
             </div>
 
             <!-- Content Section -->
             <div class="p-4">
-              <div class="flex justify-between items-start mb-2">
+              <div class="mb-2">
                 <h3 class="font-medium text-anvaya-blue text-lg">
                   {{ offer.title }}
                 </h3>
-                <span class="text-anvaya-blue font-medium">{{
-                  offer.price
-                }}</span>
               </div>
               <p class="text-sm text-gray-600">{{ offer.description }}</p>
               <button
                 class="mt-4 w-full py-2.5 bg-anvaya-blue/10 text-anvaya-blue rounded-lg hover:bg-anvaya-blue/20 transition-colors font-medium"
               >
-                View Details
+                {{ offer.type === "activity" ? "Book Now" : "View Details" }}
               </button>
             </div>
           </div>

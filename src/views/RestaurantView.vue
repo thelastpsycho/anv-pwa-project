@@ -1,8 +1,6 @@
 <template>
   <div class="restaurant p-4">
-    <h1 class="text-2xl font-medium text-anvaya-blue mb-6 text-center">
-      Dining Experiences
-    </h1>
+    <PageHeader title="Dining" />
 
     <div
       v-for="venue in diningVenues"
@@ -43,6 +41,19 @@
               {{ venue.additionalInfo }}
             </div>
           </div>
+          <div class="flex gap-3 mt-6">
+            <a
+              href="#"
+              class="flex-1 py-2.5 bg-anvaya-blue/10 text-anvaya-blue rounded-lg hover:bg-anvaya-blue/20 transition-colors font-medium text-center"
+            >
+              View Menu
+            </a>
+            <button
+              class="flex-1 py-2.5 bg-anvaya-blue text-white rounded-lg hover:bg-anvaya-blue/90 transition-colors font-medium"
+            >
+              Reserve Table
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -50,12 +61,13 @@
 </template>
 
 <script setup lang="ts">
+import PageHeader from "@/components/PageHeader.vue";
 import { diningVenues } from "@/data/dining";
 import KunyitLogo from "@/assets/Kunyit Restaurant.svg";
 import SandsLogo from "@/assets/Sands Restaurant.svg";
 
 // Map the logos
-const logos = {
+const logos: { [key: string]: string } = {
   "Kunyit Restaurant": KunyitLogo,
   "Sands Restaurant": SandsLogo,
 };

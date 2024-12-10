@@ -10,10 +10,19 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: "/details/:id",
-      name: "details",
-      component: () => import("@/views/DetailsView.vue"),
-      props: true,
+      path: "/chat",
+      name: "chat",
+      component: () => import("@/views/ChatView.vue"),
+    },
+    {
+      path: "/map",
+      name: "map",
+      component: () => import("@/views/MapView.vue"),
+    },
+    {
+      path: "/profile",
+      name: "profile",
+      component: () => import("@/views/ProfileView.vue"),
     },
     {
       path: "/restaurant",
@@ -26,9 +35,24 @@ const router = createRouter({
       component: () => import("@/views/ActivitiesView.vue"),
     },
     {
+      path: "/wellness",
+      name: "wellness",
+      component: () => import("@/views/WellnessView.vue"),
+    },
+    {
       path: "/faq",
       name: "faq",
       component: () => import("@/views/FAQView.vue"),
+    },
+    {
+      path: "/events",
+      name: "events",
+      component: () => import("@/views/EventsView.vue"),
+    },
+    {
+      path: "/around",
+      name: "around",
+      component: () => import("@/views/AroundView.vue"),
     },
   ],
 });

@@ -1,8 +1,6 @@
 <template>
   <div class="activities p-4">
-    <h1 class="text-2xl font-medium text-anvaya-blue mb-6 text-center">
-      Activities & Experiences
-    </h1>
+    <PageHeader title="Activities & Experiences" />
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div
@@ -44,6 +42,8 @@
 </template>
 
 <script setup lang="ts">
+import PageHeader from "@/components/PageHeader.vue";
+
 const activities = [
   {
     id: 1,
