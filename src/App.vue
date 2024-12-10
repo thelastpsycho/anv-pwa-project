@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import BottomNav from "@/components/BottomNav.vue";
 import SplashScreen from "@/components/SplashScreen.vue";
+import LiveChat from "@/components/LiveChat.vue";
 
 const showContent = ref(false);
 
@@ -16,9 +17,14 @@ const handleSplashFinished = () => {
   <Transition name="fade">
     <div v-if="showContent">
       <main class="min-h-screen bg-white">
-        <RouterView />
+        <router-view v-slot="{ Component }">
+          <Transition name="page" mode="out-in">
+            <component :is="Component" />
+          </Transition>
+        </router-view>
       </main>
       <BottomNav />
+      <LiveChat />
     </div>
   </Transition>
 </template>
@@ -31,6 +37,17 @@ const handleSplashFinished = () => {
 
 .fade-enter-from,
 .fade-leave-to {
+  opacity: 0;
+}
+
+/* Page Transitions */
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.15s ease;
+}
+
+.page-enter-from,
+.page-leave-to {
   opacity: 0;
 }
 </style>

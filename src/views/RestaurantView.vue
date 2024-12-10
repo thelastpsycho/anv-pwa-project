@@ -1,5 +1,11 @@
 <template>
-  <div class="restaurant p-4">
+  <div
+    class="restaurant p-4"
+    :class="[
+      'opacity-0 translate-y-5 transition-all duration-600 ease-out',
+      isLoaded ? 'opacity-100 translate-y-0' : '',
+    ]"
+  >
     <PageHeader title="Dining" />
 
     <div
@@ -61,10 +67,19 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from "vue";
 import PageHeader from "@/components/PageHeader.vue";
 import { diningVenues } from "@/data/dining";
 import KunyitLogo from "@/assets/Kunyit Restaurant.svg";
 import SandsLogo from "@/assets/Sands Restaurant.svg";
+
+const isLoaded = ref(false);
+
+onMounted(() => {
+  setTimeout(() => {
+    isLoaded.value = true;
+  }, 100);
+});
 
 // Map the logos
 const logos: { [key: string]: string } = {

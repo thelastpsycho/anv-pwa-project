@@ -23,24 +23,33 @@ const route = useRoute();
           :class="{ '!text-anvaya-blue': route.path === '/' }"
         >
           <i class="mdi mdi-home-outline text-2xl"></i>
-          <span class="text-xs mt-0.5">Home</span>
+          <span class="text-xs">Home</span>
           <div
-            class="absolute bottom-0 left-1/2 -translate-x-1/2 w-5 h-0.5 bg-anvaya-blue rounded-full transition-all"
-            :class="
-              route.path === '/' ? 'opacity-100 scale-100' : 'opacity-0 scale-0'
-            "
+            class="absolute -bottom-1 w-1 h-1 rounded-full bg-anvaya-blue transition-all duration-300"
+            :class="[
+              route.path === '/'
+                ? 'opacity-100 scale-100'
+                : 'opacity-0 scale-0',
+            ]"
           ></div>
         </router-link>
 
-        <a
-          href="https://wa.me/62811389938"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="flex flex-col items-center py-2 text-anvaya-blue/60 hover:text-anvaya-blue transition-colors"
+        <router-link
+          to="/chat"
+          class="relative flex flex-col items-center py-2 text-anvaya-blue/60 hover:text-anvaya-blue transition-colors"
+          :class="{ '!text-anvaya-blue': route.path === '/chat' }"
         >
-          <i class="mdi mdi-whatsapp text-2xl"></i>
-          <span class="text-xs mt-0.5">Chat</span>
-        </a>
+          <i class="mdi mdi-chat-outline text-2xl"></i>
+          <span class="text-xs">Chat</span>
+          <div
+            class="absolute -bottom-1 w-1 h-1 rounded-full bg-anvaya-blue transition-all duration-300"
+            :class="[
+              route.path === '/chat'
+                ? 'opacity-100 scale-100'
+                : 'opacity-0 scale-0',
+            ]"
+          ></div>
+        </router-link>
 
         <router-link
           to="/profile"
@@ -48,14 +57,14 @@ const route = useRoute();
           :class="{ '!text-anvaya-blue': route.path === '/profile' }"
         >
           <i class="mdi mdi-account-outline text-2xl"></i>
-          <span class="text-xs mt-0.5">Profile</span>
+          <span class="text-xs">Profile</span>
           <div
-            class="absolute bottom-0 left-1/2 -translate-x-1/2 w-5 h-0.5 bg-anvaya-blue rounded-full transition-all"
-            :class="
+            class="absolute -bottom-1 w-1 h-1 rounded-full bg-anvaya-blue transition-all duration-300"
+            :class="[
               route.path === '/profile'
                 ? 'opacity-100 scale-100'
-                : 'opacity-0 scale-0'
-            "
+                : 'opacity-0 scale-0',
+            ]"
           ></div>
         </router-link>
       </div>

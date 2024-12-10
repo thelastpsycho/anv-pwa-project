@@ -20,6 +20,6 @@ const goBack = () => {
     >
       <i class="mdi mdi-arrow-left text-2xl"></i>
     </button>
-    <h1 class="text-2xl font-medium text-anvaya-blue">{{ title }}</h1>
+    <h1 class="text-lg font-medium text-anvaya-blue uppercase">{{ title }}</h1>
   </div>
 </template>

@@ -1,5 +1,11 @@
 <template>
-  <div class="faq p-4">
+  <div
+    class="faq p-4"
+    :class="[
+      'opacity-0 translate-y-5 transition-all duration-600 ease-out',
+      isLoaded ? 'opacity-100 translate-y-0' : '',
+    ]"
+  >
     <PageHeader title="Information" />
 
     <!-- Search Bar -->
@@ -89,12 +95,19 @@
 
 <script setup lang="ts">
 import PageHeader from "@/components/PageHeader.vue";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { faqCategories as faqData } from "@/data/faqs";
 import type { FAQ } from "@/data/faqs";
 
 const faqCategories = ref(faqData);
 const searchQuery = ref("");
+const isLoaded = ref(false);
+
+onMounted(() => {
+  setTimeout(() => {
+    isLoaded.value = true;
+  }, 100);
+});
 
 const filteredCategories = computed(() => {
   if (!searchQuery.value) return faqCategories.value;

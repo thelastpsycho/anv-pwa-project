@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, onUnmounted } from "vue";
 import { specialOffers } from "@/data/specialOffers";
 
 const isLoaded = ref(false);
+let weatherInterval: number;
 
 interface WeatherData {
   current_weather: {
     temperature: number;
     weathercode: number;
   };
+  lastFetched?: number;
 }
 
 const weather = ref<WeatherData | null>(null);
@@ -35,19 +37,49 @@ const weatherDescription = computed(() => {
   return codes[weather.value.current_weather.weathercode] || "Unknown";
 });
 
-onMounted(async () => {
+const fetchWeather = async () => {
   try {
     const response = await fetch(
       "https://api.open-meteo.com/v1/forecast?latitude=-8.7238&longitude=115.1722&current_weather=true"
     );
-    weather.value = await response.json();
+    const data = await response.json();
+    weather.value = {
+      ...data,
+      lastFetched: Date.now(),
+    };
+    // Store in localStorage
+    localStorage.setItem("weatherData", JSON.stringify(weather.value));
   } catch (error) {
     console.error("Error fetching weather:", error);
   }
-});
+};
 
 onMounted(() => {
+  // Try to get cached weather data
+  const cachedWeather = localStorage.getItem("weatherData");
+  if (cachedWeather) {
+    const parsed = JSON.parse(cachedWeather);
+    const timeSinceLastFetch = Date.now() - parsed.lastFetched;
+    // Use cached data if less than 10 minutes old
+    if (timeSinceLastFetch < 10 * 60 * 1000) {
+      weather.value = parsed;
+    } else {
+      fetchWeather();
+    }
+  } else {
+    fetchWeather();
+  }
+
+  // Set up interval for every 10 minutes
+  weatherInterval = setInterval(fetchWeather, 10 * 60 * 1000);
   isLoaded.value = true;
+});
+
+onUnmounted(() => {
+  // Clean up interval
+  if (weatherInterval) {
+    clearInterval(weatherInterval);
+  }
 });
 
 const menuItems = [
@@ -131,9 +163,7 @@ const menuItems = [
 
     <!-- Amenities Grid -->
     <div class="mt-8 px-2">
-      <div
-        class="grid grid-cols-3 gap-3 opacity-0 animate-[cardsFadeIn_0.8s_ease-out_0.6s_forwards]"
-      >
+      <div class="grid grid-cols-3 gap-3">
         <router-link
           v-for="item in menuItems"
           :key="item.id"
@@ -223,17 +253,6 @@ const menuItems = [
   to {
     opacity: 1;
     transform: scale(1);
-  }
-}
-
-@keyframes cardsFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 </style>
