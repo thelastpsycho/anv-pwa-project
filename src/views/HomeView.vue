@@ -1,38 +1,51 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { amenities } from "@/data/amenities";
+import { specialOffers } from "@/data/specialOffers";
 
 const isLoaded = ref(false);
 
-const specialOffers = [
-  {
-    id: 1,
-    title: "Honeymoon Package",
-    description: "Special rates for honeymooners with romantic dinner",
-    image:
-      "https://www.theanvayabali.com/wp-content/uploads/2023/02/Romantic-Dinner.jpg",
-    price: "IDR 8,500,000",
-    validUntil: "31 March 2024",
-  },
-  {
-    id: 2,
-    title: "Spa Package",
-    description: "Relaxing spa treatment for two",
-    image:
-      "https://www.theanvayabali.com/wp-content/uploads/2023/02/Sakanti_Spa_Bed_21050x700.jpg",
-    price: "IDR 2,500,000",
-    validUntil: "31 March 2024",
-  },
-  {
-    id: 3,
-    title: "Weekend Getaway",
-    description: "Special weekend rates with breakfast",
-    image:
-      "https://www.theanvayabali.com/wp-content/uploads/2023/02/Swimming-Pool.jpg",
-    price: "IDR 3,500,000",
-    validUntil: "31 March 2024",
-  },
-];
+interface WeatherData {
+  current_weather: {
+    temperature: number;
+    weathercode: number;
+  };
+}
+
+const weather = ref<WeatherData | null>(null);
+const weatherDescription = computed(() => {
+  if (!weather.value) return "";
+  // Weather codes from OpenMeteo
+  const codes: Record<number, string> = {
+    0: "Clear sky",
+    1: "Mainly clear",
+    2: "Partly cloudy",
+    3: "Overcast",
+    45: "Foggy",
+    48: "Depositing rime fog",
+    51: "Light drizzle",
+    53: "Moderate drizzle",
+    55: "Dense drizzle",
+    61: "Slight rain",
+    63: "Moderate rain",
+    65: "Heavy rain",
+    80: "Slight rain showers",
+    81: "Moderate rain showers",
+    82: "Violent rain showers",
+  };
+  return codes[weather.value.current_weather.weathercode] || "Unknown";
+});
+
+onMounted(async () => {
+  try {
+    const response = await fetch(
+      "https://api.open-meteo.com/v1/forecast?latitude=-8.7238&longitude=115.1722&current_weather=true"
+    );
+    weather.value = await response.json();
+  } catch (error) {
+    console.error("Error fetching weather:", error);
+  }
+});
 
 onMounted(() => {
   isLoaded.value = true;
@@ -55,20 +68,21 @@ onMounted(() => {
       />
     </div>
 
-    <!-- Weather Widget -->
+    <!-- Weather Section -->
     <div
-      class="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-anvaya-gray/20"
+      class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-lg max-w-sm mx-auto mb-8"
     >
-      <div class="flex items-center justify-between">
+      <div v-if="weather" class="flex items-center justify-between">
         <div>
-          <h3 class="text-lg font-medium text-anvaya-blue">Current Weather</h3>
-          <p class="text-gray-600">Kuta, Bali</p>
+          <h2 class="text-xl font-medium text-anvaya-blue">Kuta, Bali</h2>
+          <p class="text-3xl font-bold text-anvaya-blue">
+            {{ Math.round(weather.current_weather.temperature) }}°C
+          </p>
+          <p class="text-gray-600">{{ weatherDescription }}</p>
         </div>
-        <div class="flex items-center">
-          <i class="mdi mdi-weather-sunny text-3xl text-anvaya-blue mr-2"></i>
-          <span class="text-2xl font-medium">29°C</span>
-        </div>
+        <i class="mdi mdi-weather-sunny text-5xl text-anvaya-blue"></i>
       </div>
+      <div v-else class="text-center text-gray-600">Loading weather...</div>
     </div>
 
     <!-- Amenities Grid -->
@@ -162,6 +176,8 @@ onMounted(() => {
         </div>
       </div>
     </div>
+
+    <div class="h-20"></div>
   </div>
 </template>
 
