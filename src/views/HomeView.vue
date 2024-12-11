@@ -501,6 +501,14 @@ const toggleDarkMode = () => {
               </div>
             </div>
           </div>
+          <button
+            @click="handleOfferAction(selectedOffer)"
+            class="w-full py-3 bg-anvaya-blue text-white rounded-lg hover:bg-anvaya-blue/90 transition-colors"
+          >
+            {{
+              selectedOffer.type === "activity" ? "Book Now" : "View Details"
+            }}
+          </button>
         </div>
       </div>
     </div>
