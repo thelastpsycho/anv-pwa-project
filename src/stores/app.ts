@@ -13,6 +13,25 @@ export const useAppStore = defineStore("app", {
   actions: {
     toggleDarkMode() {
       this.isDarkMode = !this.isDarkMode;
+      if (this.isDarkMode) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+      localStorage.setItem("darkMode", this.isDarkMode.toString());
+    },
+    initTheme() {
+      const savedTheme = localStorage.getItem("darkMode");
+      if (savedTheme !== null) {
+        this.isDarkMode = savedTheme === "true";
+      } else {
+        this.isDarkMode = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+      }
+      if (this.isDarkMode) {
+        document.documentElement.classList.add("dark");
+      }
     },
     updateOnlineStatus(status: boolean) {
       this.isOnline = status;

@@ -1,16 +1,12 @@
 <template>
-  <div
-    class="restaurant p-4"
-    :class="[
-      'opacity-0 translate-y-5 transition-all duration-600 ease-out',
-      isLoaded ? 'opacity-100 translate-y-0' : '',
-    ]"
-  >
+  <div class="restaurant px-4 pb-4">
     <PageHeader title="Dining" />
 
     <!-- FB Promotions Section -->
     <div class="mb-8">
-      <h2 class="text-lg font-medium text-anvaya-blue mb-4">
+      <h2
+        class="text-lg font-medium text-anvaya-blue dark:text-anvaya-light mb-4"
+      >
         Special Promotions
       </h2>
       <div class="overflow-x-auto pb-4">
@@ -18,7 +14,7 @@
           <div
             v-for="promo in fbPromotions"
             :key="promo.id"
-            class="flex-shrink-0 w-64 bg-white rounded-xl overflow-hidden shadow-lg group hover:shadow-xl transition-all duration-300 cursor-pointer"
+            class="flex-shrink-0 w-64 bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg group hover:shadow-xl transition-all duration-300 cursor-pointer border border-anvaya-gray/10 dark:border-gray-700"
             @click="selectedPromo = promo"
           >
             <div class="relative h-40">
@@ -28,7 +24,7 @@
                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
               <div
-                class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10"
+                class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
               ></div>
               <div class="absolute top-2 right-2">
                 <span
@@ -55,7 +51,7 @@
     >
       <div class="min-h-screen px-4 flex items-center justify-center">
         <div
-          class="relative bg-white rounded-xl w-full max-w-md my-8"
+          class="relative bg-white dark:bg-gray-800 rounded-xl w-full max-w-md my-8 border border-anvaya-gray/10 dark:border-gray-700"
           @click.stop
         >
           <div class="relative h-48">
@@ -83,16 +79,18 @@
           </div>
           <!-- Modal Content -->
           <div class="p-4">
-            <h3 class="text-xl font-medium text-anvaya-blue mb-2">
+            <h3
+              class="text-xl font-medium text-anvaya-blue dark:text-anvaya-light mb-2"
+            >
               {{ selectedPromo.title }}
             </h3>
             <p
               v-if="selectedPromo.price"
-              class="text-lg font-medium text-anvaya-blue/80 mb-3"
+              class="text-lg font-medium text-anvaya-blue/80 dark:text-anvaya-light/80 mb-3"
             >
               {{ selectedPromo.price }}
             </p>
-            <p class="text-gray-600 mb-4">
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
               {{ selectedPromo.description }}
             </p>
             <button
@@ -109,7 +107,7 @@
     <div
       v-for="venue in diningVenues"
       :key="venue.id"
-      class="mb-8 bg-white rounded-xl overflow-hidden shadow-lg"
+      class="mb-8 bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-anvaya-gray/10 dark:border-gray-700"
     >
       <div class="flex flex-col md:flex-row">
         <div class="md:w-1/2">
@@ -124,15 +122,18 @@
             v-if="venue.logo"
             :src="logos[venue.name]"
             :alt="`${venue.name} Logo`"
-            class="h-12 mb-4"
+            class="h-12 mb-4 dark:invert"
           />
-          <h2 v-else class="text-2xl font-medium text-anvaya-blue mb-2">
+          <h2
+            v-else
+            class="text-2xl font-medium text-anvaya-blue dark:text-anvaya-light mb-2"
+          >
             {{ venue.name }}
           </h2>
-          <p class="text-gray-600 mb-4">
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
             {{ venue.description }}
           </p>
-          <div class="space-y-2 text-sm text-gray-600">
+          <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
             <div>
               <i class="mdi mdi-clock-outline mr-1"></i> Open Daily:
               {{ venue.hours }}
@@ -148,7 +149,7 @@
           <div class="flex gap-3 mt-6">
             <a
               href="#"
-              class="flex-1 py-2.5 bg-anvaya-blue/10 text-anvaya-blue rounded-lg hover:bg-anvaya-blue/20 transition-colors font-medium text-center"
+              class="flex-1 py-2.5 bg-anvaya-blue/10 dark:bg-anvaya-light/10 text-anvaya-blue dark:text-anvaya-light rounded-lg hover:bg-anvaya-blue/20 dark:hover:bg-anvaya-light/20 transition-colors font-medium text-center"
             >
               View Menu
             </a>
@@ -176,48 +177,15 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
 import PageHeader from "@/components/PageHeader.vue";
+import TableReservationModal from "@/components/TableReservationModal.vue";
 import { diningVenues } from "@/data/dining";
 import KunyitLogo from "@/assets/Kunyit Restaurant.svg";
 import SandsLogo from "@/assets/Sands Restaurant.svg";
-import TableReservationModal from "@/components/TableReservationModal.vue";
 import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
 
-const router = useRouter();
-const authStore = useAuthStore();
-const isLoaded = ref(false);
-const selectedVenue = ref<{ id: number; name: string } | null>(null);
-const selectedPromo = ref<FBPromotion | null>(null);
-
-onMounted(() => {
-  setTimeout(() => {
-    isLoaded.value = true;
-  }, 100);
-});
-
-// Map the logos
-const logos: { [key: string]: string } = {
-  "Kunyit Restaurant": KunyitLogo,
-  "Sands Restaurant": SandsLogo,
-};
-
-const handleReserveClick = (venue: { id: number; name: string }) => {
-  if (!authStore.isAuthenticated) {
-    // Redirect to login if not authenticated
-    router.push("/profile");
-    return;
-  }
-  selectedVenue.value = venue;
-};
-
-const handleReservationSuccess = () => {
-  // Show success message
-  alert("Reservation confirmed! Check your email for details.");
-  selectedVenue.value = null;
-};
-
-// FB Promotions Data
+// Define interface first
 interface FBPromotion {
   id: number;
   title: string;
@@ -228,6 +196,13 @@ interface FBPromotion {
   fbLink: string;
 }
 
+// Then define variables
+const router = useRouter();
+const authStore = useAuthStore();
+const selectedVenue = ref<{ id: number; name: string } | null>(null);
+const selectedPromo = ref<FBPromotion | null>(null);
+
+// Define promotions data
 const fbPromotions: FBPromotion[] = [
   {
     id: 1,
@@ -235,7 +210,7 @@ const fbPromotions: FBPromotion[] = [
     description:
       "Up to 20% off for food and beverage. GSD #1 Value IDR 2.000.000 pay IDR 1.700.000, GSD #2 Value IDR 5.000.000 pay IDR 4.000.000",
     image:
-      "https://www.theanvayabali.com/wp-content/uploads/2024/05/Gourmet-Savings-Deal-960x700-1.jpg",
+      "https://www.theanvayabali.com/wp-content/uploads/2023/01/Sands-Front-1050x700-1.jpg",
     validUntil: "Limited Time Offer",
     fbLink: "https://www.facebook.com/theanvayabali",
   },
@@ -273,4 +248,27 @@ const fbPromotions: FBPromotion[] = [
     fbLink: "https://www.facebook.com/theanvayabali",
   },
 ];
+
+// Debug logs after data is defined
+console.log("Dining Venues:", diningVenues);
+console.log("FB Promotions:", fbPromotions);
+
+// Map the logos
+const logos: { [key: string]: string } = {
+  "Kunyit Restaurant": KunyitLogo,
+  "Sands Restaurant": SandsLogo,
+};
+
+const handleReserveClick = (venue: { id: number; name: string }) => {
+  if (!authStore.isAuthenticated) {
+    router.push("/profile");
+    return;
+  }
+  selectedVenue.value = venue;
+};
+
+const handleReservationSuccess = () => {
+  alert("Reservation confirmed! Check your email for details.");
+  selectedVenue.value = null;
+};
 </script>

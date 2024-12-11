@@ -67,19 +67,14 @@ const offers: Offer[] = [
 </script>
 
 <template>
-  <div class="events p-4">
+  <div class="events px-4 pb-4">
     <PageHeader title="What's On" />
 
-    <p class="text-gray-600 text-sm mb-8">
-      Travel more. Save more. Discover the beauty of Bali with our exclusive
-      offers.
-    </p>
-
-    <div class="space-y-6">
+    <div class="grid gap-6">
       <div
         v-for="offer in offers"
         :key="offer.id"
-        class="bg-white rounded-xl overflow-hidden shadow-lg"
+        class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-anvaya-gray/10 dark:border-gray-700"
       >
         <div class="relative h-48">
           <img
@@ -90,22 +85,26 @@ const offers: Offer[] = [
           <div
             class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
           ></div>
-          <div class="absolute bottom-0 left-0 right-0 p-4">
+          <div class="absolute top-4 right-4">
             <span
               class="px-2 py-1 bg-anvaya-blue/90 text-white text-xs rounded-full"
             >
-              {{ offer.category.toUpperCase() }}
+              {{ offer.date }}
             </span>
           </div>
         </div>
 
         <div class="p-6">
-          <h3 class="text-lg font-medium text-anvaya-blue mb-2">
+          <h3
+            class="text-xl font-medium text-anvaya-blue dark:text-anvaya-light mb-2"
+          >
             {{ offer.title }}
           </h3>
-          <p class="text-gray-600 text-sm mb-4">{{ offer.description }}</p>
 
-          <div v-if="offer.price" class="text-anvaya-blue font-medium mb-4">
+          <div
+            v-if="offer.price"
+            class="text-anvaya-blue dark:text-anvaya-light font-medium mb-4"
+          >
             {{ offer.price }}
           </div>
 
@@ -113,15 +112,17 @@ const offers: Offer[] = [
             <div
               v-for="(detail, index) in offer.details"
               :key="index"
-              class="flex items-start gap-2 text-sm text-gray-600"
+              class="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400"
             >
-              <i class="mdi mdi-check text-anvaya-blue mt-0.5"></i>
+              <i
+                class="mdi mdi-check text-anvaya-blue dark:text-anvaya-light mt-0.5"
+              ></i>
               <span>{{ detail }}</span>
             </div>
           </div>
 
           <button
-            class="w-full py-2.5 bg-anvaya-blue text-white rounded-lg hover:bg-anvaya-blue/90 transition-colors font-medium"
+            class="w-full py-2.5 bg-anvaya-blue/10 dark:bg-anvaya-light/10 text-anvaya-blue dark:text-anvaya-light rounded-lg hover:bg-anvaya-blue/20 dark:hover:bg-anvaya-light/20 transition-colors font-medium"
           >
             Book Now
           </button>

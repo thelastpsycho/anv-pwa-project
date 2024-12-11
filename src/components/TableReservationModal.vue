@@ -140,242 +140,90 @@ const handleSubmit = async () => {
 
 <template>
   <div
-    v-if="isOpen"
-    class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
-    @click.self="emit('close')"
+    class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
   >
-    <div class="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-xl">
-      <!-- Header -->
-      <div class="bg-anvaya-blue/5 px-6 py-4 border-b border-anvaya-gray/10">
-        <div class="flex justify-between items-center">
-          <div>
-            <h2 class="text-xl font-medium text-anvaya-blue">
-              Table Reservation
-            </h2>
-            <p class="text-sm text-gray-600 mt-1">{{ venueName }}</p>
-          </div>
-          <button
-            @click="emit('close')"
-            class="p-2 hover:bg-black/5 rounded-full transition-colors"
-          >
-            <i class="mdi mdi-close text-xl text-gray-500"></i>
-          </button>
-        </div>
-      </div>
+    <div class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-md">
+      <div class="p-6">
+        <h3
+          class="text-xl font-medium text-anvaya-blue dark:text-anvaya-light mb-6"
+        >
+          Reserve Table at {{ venueName }}
+        </h3>
 
-      <!-- Form -->
-      <div class="p-4 sm:p-6">
-        <form @submit.prevent="handleSubmit" class="space-y-6">
-          <!-- Date & Time Section -->
-          <div class="bg-anvaya-blue/5 p-3 sm:p-4 rounded-xl space-y-4">
-            <h3 class="font-medium text-anvaya-blue flex items-center gap-2">
-              <i class="mdi mdi-calendar-clock text-xl"></i>
-              Schedule
-            </h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-600 mb-1">
-                  Date
-                </label>
-                <input
-                  type="date"
-                  v-model="reservation.date"
-                  @blur="validateField('date')"
-                  required
-                  :class="[
-                    'w-full h-11 rounded-lg border bg-white/80 focus:outline-none focus:ring-1',
-                    isFieldValid('date')
-                      ? 'border-gray-300 focus:border-anvaya-blue focus:ring-anvaya-blue'
-                      : 'border-red-300 focus:border-red-500 focus:ring-red-500',
-                  ]"
-                />
-                <p
-                  v-if="!isFieldValid('date')"
-                  class="mt-1 text-xs text-red-500"
-                >
-                  {{ errors.date }}
-                </p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-600 mb-1">
-                  Time
-                </label>
-                <input
-                  type="time"
-                  v-model="reservation.time"
-                  @blur="validateField('time')"
-                  required
-                  :class="[
-                    'w-full h-11 rounded-lg border bg-white/80 focus:outline-none focus:ring-1',
-                    isFieldValid('time')
-                      ? 'border-gray-300 focus:border-anvaya-blue focus:ring-anvaya-blue'
-                      : 'border-red-300 focus:border-red-500 focus:ring-red-500',
-                  ]"
-                />
-                <p
-                  v-if="!isFieldValid('time')"
-                  class="mt-1 text-xs text-red-500"
-                >
-                  {{ errors.time }}
-                </p>
-              </div>
-            </div>
+        <form @submit.prevent="handleSubmit" class="space-y-4">
+          <div class="space-y-2">
+            <label
+              class="text-sm font-medium text-anvaya-blue dark:text-anvaya-light"
+            >
+              Date
+            </label>
+            <input
+              v-model="reservation.date"
+              type="date"
+              class="w-full px-4 py-2.5 rounded-lg border border-anvaya-gray/10 dark:border-gray-700 focus:outline-none focus:border-anvaya-blue/30 dark:focus:border-anvaya-light/30 bg-white dark:bg-gray-800 text-anvaya-blue dark:text-anvaya-light"
+            />
           </div>
 
-          <!-- Guest Details Section -->
-          <div class="bg-anvaya-blue/5 p-3 sm:p-4 rounded-xl space-y-4">
-            <h3 class="font-medium text-anvaya-blue flex items-center gap-2">
-              <i class="mdi mdi-account-group text-xl"></i>
-              Guest Details
-            </h3>
-            <div class="space-y-4">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-600 mb-1">
-                    Number of Guests
-                  </label>
-                  <div class="relative">
-                    <i
-                      class="mdi mdi-account-multiple absolute left-3 top-3 text-anvaya-blue/60"
-                    ></i>
-                    <input
-                      type="number"
-                      v-model="reservation.guests"
-                      @blur="validateField('guests')"
-                      min="1"
-                      max="20"
-                      required
-                      :class="[
-                        'w-full h-11 rounded-lg border bg-white/80 pl-10 focus:outline-none focus:ring-1',
-                        isFieldValid('guests')
-                          ? 'border-gray-300 focus:border-anvaya-blue focus:ring-anvaya-blue'
-                          : 'border-red-300 focus:border-red-500 focus:ring-red-500',
-                      ]"
-                    />
-                  </div>
-                  <p
-                    v-if="!isFieldValid('guests')"
-                    class="mt-1 text-xs text-red-500"
-                  >
-                    {{ errors.guests }}
-                  </p>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-600 mb-1">
-                    Name
-                  </label>
-                  <div class="relative">
-                    <i
-                      class="mdi mdi-account absolute left-3 top-3 text-anvaya-blue/60"
-                    ></i>
-                    <input
-                      type="text"
-                      v-model="reservation.name"
-                      @blur="validateField('name')"
-                      required
-                      :class="[
-                        'w-full h-11 rounded-lg border bg-white/80 pl-10 focus:outline-none focus:ring-1',
-                        isFieldValid('name')
-                          ? 'border-gray-300 focus:border-anvaya-blue focus:ring-anvaya-blue'
-                          : 'border-red-300 focus:border-red-500 focus:ring-red-500',
-                      ]"
-                    />
-                  </div>
-                  <p
-                    v-if="!isFieldValid('name')"
-                    class="mt-1 text-xs text-red-500"
-                  >
-                    {{ errors.name }}
-                  </p>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-600 mb-1">
-                    Email
-                  </label>
-                  <div class="relative">
-                    <i
-                      class="mdi mdi-email absolute left-3 top-3 text-anvaya-blue/60"
-                    ></i>
-                    <input
-                      type="email"
-                      v-model="reservation.email"
-                      @blur="validateField('email')"
-                      required
-                      placeholder="your@email.com"
-                      :class="[
-                        'w-full h-11 rounded-lg border bg-white/80 pl-10 focus:outline-none focus:ring-1',
-                        isFieldValid('email')
-                          ? 'border-gray-300 focus:border-anvaya-blue focus:ring-anvaya-blue'
-                          : 'border-red-300 focus:border-red-500 focus:ring-red-500',
-                      ]"
-                    />
-                  </div>
-                  <p
-                    v-if="!isFieldValid('email')"
-                    class="mt-1 text-xs text-red-500"
-                  >
-                    {{ errors.email }}
-                  </p>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-600 mb-1">
-                    Phone
-                  </label>
-                  <div class="relative">
-                    <i
-                      class="mdi mdi-phone absolute left-3 top-3 text-anvaya-blue/60"
-                    ></i>
-                    <input
-                      type="tel"
-                      v-model="reservation.phone"
-                      @blur="validateField('phone')"
-                      required
-                      placeholder="+62812345678"
-                      :class="[
-                        'w-full h-11 rounded-lg border bg-white/80 pl-10 focus:outline-none focus:ring-1',
-                        isFieldValid('phone')
-                          ? 'border-gray-300 focus:border-anvaya-blue focus:ring-anvaya-blue'
-                          : 'border-red-300 focus:border-red-500 focus:ring-red-500',
-                      ]"
-                    />
-                  </div>
-                  <p
-                    v-if="!isFieldValid('phone')"
-                    class="mt-1 text-xs text-red-500"
-                  >
-                    {{ errors.phone }}
-                  </p>
-                </div>
-              </div>
-            </div>
+          <div class="space-y-2">
+            <label
+              class="text-sm font-medium text-anvaya-blue dark:text-anvaya-light"
+            >
+              Time
+            </label>
+            <select
+              v-model="reservation.time"
+              class="w-full px-4 py-2.5 rounded-lg border border-anvaya-gray/10 dark:border-gray-700 focus:outline-none focus:border-anvaya-blue/30 dark:focus:border-anvaya-light/30 bg-white dark:bg-gray-800 text-anvaya-blue dark:text-anvaya-light"
+            >
+              <option value="">Select time</option>
+              <option v-for="time in availableTimes" :key="time" :value="time">
+                {{ time }}
+              </option>
+            </select>
           </div>
 
-          <!-- Special Requests -->
-          <div class="bg-anvaya-blue/5 p-3 sm:p-4 rounded-xl space-y-4">
-            <h3 class="font-medium text-anvaya-blue flex items-center gap-2">
-              <i class="mdi mdi-note-text text-xl"></i>
-              Additional Requests
-            </h3>
+          <div class="space-y-2">
+            <label
+              class="text-sm font-medium text-anvaya-blue dark:text-anvaya-light"
+            >
+              Number of Guests
+            </label>
+            <input
+              v-model="reservation.guests"
+              type="number"
+              min="1"
+              max="10"
+              class="w-full px-4 py-2.5 rounded-lg border border-anvaya-gray/10 dark:border-gray-700 focus:outline-none focus:border-anvaya-blue/30 dark:focus:border-anvaya-light/30 bg-white dark:bg-gray-800 text-anvaya-blue dark:text-anvaya-light"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label
+              class="text-sm font-medium text-anvaya-blue dark:text-anvaya-light"
+            >
+              Special Requests
+            </label>
             <textarea
               v-model="reservation.specialRequests"
               rows="3"
-              placeholder="Any special requests or preferences..."
-              class="w-full rounded-lg border-gray-300 bg-white/80 focus:border-anvaya-blue focus:ring-anvaya-blue focus:outline-none focus:ring-1 p-3"
+              class="w-full px-4 py-2.5 rounded-lg border border-anvaya-gray/10 dark:border-gray-700 focus:outline-none focus:border-anvaya-blue/30 dark:focus:border-anvaya-light/30 bg-white dark:bg-gray-800 text-anvaya-blue dark:text-anvaya-light"
             ></textarea>
           </div>
 
-          <!-- Submit Button -->
-          <button
-            type="submit"
-            :disabled="isSubmitting"
-            class="w-full h-12 bg-anvaya-blue text-white rounded-xl hover:bg-anvaya-blue/90 transition-colors font-medium disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            <i class="mdi mdi-check-circle"></i>
-            {{ isSubmitting ? "Processing..." : "Confirm Reservation" }}
-          </button>
+          <div class="flex gap-3 mt-6">
+            <button
+              type="button"
+              @click="$emit('close')"
+              class="flex-1 py-2.5 bg-anvaya-blue/10 dark:bg-anvaya-light/10 text-anvaya-blue dark:text-anvaya-light rounded-lg hover:bg-anvaya-blue/20 dark:hover:bg-anvaya-light/20 transition-colors font-medium"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="flex-1 py-2.5 bg-anvaya-blue text-white rounded-lg hover:bg-anvaya-blue/90 transition-colors font-medium"
+            >
+              Reserve
+            </button>
+          </div>
         </form>
       </div>
     </div>

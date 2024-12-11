@@ -6,7 +6,7 @@ const route = useRoute();
 
 <template>
   <nav
-    class="fixed bottom-0 left-0 right-0 bg-white border-t border-anvaya-gray/10 px-2 py-1"
+    class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-anvaya-gray/10 dark:border-gray-800 px-2 py-1"
   >
     <div class="flex items-center">
       <div class="w-[30%] pl-4">
@@ -19,53 +19,48 @@ const route = useRoute();
       <div class="w-[70%] flex justify-around">
         <router-link
           to="/"
-          class="relative flex flex-col items-center py-2 text-anvaya-blue/60 hover:text-anvaya-blue transition-colors"
-          :class="{ '!text-anvaya-blue': route.path === '/' }"
+          class="relative flex flex-col items-center py-2 text-anvaya-blue/60 dark:text-anvaya-light/60 hover:text-anvaya-blue dark:hover:text-anvaya-light transition-colors"
+          :class="{
+            '!text-anvaya-blue dark:!text-anvaya-light': route.path === '/',
+          }"
         >
+          <div
+            class="absolute top-0 left-0 right-0 h-0.5 bg-anvaya-blue transition-all duration-300"
+            :class="[route.path === '/' ? 'opacity-100' : 'opacity-0']"
+          ></div>
           <i class="mdi mdi-home-outline text-2xl"></i>
           <span class="text-xs">Home</span>
-          <div
-            class="absolute -bottom-1 w-1 h-1 rounded-full bg-anvaya-blue transition-all duration-300"
-            :class="[
-              route.path === '/'
-                ? 'opacity-100 scale-100'
-                : 'opacity-0 scale-0',
-            ]"
-          ></div>
         </router-link>
 
         <router-link
           to="/chat"
-          class="relative flex flex-col items-center py-2 text-anvaya-blue/60 hover:text-anvaya-blue transition-colors"
-          :class="{ '!text-anvaya-blue': route.path === '/chat' }"
+          class="relative flex flex-col items-center py-2 text-anvaya-blue/60 dark:text-anvaya-light/60 hover:text-anvaya-blue dark:hover:text-anvaya-light transition-colors"
+          :class="{
+            '!text-anvaya-blue dark:!text-anvaya-light': route.path === '/chat',
+          }"
         >
+          <div
+            class="absolute top-0 left-0 right-0 h-0.5 bg-anvaya-blue transition-all duration-300"
+            :class="[route.path === '/chat' ? 'opacity-100' : 'opacity-0']"
+          ></div>
           <i class="mdi mdi-chat-outline text-2xl"></i>
           <span class="text-xs">Chat</span>
-          <div
-            class="absolute -bottom-1 w-1 h-1 rounded-full bg-anvaya-blue transition-all duration-300"
-            :class="[
-              route.path === '/chat'
-                ? 'opacity-100 scale-100'
-                : 'opacity-0 scale-0',
-            ]"
-          ></div>
         </router-link>
 
         <router-link
           to="/profile"
-          class="relative flex flex-col items-center py-2 text-anvaya-blue/60 hover:text-anvaya-blue transition-colors"
-          :class="{ '!text-anvaya-blue': route.path === '/profile' }"
+          class="relative flex flex-col items-center py-2 text-anvaya-blue/60 dark:text-anvaya-light/60 hover:text-anvaya-blue dark:hover:text-anvaya-light transition-colors"
+          :class="{
+            '!text-anvaya-blue dark:!text-anvaya-light':
+              route.path === '/profile',
+          }"
         >
+          <div
+            class="absolute top-0 left-0 right-0 h-0.5 bg-anvaya-blue transition-all duration-300"
+            :class="[route.path === '/profile' ? 'opacity-100' : 'opacity-0']"
+          ></div>
           <i class="mdi mdi-account-outline text-2xl"></i>
           <span class="text-xs">Profile</span>
-          <div
-            class="absolute -bottom-1 w-1 h-1 rounded-full bg-anvaya-blue transition-all duration-300"
-            :class="[
-              route.path === '/profile'
-                ? 'opacity-100 scale-100'
-                : 'opacity-0 scale-0',
-            ]"
-          ></div>
         </router-link>
       </div>
     </div>

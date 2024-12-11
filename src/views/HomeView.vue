@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, onUnmounted } from "vue";
 import { specialOffers } from "@/data/specialOffers";
+import { useRouter } from "vue-router";
+import { useAppStore } from "@/stores/app";
 
 const isLoaded = ref(false);
 let weatherInterval: number;
@@ -120,6 +122,105 @@ const menuItems = [
     route: "around",
   },
 ];
+
+const currentIndex = ref(0);
+
+const displayOffers = computed(() => {
+  return [
+    ...specialOffers,
+    ...specialOffers,
+    ...specialOffers,
+    ...specialOffers,
+    ...specialOffers,
+  ];
+});
+
+const totalSlides = computed(() => specialOffers.length);
+
+const nextSlide = () => {
+  const isLastSlide = currentIndex.value === totalSlides.value * 3 - 1;
+
+  if (isLastSlide) {
+    // When reaching the last slide, quickly jump to the first set without animation
+    currentIndex.value = totalSlides.value;
+    // Then immediately move to the next slide with animation
+    requestAnimationFrame(() => {
+      currentIndex.value = totalSlides.value + 1;
+    });
+  } else {
+    currentIndex.value++;
+  }
+};
+
+const prevSlide = () => {
+  const isFirstSlide = currentIndex.value === totalSlides.value;
+
+  if (isFirstSlide) {
+    // When reaching the first slide, quickly jump to the last set without animation
+    currentIndex.value = totalSlides.value * 2;
+    // Then immediately move to the previous slide with animation
+    requestAnimationFrame(() => {
+      currentIndex.value = totalSlides.value * 2 - 1;
+    });
+  } else {
+    currentIndex.value--;
+  }
+};
+
+const touchStart = ref(0);
+const touchEnd = ref(0);
+
+const handleTouchStart = (e: TouchEvent) => {
+  touchStart.value = e.touches[0].clientX;
+  touchEnd.value = touchStart.value;
+};
+
+const handleTouchMove = (e: TouchEvent) => {
+  touchEnd.value = e.touches[0].clientX;
+};
+
+const handleTouchEnd = () => {
+  const swipeDistance = touchStart.value - touchEnd.value;
+  const minSwipeDistance = 50; // minimum distance for swipe
+
+  if (Math.abs(swipeDistance) > minSwipeDistance) {
+    if (swipeDistance > 0) {
+      nextSlide();
+    } else {
+      prevSlide();
+    }
+  }
+};
+
+// Initialize to the middle set
+onMounted(() => {
+  // Start from the middle set of slides
+  currentIndex.value = totalSlides.value;
+});
+
+// Add transition control
+const isTransitioning = ref(false);
+const handleTransitionEnd = () => {
+  isTransitioning.value = false;
+};
+
+// Offer Details Modal
+const router = useRouter();
+const selectedOffer = ref<(typeof specialOffers)[0] | null>(null);
+
+const handleOfferAction = (offer: (typeof specialOffers)[0]) => {
+  if (offer.type === "activity") {
+    router.push({ name: "activities" });
+  }
+  selectedOffer.value = null;
+};
+
+const appStore = useAppStore();
+const isDarkMode = computed(() => appStore.isDarkMode);
+
+const toggleDarkMode = () => {
+  appStore.toggleDarkMode();
+};
 </script>
 
 <template>
@@ -140,43 +241,69 @@ const menuItems = [
 
     <!-- Weather Section -->
     <div
-      class="bg-white/80 backdrop-blur-sm p-2.5 rounded-lg shadow-sm max-w-xs mx-auto mb-6"
+      class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-2.5 rounded-lg shadow-sm max-w-xs mx-auto mb-2"
     >
-      <div v-if="weather" class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <p class="text-2xl font-medium text-anvaya-blue">
+      <div class="flex items-center justify-between">
+        <!-- Weather Info -->
+        <div v-if="weather" class="flex items-center gap-3">
+          <p
+            class="text-2xl font-medium text-anvaya-blue dark:text-anvaya-light"
+          >
             {{ Math.round(weather.current_weather.temperature) }}°C
           </p>
           <div class="flex flex-col">
-            <span class="text-xs font-medium text-anvaya-blue/80"
+            <span
+              class="text-xs font-medium text-anvaya-blue/80 dark:text-anvaya-light/80"
               >Kuta, Bali</span
             >
-            <span class="text-xs text-gray-500">{{ weatherDescription }}</span>
+            <span class="text-xs text-gray-500 dark:text-gray-400">{{
+              weatherDescription
+            }}</span>
           </div>
         </div>
-        <i class="mdi mdi-weather-sunny text-2xl text-anvaya-blue/80"></i>
-      </div>
-      <div v-else class="text-center text-gray-600 text-sm">
-        Loading weather...
+        <div
+          v-else
+          class="text-center text-gray-600 dark:text-gray-400 text-sm"
+        >
+          Loading weather...
+        </div>
+
+        <!-- Theme Toggle -->
+        <button
+          @click="toggleDarkMode"
+          class="p-2 rounded-lg hover:bg-anvaya-blue/5 dark:hover:bg-anvaya-light/5 transition-colors"
+        >
+          <i
+            :class="[
+              isDarkMode ? 'mdi mdi-weather-sunny' : 'mdi mdi-weather-night',
+              'text-2xl text-anvaya-blue dark:text-anvaya-light',
+            ]"
+          ></i>
+        </button>
       </div>
     </div>
 
     <!-- Amenities Grid -->
-    <div class="mt-8 px-2">
+    <div class="mt-2 p-4">
       <div class="grid grid-cols-3 gap-3">
         <router-link
           v-for="item in menuItems"
           :key="item.id"
           :to="{ name: item.route }"
-          class="group relative overflow-hidden rounded-2xl aspect-square bg-gradient-to-br from-white to-anvaya-gray/5 shadow-sm border border-anvaya-gray/10 p-4 flex flex-col items-center justify-center gap-3 hover:shadow-md transition-all duration-300"
+          class="group relative overflow-hidden rounded-2xl aspect-square bg-gradient-to-br from-white dark:from-gray-800 to-anvaya-gray/5 dark:to-gray-900/5 shadow-sm border border-anvaya-gray/10 dark:border-gray-700 p-4 flex flex-col items-center justify-center gap-3 hover:shadow-md transition-all duration-300"
         >
           <div
-            class="w-12 h-12 flex items-center justify-center rounded-xl bg-white shadow-sm group-hover:scale-110 transition-transform duration-300"
+            class="w-12 h-12 flex items-center justify-center rounded-xl bg-white dark:bg-gray-800 shadow-sm group-hover:scale-110 transition-transform duration-300"
           >
-            <i :class="[item.icon, 'text-2xl text-anvaya-blue']"></i>
+            <i
+              :class="[
+                item.icon,
+                'text-2xl text-anvaya-blue dark:text-anvaya-light',
+              ]"
+            ></i>
           </div>
           <h3
-            class="text-xs font-medium text-center text-anvaya-blue/80 group-hover:text-anvaya-blue transition-colors"
+            class="text-xs font-medium text-center text-anvaya-blue/80 dark:text-anvaya-light/80 group-hover:text-anvaya-blue dark:group-hover:text-anvaya-light transition-colors"
           >
             {{ item.title }}
           </h3>
@@ -185,55 +312,193 @@ const menuItems = [
     </div>
 
     <!-- Special Offers -->
-    <div class="mt-12">
+    <div class="mt-8">
       <h2 class="text-xl font-medium text-anvaya-blue mb-4">TRENDING</h2>
-      <div class="overflow-x-auto pb-4">
-        <div class="flex space-x-4">
+      <div class="relative">
+        <div
+          class="overflow-hidden"
+          @touchstart="handleTouchStart"
+          @touchmove="handleTouchMove"
+          @touchend="handleTouchEnd"
+        >
           <div
-            v-for="offer in specialOffers"
-            :key="offer.id"
-            class="flex-shrink-0 w-80 bg-white rounded-xl overflow-hidden shadow-sm border border-anvaya-gray/20 group hover:shadow-md transition-all duration-300"
+            class="flex transition-transform duration-500 ease-out"
+            :style="{
+              transform: `translateX(calc(50vw - ${currentIndex * 240}px - 120px))`,
+              touchAction: 'pan-y',
+            }"
+            @transitionend="handleTransitionEnd"
           >
-            <!-- Image Section -->
-            <div class="relative h-48 overflow-hidden">
-              <img
-                :src="offer.image"
-                :alt="offer.title"
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
+            <div
+              v-for="(offer, index) in displayOffers"
+              :key="`${offer.id}-${index}`"
+              class="flex-shrink-0 w-60 px-2 transition-all duration-500"
+              :class="[
+                currentIndex === index
+                  ? 'scale-110 opacity-100 blur-none'
+                  : Math.abs(currentIndex - index) <= 1
+                    ? 'scale-90 opacity-40 blur-[1px]'
+                    : 'scale-75 opacity-20 blur-[2px]',
+              ]"
+            >
               <div
-                class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
-              ></div>
-              <div class="absolute bottom-0 left-0 right-0 p-4">
-                <div class="flex items-center gap-2">
-                  <span class="text-white/90 text-sm">
-                    <i
-                      :class="[
-                        offer.type === 'activity'
-                          ? 'mdi mdi-calendar-clock'
-                          : 'mdi mdi-tag-outline',
-                        'mr-1',
-                      ]"
-                    ></i>
-                    {{ offer.validUntil }}
-                  </span>
+                class="mb-12 bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-anvaya-gray/20 dark:border-gray-700 group hover:shadow-md transition-all duration-300"
+                @click="selectedOffer = offer"
+              >
+                <!-- Image Section -->
+                <div class="relative h-64 overflow-hidden">
+                  <img
+                    :src="offer.image"
+                    :alt="offer.title"
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div
+                    class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+                  ></div>
+                  <div class="absolute bottom-0 left-0 right-0 p-4">
+                    <div class="flex items-center gap-2">
+                      <span class="text-white/90 text-xs">
+                        <i
+                          :class="[
+                            offer.type === 'activity'
+                              ? 'mdi mdi-calendar-clock'
+                              : 'mdi mdi-tag-outline',
+                            'mr-1',
+                          ]"
+                        ></i>
+                        {{ offer.validUntil }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Content Section -->
+                <div class="p-4">
+                  <div class="mb-2">
+                    <h3
+                      class="font-medium text-anvaya-blue dark:text-anvaya-light text-md"
+                    >
+                      {{ offer.title }}
+                    </h3>
+                  </div>
+                  <p class="text-xs text-gray-600 dark:text-gray-400">
+                    {{ offer.description }}
+                  </p>
+                  <button
+                    class="mt-4 w-full py-1 bg-anvaya-blue/10 dark:bg-anvaya-light/10 text-anvaya-blue dark:text-anvaya-light rounded-lg hover:bg-anvaya-blue/20 dark:hover:bg-anvaya-light/20 transition-colors text-xs"
+                  >
+                    {{
+                      offer.type === "activity" ? "Book Now" : "View Details"
+                    }}
+                  </button>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-            <!-- Content Section -->
-            <div class="p-4">
-              <div class="mb-2">
-                <h3 class="font-medium text-anvaya-blue text-lg">
-                  {{ offer.title }}
-                </h3>
+    <!-- Offer Details Modal -->
+    <div
+      v-if="selectedOffer"
+      class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+      @click="selectedOffer = null"
+    >
+      <div
+        class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-md overflow-hidden shadow-xl"
+        @click.stop
+      >
+        <div class="relative h-64">
+          <img
+            :src="selectedOffer.image"
+            :alt="selectedOffer.title"
+            class="w-full h-full object-cover"
+          />
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+          ></div>
+          <button
+            @click="selectedOffer = null"
+            class="absolute top-4 right-4 p-2 rounded-full bg-black/20 text-white hover:bg-black/40 transition-colors"
+          >
+            <i class="mdi mdi-close text-lg"></i>
+          </button>
+          <div class="absolute bottom-4 left-4 flex items-center gap-2">
+            <span
+              class="px-2 py-1 bg-anvaya-blue/90 text-white text-xs rounded-full flex items-center gap-1"
+            >
+              <i
+                :class="[
+                  selectedOffer.type === 'activity'
+                    ? 'mdi mdi-calendar-clock'
+                    : 'mdi mdi-tag-outline',
+                ]"
+              ></i>
+              {{ selectedOffer.validUntil }}
+            </span>
+          </div>
+        </div>
+
+        <div class="p-6">
+          <h3
+            class="text-xl font-medium text-anvaya-blue dark:text-anvaya-light mb-2"
+          >
+            {{ selectedOffer.title }}
+          </h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-6">
+            {{ selectedOffer.description }}
+          </p>
+          <div
+            class="space-y-4 bg-anvaya-blue/5 dark:bg-anvaya-light/5 rounded-lg p-4"
+          >
+            <div
+              v-if="selectedOffer.type === 'activity'"
+              class="flex items-start gap-3"
+            >
+              <i class="mdi mdi-information text-anvaya-blue mt-1"></i>
+              <div>
+                <h4 class="text-sm font-medium text-anvaya-blue mb-1">
+                  Activity Details
+                </h4>
+                <ul class="space-y-2">
+                  <li class="text-sm text-gray-600 flex items-center gap-2">
+                    <i class="mdi mdi-clock-outline text-anvaya-blue/60"></i>
+                    <span>Available daily, advance booking required</span>
+                  </li>
+                  <li class="text-sm text-gray-600 flex items-center gap-2">
+                    <i
+                      class="mdi mdi-account-group-outline text-anvaya-blue/60"
+                    ></i>
+                    <span>Suitable for all ages</span>
+                  </li>
+                </ul>
               </div>
-              <p class="text-sm text-gray-600">{{ offer.description }}</p>
-              <button
-                class="mt-4 w-full py-2.5 bg-anvaya-blue/10 text-anvaya-blue rounded-lg hover:bg-anvaya-blue/20 transition-colors font-medium"
-              >
-                {{ offer.type === "activity" ? "Book Now" : "View Details" }}
-              </button>
+            </div>
+
+            <div v-else class="flex items-start gap-3">
+              <i class="mdi mdi-ticket-percent text-anvaya-blue mt-1"></i>
+              <div>
+                <h4 class="text-sm font-medium text-anvaya-blue mb-1">
+                  Offer Terms
+                </h4>
+                <ul class="space-y-2">
+                  <li class="text-sm text-gray-600 flex items-center gap-2">
+                    <i class="mdi mdi-calendar-range text-anvaya-blue/60"></i>
+                    <span>Valid for the specified period</span>
+                  </li>
+                  <li class="text-sm text-gray-600 flex items-center gap-2">
+                    <i
+                      class="mdi mdi-information-outline text-anvaya-blue/60"
+                    ></i>
+                    <span>Subject to availability</span>
+                  </li>
+                  <li class="text-sm text-gray-600 flex items-center gap-2">
+                    <i class="mdi mdi-phone-outline text-anvaya-blue/60"></i>
+                    <span>Contact front desk for more information</span>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -245,6 +510,15 @@ const menuItems = [
 </template>
 
 <style>
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
 @keyframes logoFadeIn {
   from {
     opacity: 0;
@@ -254,5 +528,10 @@ const menuItems = [
     opacity: 1;
     transform: scale(1);
   }
+}
+
+.touch-pan-x {
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
 }
 </style>

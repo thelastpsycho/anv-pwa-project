@@ -1,4 +1,4 @@
-interface DiningVenue {
+export interface DiningVenue {
   id: number;
   name: string;
   logo?: string;

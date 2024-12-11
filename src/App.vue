@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import BottomNav from "@/components/BottomNav.vue";
 import SplashScreen from "@/components/SplashScreen.vue";
-import LiveChat from "@/components/LiveChat.vue";
+import { useAppStore } from "@/stores/app";
 
 const showContent = ref(false);
+const appStore = useAppStore();
+
+onMounted(() => {
+  appStore.initTheme();
+});
 
 const handleSplashFinished = () => {
   showContent.value = true;
@@ -16,7 +21,7 @@ const handleSplashFinished = () => {
 
   <Transition name="fade">
     <div v-if="showContent">
-      <main class="min-h-screen bg-white">
+      <main class="min-h-screen bg-white dark:bg-gray-900">
         <router-view v-slot="{ Component }">
           <Transition name="page" mode="out-in">
             <component :is="Component" />
@@ -24,7 +29,6 @@ const handleSplashFinished = () => {
         </router-view>
       </main>
       <BottomNav />
-      <LiveChat />
     </div>
   </Transition>
 </template>
