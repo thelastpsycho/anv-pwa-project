@@ -1,11 +1,11 @@
-export interface FAQ {
+interface FAQ {
   id: number;
   question: string;
   answer: string;
   isOpen: boolean;
 }
 
-export interface FAQCategory {
+interface FAQCategory {
   id: number;
   title: string;
   faqs: FAQ[];
