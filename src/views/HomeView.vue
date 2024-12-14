@@ -75,47 +75,86 @@ const hourlyForecasts = computed(() => {
       weathercode: weather.value!.hourly.weathercode[index],
     }))
     .filter((forecast) => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const forecastDate = new Date(forecast.time);
+      forecastDate.setHours(0, 0, 0, 0);
+
+      const isToday = today.getTime() === forecastDate.getTime();
       const forecastHour = forecast.time.getHours();
-      return forecastHour > currentHour && forecastHour <= currentHour + 6;
+
+      return isToday && forecastHour >= currentHour;
     })
     .slice(0, 6);
 });
 
 const fetchWeather = async () => {
   try {
+    // Show loading state
+    weather.value = null;
+    console.log("Fetching weather data...");
+
     const response = await fetch(
-      "https://api.open-meteo.com/v1/forecast?latitude=-8.7238&longitude=115.1722&current_weather=true&hourly=temperature_2m,weathercode"
+      "https://api.open-meteo.com/v1/forecast?latitude=-8.7213&longitude=115.1697&timezone=Asia/Makassar&hourly=temperature_2m,weathercode&current=temperature_2m,weathercode&forecast_days=1"
     );
+
+    if (!response.ok) {
+      throw new Error("Weather API response was not ok");
+    }
+
     const data = await response.json();
-    weather.value = {
-      ...data,
+    console.log("Weather data received:", data);
+
+    // Transform the data to match our interface
+    const transformedData = {
+      current_weather: {
+        temperature: data.current.temperature_2m,
+        weathercode: data.current.weathercode,
+      },
+      hourly: {
+        time: data.hourly.time,
+        temperature_2m: data.hourly.temperature_2m,
+        weathercode: data.hourly.weathercode,
+      },
       lastFetched: Date.now(),
     };
-    // Store in localStorage
+
+    weather.value = transformedData;
     localStorage.setItem("weatherData", JSON.stringify(weather.value));
+    console.log("Weather data updated and cached");
   } catch (error) {
     console.error("Error fetching weather:", error);
+    // Try to use cached data as fallback if fetch fails
+    const cachedWeather = localStorage.getItem("weatherData");
+    if (cachedWeather) {
+      console.log("Using cached weather data");
+      weather.value = JSON.parse(cachedWeather);
+    }
   }
 };
 
 onMounted(() => {
-  // Try to get cached weather data
-  const cachedWeather = localStorage.getItem("weatherData");
-  if (cachedWeather) {
-    const parsed = JSON.parse(cachedWeather);
-    const timeSinceLastFetch = Date.now() - parsed.lastFetched;
-    // Use cached data if less than 10 minutes old
-    if (timeSinceLastFetch < 10 * 60 * 1000) {
-      weather.value = parsed;
+  // Check if this is a page reload or navigation
+  const pageLoadTime = sessionStorage.getItem("pageLoadTime");
+  const currentTime = Date.now().toString();
+
+  if (!pageLoadTime) {
+    // First load of the page
+    sessionStorage.setItem("pageLoadTime", currentTime);
+    fetchWeather();
+  } else {
+    // Navigation back to page - use cached data
+    const cachedWeather = localStorage.getItem("weatherData");
+    if (cachedWeather) {
+      weather.value = JSON.parse(cachedWeather);
     } else {
       fetchWeather();
     }
-  } else {
-    fetchWeather();
   }
 
-  // Set up interval for every 10 minutes
-  weatherInterval = setInterval(fetchWeather, 10 * 60 * 1000);
+  // Set up interval for every 15 minutes
+  weatherInterval = setInterval(fetchWeather, 15 * 60 * 1000);
   isLoaded.value = true;
 });
 
@@ -342,12 +381,12 @@ const toggleDarkMode = () => {
         <!-- Hourly Forecast -->
         <div
           v-if="hourlyForecasts.length"
-          class="flex gap-2 overflow-x-auto scrollbar-hide pb-2"
+          class="flex gap-1.5 overflow-x-auto scrollbar-hide pb-1"
         >
           <div
             v-for="forecast in hourlyForecasts"
             :key="forecast.time.toISOString()"
-            class="flex flex-col items-center min-w-[3.5rem] bg-white/50 dark:bg-gray-800/50 rounded-lg py-1.5 px-2"
+            class="flex flex-col items-center min-w-[3rem] bg-white/50 dark:bg-gray-800/50 rounded-lg py-1 px-1.5"
           >
             <span class="text-xs text-gray-500 dark:text-gray-400">
               {{ forecast.time.getHours() }}
@@ -360,7 +399,7 @@ const toggleDarkMode = () => {
             <i
               :class="[
                 weatherIcons[forecast.weathercode] || 'mdi mdi-weather-cloudy',
-                'text-base text-anvaya-blue/80 dark:text-anvaya-light/80',
+                'text-sm text-anvaya-blue/80 dark:text-anvaya-light/80',
               ]"
             ></i>
           </div>
