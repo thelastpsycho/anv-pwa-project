@@ -45,3 +45,24 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+interface Props {
+  roomNumber: string;
+  guestName: string;
+  checkIn: string;
+  checkOut: string;
+  adults: number;
+  children: number;
+}
+
+defineProps<Props>();
+
+const emit = defineEmits<{
+  (e: "logout"): void;
+}>();
+
+const handleLogout = () => {
+  emit("logout");
+};
+</script>

@@ -31,7 +31,7 @@ export const specialOffers: SpecialOffer[] = [
     title: "Weekend Getaway",
     description: "Special weekend rates with breakfast",
     image:
-      "https://www.theanvayabali.com/wp-content/uploads/2023/02/Swimming-Pool.jpg",
+      "https://www.theanvayabali.com/wp-content/uploads/2023/02/Romantic-Dinner.jpg",
     validUntil: "31 March 2024",
     type: "offer",
   },

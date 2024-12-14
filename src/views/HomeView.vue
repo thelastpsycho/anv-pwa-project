@@ -7,10 +7,51 @@ import { useAppStore } from "@/stores/app";
 const isLoaded = ref(false);
 let weatherInterval: number;
 
+const weatherCodes: Record<number, string> = {
+  0: "Clear sky",
+  1: "Mainly clear",
+  2: "Partly cloudy",
+  3: "Overcast",
+  45: "Foggy",
+  48: "Depositing rime fog",
+  51: "Light drizzle",
+  53: "Moderate drizzle",
+  55: "Dense drizzle",
+  61: "Slight rain",
+  63: "Moderate rain",
+  65: "Heavy rain",
+  80: "Slight rain showers",
+  81: "Moderate rain showers",
+  82: "Violent rain showers",
+};
+
+const weatherIcons: Record<number, string> = {
+  0: "mdi mdi-weather-sunny",
+  1: "mdi mdi-weather-partly-cloudy",
+  2: "mdi mdi-weather-partly-cloudy",
+  3: "mdi mdi-weather-cloudy",
+  45: "mdi mdi-weather-fog",
+  48: "mdi mdi-weather-fog",
+  51: "mdi mdi-weather-rainy",
+  53: "mdi mdi-weather-pouring",
+  55: "mdi mdi-weather-pouring",
+  61: "mdi mdi-weather-rainy",
+  63: "mdi mdi-weather-pouring",
+  65: "mdi mdi-weather-pouring",
+  80: "mdi mdi-weather-rainy",
+  81: "mdi mdi-weather-pouring",
+  82: "mdi mdi-weather-lightning-rainy",
+};
+
 interface WeatherData {
   current_weather: {
     temperature: number;
     weathercode: number;
+  };
+  hourly: {
+    time: string[];
+    temperature_2m: number[];
+    weathercode: number[];
   };
   lastFetched?: number;
 }
@@ -18,31 +59,32 @@ interface WeatherData {
 const weather = ref<WeatherData | null>(null);
 const weatherDescription = computed(() => {
   if (!weather.value) return "";
-  // Weather codes from OpenMeteo
-  const codes: Record<number, string> = {
-    0: "Clear sky",
-    1: "Mainly clear",
-    2: "Partly cloudy",
-    3: "Overcast",
-    45: "Foggy",
-    48: "Depositing rime fog",
-    51: "Light drizzle",
-    53: "Moderate drizzle",
-    55: "Dense drizzle",
-    61: "Slight rain",
-    63: "Moderate rain",
-    65: "Heavy rain",
-    80: "Slight rain showers",
-    81: "Moderate rain showers",
-    82: "Violent rain showers",
-  };
-  return codes[weather.value.current_weather.weathercode] || "Unknown";
+  return weatherCodes[weather.value.current_weather.weathercode] || "Unknown";
+});
+
+const hourlyForecasts = computed(() => {
+  if (!weather.value?.hourly) return [];
+
+  const now = new Date();
+  const currentHour = now.getHours();
+
+  return weather.value.hourly.time
+    .map((time, index) => ({
+      time: new Date(time),
+      temperature: Math.round(weather.value!.hourly.temperature_2m[index]),
+      weathercode: weather.value!.hourly.weathercode[index],
+    }))
+    .filter((forecast) => {
+      const forecastHour = forecast.time.getHours();
+      return forecastHour > currentHour && forecastHour <= currentHour + 6;
+    })
+    .slice(0, 6);
 });
 
 const fetchWeather = async () => {
   try {
     const response = await fetch(
-      "https://api.open-meteo.com/v1/forecast?latitude=-8.7238&longitude=115.1722&current_weather=true"
+      "https://api.open-meteo.com/v1/forecast?latitude=-8.7238&longitude=115.1722&current_weather=true&hourly=temperature_2m,weathercode"
     );
     const data = await response.json();
     weather.value = {
@@ -241,45 +283,88 @@ const toggleDarkMode = () => {
 
     <!-- Weather Section -->
     <div
-      class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-2.5 rounded-lg shadow-sm max-w-xs mx-auto mb-2"
+      class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-4 pt-2 rounded-lg shadow-sm w-full mb-2"
     >
-      <div class="flex items-center justify-between">
-        <!-- Weather Info -->
-        <div v-if="weather" class="flex items-center gap-3">
-          <p
-            class="text-2xl font-medium text-anvaya-blue dark:text-anvaya-light"
-          >
-            {{ Math.round(weather.current_weather.temperature) }}°C
-          </p>
-          <div class="flex flex-col">
-            <span
-              class="text-xs font-medium text-anvaya-blue/80 dark:text-anvaya-light/80"
-              >Kuta, Bali</span
-            >
-            <span class="text-xs text-gray-500 dark:text-gray-400">{{
-              weatherDescription
-            }}</span>
+      <div class="flex flex-col">
+        <div class="flex items-center justify-between">
+          <!-- Weather Info -->
+          <div v-if="weather" class="flex items-center gap-3">
+            <div class="flex flex-col items-center">
+              <i
+                :class="[
+                  weatherCodes[weather.current_weather.weathercode] ||
+                    'mdi mdi-weather-cloudy',
+                  'text-2xl text-anvaya-blue dark:text-anvaya-light mb-1',
+                ]"
+              ></i>
+              <p
+                class="text-2xl font-medium text-anvaya-blue dark:text-anvaya-light"
+              >
+                {{ Math.round(weather.current_weather.temperature) }}°C
+              </p>
+            </div>
+            <div class="flex flex-col">
+              <span
+                class="text-xs font-medium text-anvaya-blue/80 dark:text-anvaya-light/80"
+                >Kuta, Bali</span
+              >
+              <span class="text-xs text-gray-500 dark:text-gray-400">{{
+                weatherDescription
+              }}</span>
+            </div>
           </div>
-        </div>
-        <div
-          v-else
-          class="text-center text-gray-600 dark:text-gray-400 text-sm"
-        >
-          Loading weather...
+          <div
+            v-else
+            class="text-center text-gray-600 dark:text-gray-400 text-sm"
+          >
+            Loading weather...
+          </div>
+
+          <!-- Theme Toggle -->
+          <button
+            @click="toggleDarkMode"
+            class="p-2 rounded-lg hover:bg-anvaya-blue/5 dark:hover:bg-anvaya-light/5 transition-colors"
+          >
+            <i
+              :class="[
+                isDarkMode ? 'mdi mdi-weather-sunny' : 'mdi mdi-weather-night',
+                'text-2xl text-anvaya-blue dark:text-anvaya-light',
+              ]"
+            ></i>
+          </button>
         </div>
 
-        <!-- Theme Toggle -->
-        <button
-          @click="toggleDarkMode"
-          class="p-2 rounded-lg hover:bg-anvaya-blue/5 dark:hover:bg-anvaya-light/5 transition-colors"
+        <!-- Divider -->
+        <div
+          class="w-full h-[1px] bg-anvaya-gray/10 dark:bg-gray-700/50 my-2"
+        ></div>
+
+        <!-- Hourly Forecast -->
+        <div
+          v-if="hourlyForecasts.length"
+          class="flex gap-2 overflow-x-auto scrollbar-hide pb-2"
         >
-          <i
-            :class="[
-              isDarkMode ? 'mdi mdi-weather-sunny' : 'mdi mdi-weather-night',
-              'text-2xl text-anvaya-blue dark:text-anvaya-light',
-            ]"
-          ></i>
-        </button>
+          <div
+            v-for="forecast in hourlyForecasts"
+            :key="forecast.time.toISOString()"
+            class="flex flex-col items-center min-w-[3.5rem] bg-white/50 dark:bg-gray-800/50 rounded-lg py-1.5 px-2"
+          >
+            <span class="text-xs text-gray-500 dark:text-gray-400">
+              {{ forecast.time.getHours() }}
+            </span>
+            <span
+              class="text-xs font-medium text-anvaya-blue dark:text-anvaya-light"
+            >
+              {{ forecast.temperature }}°C
+            </span>
+            <i
+              :class="[
+                weatherIcons[forecast.weathercode] || 'mdi mdi-weather-cloudy',
+                'text-base text-anvaya-blue/80 dark:text-anvaya-light/80',
+              ]"
+            ></i>
+          </div>
+        </div>
       </div>
     </div>
 

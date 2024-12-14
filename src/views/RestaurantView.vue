@@ -1,5 +1,5 @@
 <template>
-  <div class="restaurant px-4 pb-4">
+  <div class="restaurant px-4 pb-8 mb-8">
     <PageHeader title="Dining" />
 
     <!-- FB Promotions Section -->

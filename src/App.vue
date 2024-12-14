@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 import BottomNav from "@/components/BottomNav.vue";
 import SplashScreen from "@/components/SplashScreen.vue";
+import PWAUpdateNotification from "@/components/PWAUpdateNotification.vue";
 import { useAppStore } from "@/stores/app";
 
 const showContent = ref(false);
@@ -29,6 +30,7 @@ const handleSplashFinished = () => {
         </router-view>
       </main>
       <BottomNav />
+      <PWAUpdateNotification />
     </div>
   </Transition>
 </template>

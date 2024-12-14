@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import PageHeader from "@/components/PageHeader.vue";
+import { attractions } from "@/data/attractions";
 
 const isLoaded = ref(false);
 
@@ -9,63 +10,10 @@ onMounted(() => {
     isLoaded.value = true;
   }, 100);
 });
-
-const attractions = [
-  {
-    id: 1,
-    title: "Kuta Beach",
-    description:
-      "Famous beach known for its surfing, sunsets, and vibrant atmosphere. Just steps away from the hotel.",
-    distance: "5 minutes walk",
-    image:
-      "https://www.theanvayabali.com/wp-content/uploads/2023/02/Kuta-Beach.jpg",
-    category: "Beach",
-  },
-  {
-    id: 2,
-    title: "Beachwalk Shopping Center",
-    description:
-      "Modern shopping mall with international brands, dining options, and entertainment facilities.",
-    distance: "10 minutes walk",
-    image:
-      "https://www.theanvayabali.com/wp-content/uploads/2023/02/Beachwalk.jpg",
-    category: "Shopping",
-  },
-  {
-    id: 3,
-    title: "Waterbom Bali",
-    description:
-      "Asia's #1 waterpark featuring exciting slides and attractions for all ages.",
-    distance: "15 minutes walk",
-    image:
-      "https://www.theanvayabali.com/wp-content/uploads/2023/02/Waterbom.jpg",
-    category: "Entertainment",
-  },
-  {
-    id: 4,
-    title: "Discovery Shopping Mall",
-    description:
-      "Beachfront shopping center with local and international retailers.",
-    distance: "15 minutes walk",
-    image:
-      "https://www.theanvayabali.com/wp-content/uploads/2023/02/Discovery-Mall.jpg",
-    category: "Shopping",
-  },
-  {
-    id: 5,
-    title: "Kuta Art Market",
-    description:
-      "Traditional market selling local crafts, souvenirs, and textiles.",
-    distance: "20 minutes walk",
-    image:
-      "https://www.theanvayabali.com/wp-content/uploads/2023/02/Kuta-Art-Market.jpg",
-    category: "Shopping",
-  },
-];
 </script>
 
 <template>
-  <div class="around px-4 pb-4">
+  <div class="around px-4 pb-12 mb-12">
     <PageHeader title="Around Us" />
 
     <div
