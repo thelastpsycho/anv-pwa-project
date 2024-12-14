@@ -1,17 +1,46 @@
-# The Anvaya Bali Website
+# The Anvaya Beach Resort Bali - Mobile App
 
-A modern, elegant website for The Anvaya Beach Resort Bali built with Vue 3, TypeScript, and Tailwind CSS.
+Official mobile application for The Anvaya Beach Resort Bali, providing guests with easy access to hotel services and information.
 
-## 🌟 Features
+## Features
 
-- **Modern Stack**: Vue 3, TypeScript, Vite, and Tailwind CSS
-- **Responsive Design**: Optimized for all device sizes
-- **Performance Focused**: Fast loading and smooth animations
-- **SEO Friendly**: Optimized meta tags and semantic HTML
-- **Type Safe**: Full TypeScript support
-- **Interactive UI**: Dynamic components and smooth transitions
+### Guest Services
 
-## 🚀 Quick Start
+- Room authentication using WiFi credentials
+- Real-time weather information for Kuta, Bali
+- Dark/Light mode theme preference
+- Table reservations for dining venues
+- Activity and experience bookings
+- Local attractions guide
+- 24/7 guest support access
+
+### Technical Features
+
+- Progressive Web App (PWA) capabilities
+- Offline functionality
+- Automatic updates
+- Responsive design for all devices
+- Real-time data synchronization
+- Secure authentication system
+
+## Technical Stack
+
+### Core Technologies
+
+- Vue 3 with Composition API
+- TypeScript for type safety
+- Tailwind CSS for styling
+- Pinia for state management
+- Vite as build tool
+
+### Additional Tools
+
+- Vue Router for navigation
+- Material Design Icons
+- PWA plugin for offline capabilities
+- ESLint & Prettier for code quality
+
+## Development Setup
 
 ### Prerequisites
 
@@ -20,92 +49,178 @@ A modern, elegant website for The Anvaya Beach Resort Bali built with Vue 3, Typ
 
 ### Installation
 
-1. Clone the repository
-
 ```bash
-git clone https://github.com/yourusername/anvaya-bali.git
-cd anvaya-bali
-```
+# Clone the repository
+git clone [repository-url]
 
-2. Install dependencies
-
-```bash
+# Install dependencies
 npm install
-# or
-yarn install
-```
 
-3. Start development server
-
-```bash
+# Start development server
 npm run dev
-# or
-yarn dev
-```
 
-4. Build for production
+# Type check
+npm run type-check
 
-```bash
+# Lint and fix files
+npm run lint
+
+# Format code
+npm run format
+
+# Build for production
 npm run build
-# or
-yarn build
 ```
 
-## 🛠 Tech Stack
-
-- **Framework**: Vue 3 with Composition API
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS
-- **Language**: TypeScript
-- **State Management**: Vue Router, Pinia
-- **Icons**: Material Design Icons
-- **Testing**: Vitest
-- **Linting**: ESLint, Prettier
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 src/
-├── assets/        # Static assets (images, fonts)
+├── assets/        # Static assets (images, icons)
 ├── components/    # Reusable Vue components
-├── data/         # Static data and configurations
+├── data/         # Static data (amenities, activities)
 ├── router/       # Vue Router configuration
-├── stores/       # Pinia stores
+├── services/     # API services
+├── stores/       # Pinia state management
 ├── types/        # TypeScript type definitions
 ├── utils/        # Utility functions
 └── views/        # Page components
 ```
 
-## 🎨 Features & Pages
+## Key Features Implementation
 
-- **Home**: Showcase of the resort's beauty
-- **Rooms**: Detailed room information and booking
-- **Dining**: Restaurant and dining options
-- **Activities**: Available activities and experiences
-- **FAQ**: Common questions and answers
-- **Contact**: Contact information and form
+### Authentication System
 
-## 🔧 Configuration
+```typescript
+// WiFi credentials authentication
+const success = await authStore.login(roomNumber, password);
 
-The project uses several configuration files:
+// Admin access
+username: admin;
+password: admin;
+```
 
-- `vite.config.ts`: Vite configuration
-- `tailwind.config.js`: Tailwind CSS customization
-- `tsconfig.json`: TypeScript configuration
-- `.env`: Environment variables
+### Weather Integration
 
-## 📝 License
+```typescript
+// Real-time weather data for Kuta
+const weatherData = await fetch(
+  "https://api.open-meteo.com/v1/forecast?latitude=-8.7213&longitude=115.1697"
+);
+```
 
-This project is proprietary and confidential. All rights reserved.
+### Reservation System
 
-## 🤝 Contributing
+```typescript
+// Table reservation handling
+const reservation = {
+  venueId: number;
+  date: string;
+  time: string;
+  guests: number;
+  // ...other details
+};
+```
+
+## Configuration
+
+### Vite Configuration
+
+```typescript
+export default defineConfig({
+  server: {
+    host: true,
+    port: 5173,
+    proxy: {
+      "/api": {
+        target: "http://10.201.59.16:9090",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
+  },
+  plugins: [vue(), VitePWA()],
+});
+```
+
+### Environment Variables
+
+Create a `.env` file:
+
+```
+VITE_API_BASE_URL=your_api_url
+```
+
+## PWA Features
+
+### Capabilities
+
+- Installable on mobile devices
+- Works offline
+- Automatic updates
+- Background sync
+- Push notifications (planned)
+
+### Cache Strategy
+
+- Weather data: 15-minute cache
+- Static assets: Long-term cache
+- API responses: Network-first strategy
+
+## Support
+
+For assistance:
+
+- Contact front desk
+- Dial Extension 0 from room phone
+- Email: info@theanvayabali.com
+
+## Security Notes
+
+- Secure authentication using WiFi credentials
+- API endpoint protection
+- Data encryption in transit
+- Session management
+- Regular security updates
+
+## Performance Optimization
+
+- Lazy loading of routes
+- Image optimization
+- Efficient caching strategies
+- Minimal bundle size
+- Code splitting
+
+## Browser Support
+
+- Chrome (latest)
+- Safari (latest)
+- Firefox (latest)
+- Edge (latest)
+- Mobile browsers
+
+## Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Create Pull Request
 
-## 📞 Support
+## License
 
-For support, email [support@theanvayabali.com](mailto:support@theanvayabali.com)
+Private and Confidential
+All rights reserved - The Anvaya Beach Resort Bali
+
+```
+
+This README provides:
+1. Comprehensive feature list
+2. Detailed technical information
+3. Clear setup instructions
+4. Code examples
+5. Configuration details
+6. Security and performance notes
+7. Support information
+8. Contribution guidelines
+```
