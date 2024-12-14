@@ -106,10 +106,10 @@
             <h3
               class="text-xl font-medium text-anvaya-blue dark:text-anvaya-light"
             >
-              {{ authStore.user?.name }}
+              Room {{ authStore.roomNumber }}
             </h3>
             <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Room {{ authStore.user?.roomNumber }}
+              {{ authStore.credentials?.isAdmin ? "Administrator" : "Guest" }}
             </p>
           </div>
 
@@ -132,6 +132,7 @@
 import { ref, onMounted } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import PageHeader from "@/components/PageHeader.vue";
+import { useRouter } from "vue-router";
 
 const authStore = useAuthStore();
 const roomNumber = ref("");
@@ -139,6 +140,7 @@ const password = ref("");
 const error = ref("");
 const showPassword = ref(false);
 const isLoaded = ref(false);
+const router = useRouter();
 
 onMounted(() => {
   setTimeout(() => {
@@ -146,15 +148,17 @@ onMounted(() => {
   }, 100);
 });
 
-const handleLogin = () => {
+const handleLogin = async () => {
   if (!roomNumber.value || !password.value) {
-    error.value = "Please fill in all fields";
+    error.value = "Please enter both room number and password";
     return;
   }
 
-  const success = authStore.login(roomNumber.value, password.value);
+  const success = await authStore.login(roomNumber.value, password.value);
   if (!success) {
     error.value = "Invalid room number or password";
+  } else {
+    handleLoginSuccess();
   }
 };
 
@@ -166,5 +170,24 @@ const handleLogout = () => {
 
 const togglePassword = () => {
   showPassword.value = !showPassword.value;
+};
+
+const handleLoginSuccess = () => {
+  const lastPath = localStorage.getItem("lastPath");
+  console.log("Last path:", lastPath);
+  if (lastPath) {
+    localStorage.removeItem("lastPath");
+    try {
+      router.push({ path: lastPath }).catch(() => {
+        console.error("Failed to navigate to:", lastPath);
+        router.push("/");
+      });
+    } catch (error) {
+      console.error("Navigation error:", error);
+      router.push("/");
+    }
+    return;
+  }
+  router.push("/");
 };
 </script>

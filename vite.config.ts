@@ -9,6 +9,13 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
+    proxy: {
+      "/api": {
+        target: "http://10.201.59.16:9090",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
   },
   optimizeDeps: {
     include: ["vue", "vue-router", "pinia", "@vueuse/core"],

@@ -3,8 +3,10 @@ import { ref, onMounted, computed, onUnmounted } from "vue";
 import { specialOffers } from "@/data/specialOffers";
 import { useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
+import { useAuthStore } from "@/stores/auth";
 
 const isLoaded = ref(false);
+const authStore = useAuthStore();
 let weatherInterval: number;
 
 const weatherCodes: Record<number, string> = {
@@ -84,7 +86,9 @@ const hourlyForecasts = computed(() => {
       const isToday = today.getTime() === forecastDate.getTime();
       const forecastHour = forecast.time.getHours();
 
-      return isToday && forecastHour >= currentHour;
+      return (
+        isToday && forecastHour >= currentHour && forecastHour < currentHour + 6
+      );
     })
     .slice(0, 6);
 });
@@ -358,19 +362,30 @@ const toggleDarkMode = () => {
           >
             Loading weather...
           </div>
-
-          <!-- Theme Toggle -->
-          <button
-            @click="toggleDarkMode"
-            class="p-2 rounded-lg hover:bg-anvaya-blue/5 dark:hover:bg-anvaya-light/5 transition-colors"
-          >
-            <i
-              :class="[
-                isDarkMode ? 'mdi mdi-weather-sunny' : 'mdi mdi-weather-night',
-                'text-2xl text-anvaya-blue dark:text-anvaya-light',
-              ]"
-            ></i>
-          </button>
+          <div class="flex flex-col items-center">
+            <!-- Theme Toggle -->
+            <button
+              @click="toggleDarkMode"
+              class="p-2 rounded-lg hover:bg-anvaya-blue/5 dark:hover:bg-anvaya-light/5 transition-colors"
+            >
+              <i
+                :class="[
+                  isDarkMode
+                    ? 'mdi mdi-weather-sunny'
+                    : 'mdi mdi-weather-night',
+                  'text-2xl text-anvaya-blue dark:text-anvaya-light',
+                ]"
+              ></i>
+              <!-- Room Number -->
+              <div
+                v-if="authStore.isAuthenticated"
+                class="flex items-center gap-1 text-anvaya-blue/80 dark:text-anvaya-light/80"
+              >
+                <!-- <i class="mdi mdi-door text-lg"></i> -->
+                <span class="text-xs">{{ authStore.roomNumber }}</span>
+              </div>
+            </button>
+          </div>
         </div>
 
         <!-- Divider -->

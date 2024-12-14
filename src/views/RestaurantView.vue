@@ -261,6 +261,7 @@ const logos: { [key: string]: string } = {
 
 const handleReserveClick = (venue: { id: number; name: string }) => {
   if (!authStore.isAuthenticated) {
+    localStorage.setItem("lastPath", "/restaurant");
     router.push("/profile");
     return;
   }

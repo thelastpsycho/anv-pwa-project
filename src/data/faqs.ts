@@ -37,6 +37,20 @@ export const faqCategories: FAQCategory[] = [
           "Yes, we offer airport transfers for an additional fee. Please contact our concierge to arrange.",
         isOpen: false,
       },
+      {
+        id: 4,
+        question: "What is the hotel's address?",
+        answer:
+          "Jl. Kartika Plaza, Tuban, Kuta, Kabupaten Badung, Bali 80361, Indonesia",
+        isOpen: false,
+      },
+      {
+        id: 5,
+        question: "How can I contact the hotel?",
+        answer:
+          "You can reach us at +62 361 2090477 or email us at info@theanvayabali.com",
+        isOpen: false,
+      },
     ],
   },
   {

@@ -41,7 +41,7 @@ const handleTouchEnd = () => {
 
 <template>
   <div class="wellness px-4 pb-12 mb-12">
-    <PageHeader title="Wellness & Spa" />
+    <PageHeader title="Wellness" />
 
     <div
       class="wellness mb-4"
@@ -169,7 +169,7 @@ const handleTouchEnd = () => {
 }
 
 .animate-kenburns {
-  animation: kenburns 10s ease-in-out infinite;
+  animation: kenburns 15s ease-in-out infinite;
 }
 
 .scrollbar-hide {

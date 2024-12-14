@@ -1,39 +1,59 @@
 import { defineStore } from "pinia";
+import { getWifiCredentials } from "@/services/api";
 
-interface User {
-  id: string;
-  name: string;
-  roomNumber: string;
-}
-
-// Test credentials
-const TEST_ROOM = "1520";
-const TEST_PASSWORD = "1520";
+// Master admin credentials
+const ADMIN_CREDENTIALS = {
+  username: "admin",
+  password: "admin",
+};
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
-    user: null as User | null,
     isAuthenticated: false,
+    roomNumber: "",
+    credentials: null as any,
   }),
 
   actions: {
-    login(roomNumber: string, password: string) {
-      // Check against test credentials
-      if (roomNumber === TEST_ROOM && password === TEST_PASSWORD) {
-        this.user = {
-          id: "1",
-          name: "Guest Room 123",
-          roomNumber,
-        };
+    async login(roomNumber: string, password: string) {
+      // Check admin credentials first
+      if (
+        roomNumber === ADMIN_CREDENTIALS.username &&
+        password === ADMIN_CREDENTIALS.password
+      ) {
         this.isAuthenticated = true;
+        this.roomNumber = "admin";
+        this.credentials = { isAdmin: true };
         return true;
       }
-      return false;
+
+      try {
+        const response = await getWifiCredentials();
+
+        // Find matching credentials
+        const credential = response.data.find(
+          (cred) =>
+            cred.username.trim() === roomNumber && cred.value === password
+        );
+
+        if (credential) {
+          this.isAuthenticated = true;
+          this.roomNumber = roomNumber;
+          this.credentials = credential;
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.error("Login error:", error);
+        return false;
+      }
     },
 
     logout() {
-      this.user = null;
       this.isAuthenticated = false;
+      this.roomNumber = "";
+      this.credentials = null;
     },
   },
 });
