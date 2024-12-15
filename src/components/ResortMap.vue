@@ -210,93 +210,6 @@ onMounted(async () => {
     stroke: false,
   }).addTo(map.value as L.Map);
 
-  // Track current location marker and circle
-  let currentLocationMarker: L.Marker | null = null;
-  let currentLocationCircle: L.Circle | null = null;
-
-  // Function to update location marker
-  const updateLocationMarker = (position: L.LatLng, accuracy: number) => {
-    // Remove existing markers
-    if (currentLocationMarker) {
-      map.value?.removeLayer(currentLocationMarker);
-    }
-    if (currentLocationCircle) {
-      map.value?.removeLayer(currentLocationCircle);
-    }
-
-    // Add new marker
-    currentLocationMarker = L.marker(position, {
-      icon: L.divIcon({
-        html: `
-          <div class="flex flex-col items-center">
-            <i class="mdi mdi-crosshairs-gps text-blue-500 text-xl"></i>
-            <span class="text-xs bg-white px-1.5 py-0.5 rounded-full shadow-sm mt-1">You are here</span>
-          </div>
-        `,
-        className: "location-marker",
-        iconSize: [80, 45],
-        iconAnchor: [40, 22],
-      }),
-    }).addTo(map.value as L.Map);
-
-    // Add accuracy circle
-    currentLocationCircle = L.circle(position, {
-      radius: accuracy,
-      weight: 1,
-      color: "#4299e1",
-      fillColor: "#4299e1",
-      fillOpacity: 0.1,
-    }).addTo(map.value as L.Map);
-  };
-
-  // Add custom location control
-  try {
-    const locationButton = new L.Control({ position: "topleft" });
-    locationButton.onAdd = () => {
-      const div = L.DomUtil.create("div", "leaflet-bar");
-      div.innerHTML = `
-        <button 
-          class="bg-white p-2 rounded-lg shadow-md hover:bg-gray-50"
-          title="Show my location"
-        >
-          <i class="mdi mdi-crosshairs-gps text-anvaya-blue text-xl"></i>
-        </button>
-      `;
-
-      div.onclick = () => {
-        map.value?.locate({
-          setView: true,
-          maxZoom: 18,
-          enableHighAccuracy: true,
-          watch: true, // Continuously watch position
-        });
-      };
-      return div;
-    };
-    locationButton.addTo(map.value as L.Map);
-
-    // Handle location found
-    map.value.on("locationfound", (e) => {
-      updateLocationMarker(e.latlng, e.accuracy);
-    });
-
-    // Handle location error
-    map.value.on("locationerror", (e) => {
-      console.error("Location error:", e.message);
-      alert("Please enable location access in your device settings");
-    });
-
-    // Start watching location immediately
-    map.value.locate({
-      setView: true,
-      maxZoom: 18,
-      enableHighAccuracy: true,
-      watch: true,
-    });
-  } catch (error) {
-    console.error("Error initializing location control:", error);
-  }
-
   // Add initial markers
   updateMarkers();
 });
@@ -326,27 +239,5 @@ onMounted(async () => {
 
 .custom-marker i {
   font-size: 18px;
-}
-
-.location-marker {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
 }
 </style>
