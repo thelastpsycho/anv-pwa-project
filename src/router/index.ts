@@ -18,6 +18,9 @@ const router = createRouter({
       path: "/map",
       name: "map",
       component: () => import("@/views/MapView.vue"),
+      meta: {
+        title: "Resort Map",
+      },
     },
     {
       path: "/profile",

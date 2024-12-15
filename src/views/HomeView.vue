@@ -170,6 +170,12 @@ onUnmounted(() => {
 });
 
 const menuItems = [
+  // {
+  //   id: "map",
+  //   title: "Resort Map",
+  //   icon: "mdi mdi-map",
+  //   route: "map",
+  // },
   {
     id: "activities",
     title: "Activities",

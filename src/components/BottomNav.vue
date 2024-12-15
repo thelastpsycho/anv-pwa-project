@@ -48,6 +48,21 @@ const route = useRoute();
         </router-link>
 
         <router-link
+          to="/map"
+          class="relative flex flex-col items-center py-2 text-anvaya-blue/60 dark:text-anvaya-light/60 hover:text-anvaya-blue dark:hover:text-anvaya-light transition-colors"
+          :class="{
+            '!text-anvaya-blue dark:!text-anvaya-light': route.path === '/map',
+          }"
+        >
+          <div
+            class="absolute top-0 left-0 right-0 h-0.5 bg-anvaya-blue transition-all duration-300"
+            :class="[route.path === '/map' ? 'opacity-100' : 'opacity-0']"
+          ></div>
+          <i class="mdi mdi-map text-2xl"></i>
+          <span class="text-xs">Map</span>
+        </router-link>
+
+        <router-link
           to="/profile"
           class="relative flex flex-col items-center py-2 text-anvaya-blue/60 dark:text-anvaya-light/60 hover:text-anvaya-blue dark:hover:text-anvaya-light transition-colors"
           :class="{

@@ -124,25 +124,6 @@ const reservation = {
 
 ## Configuration
 
-### Vite Configuration
-
-```typescript
-export default defineConfig({
-  server: {
-    host: true,
-    port: 5173,
-    proxy: {
-      "/api": {
-        target: "http://10.201.59.16:9090",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
-      },
-    },
-  },
-  plugins: [vue(), VitePWA()],
-});
-```
-
 ### Environment Variables
 
 Create a `.env` file:
