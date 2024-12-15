@@ -27,6 +27,9 @@ import { onMounted, ref } from "vue";
 import L from "leaflet";
 import { resortPoints, categoryColors } from "@/data/mapPoints";
 import type { MapPoint } from "@/data/mapPoints";
+import logoKunyit from "@/assets/Kunyit Restaurant.svg";
+import logoSands from "@/assets/Sands Restaurant.svg";
+import logoSakanti from "@/assets/Sakanti Spa.svg";
 
 // Import Leaflet CSS
 import "leaflet/dist/leaflet.css";
@@ -36,35 +39,11 @@ const markers = ref<L.Marker[]>([]);
 const categories = ["dining", "wellness", "facility", "pool", "entrance"];
 const activeCategories = ref(categories);
 
-// Define Anvaya boundaries
-const anvayaBounds = [
-  [-8.732452, 115.167452],
-  [-8.73216, 115.167242],
-  [-8.732022, 115.166931],
-  [-8.731884, 115.166545],
-  [-8.731927, 115.166486],
-  [-8.732181, 115.166373],
-  [-8.732054, 115.166046],
-  [-8.731826, 115.166094],
-  [-8.731577, 115.165182],
-  [-8.731709, 115.165097],
-  [-8.731678, 115.164914],
-  [-8.731487, 115.164576],
-  [-8.73075, 115.164791],
-  [-8.730622, 115.16448],
-  [-8.731153, 115.163798],
-  [-8.73172, 115.163262],
-  [-8.732176, 115.163906],
-  [-8.732537, 115.164764],
-  [-8.732685, 115.165644],
-  [-8.732621, 115.165966],
-  [-8.732515, 115.16633],
-  [-8.732887, 115.166363],
-  [-8.732897, 115.166663],
-  [-8.733035, 115.167253],
-  [-8.732526, 115.16735],
-  [-8.732452, 115.167452],
-];
+const venueLogos = {
+  "Kunyit Restaurant": logoKunyit,
+  "Sands Restaurant": logoSands,
+  "Sakanti Spa": logoSakanti,
+} as const;
 
 const toggleCategory = (category: string) => {
   const index = activeCategories.value.indexOf(category);
@@ -93,14 +72,27 @@ const getCategoryIcon = (category: string) => {
   }
 };
 
+type VenueName = keyof typeof venueLogos;
+
 const createCustomIcon = (point: MapPoint) => {
   return L.divIcon({
-    html: `<div class="custom-marker" style="color: ${categoryColors[point.category]}">
-             <i class="${point.icon}"></i>
-           </div>`,
+    html: `
+      <div class="flex flex-col items-center">
+        <span class="text-[10px] bg-white/90 px-1 py-0.5 rounded-full shadow-sm mb-0.5 whitespace-nowrap">
+          ${point.name}
+        </span>
+        <div class="custom-marker" style="color: ${categoryColors[point.category]}">
+          ${
+            venueLogos[point.name as VenueName]
+              ? `<img src="${venueLogos[point.name as VenueName]}" alt="" class="w-4 h-4 dark:invert">`
+              : `<i class="${point.icon}"></i>`
+          }
+        </div>
+      </div>
+    `,
     className: "custom-marker-container",
-    iconSize: [30, 30],
-    iconAnchor: [15, 30],
+    iconSize: [100, 40],
+    iconAnchor: [50, 40],
     popupAnchor: [0, -30],
   });
 };
@@ -131,7 +123,32 @@ const updateMarkers = () => {
     });
 };
 
-onMounted(() => {
+// Parse KML coordinates
+const parseKMLCoordinates = async () => {
+  try {
+    const response = await fetch("/anv-boundary.kml");
+    const kmlText = await response.text();
+    const parser = new DOMParser();
+    const kmlDoc = parser.parseFromString(kmlText, "text/xml");
+    const coordinates = kmlDoc.querySelector("coordinates")?.textContent || "";
+
+    return coordinates
+      .trim()
+      .split(" ")
+      .map((coord) => {
+        const [lng, lat] = coord.split(",");
+        return [parseFloat(lat), parseFloat(lng)];
+      });
+  } catch (error) {
+    console.error("Error parsing KML:", error);
+    return [];
+  }
+};
+
+onMounted(async () => {
+  // Get coordinates from KML
+  const anvayaBounds = await parseKMLCoordinates();
+
   // Initialize map
   map.value = L.map("map", {
     maxBounds: L.latLngBounds([

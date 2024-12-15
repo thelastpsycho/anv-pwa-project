@@ -1,3 +1,7 @@
+import logoKunyit from "../assets/Kunyit Restaurant.svg";
+import logoSands from "../assets/Sands Restaurant.svg";
+import logoSakanti from "../assets/Sakanti Spa.svg";
+
 export interface MapPoint {
   id: number;
   name: string;
@@ -5,6 +9,7 @@ export interface MapPoint {
   description: string;
   coordinates: [number, number]; // [latitude, longitude]
   icon: string;
+  logo?: string; // Optional logo URL for specific venues
 }
 
 export const resortPoints: MapPoint[] = [
@@ -25,12 +30,21 @@ export const resortPoints: MapPoint[] = [
     icon: "mdi mdi-pool",
   },
   {
+    id: 10,
+    name: "Pool Bar",
+    category: "dining",
+    description: "Refreshing drinks and light bites by the pool",
+    coordinates: [-8.731667, 115.164482],
+    icon: "mdi mdi-glass-cocktail",
+  },
+  {
     id: 3,
     name: "Sands Restaurant",
     category: "dining",
     description: "Beachfront international dining",
     coordinates: [-8.732191, 115.164329],
     icon: "mdi mdi-silverware",
+    logo: logoSands,
   },
   {
     id: 4,
@@ -47,6 +61,7 @@ export const resortPoints: MapPoint[] = [
     description: "Luxury spa and wellness center",
     coordinates: [-8.730943, 115.164526],
     icon: "mdi mdi-spa",
+    logo: logoSakanti,
   },
   {
     id: 6,
@@ -73,12 +88,21 @@ export const resortPoints: MapPoint[] = [
     icon: "mdi mdi-domain",
   },
   {
+    id: 11,
+    name: "Meeting Rooms",
+    category: "facility",
+    description: "Professional meeting and conference facilities",
+    coordinates: [-8.732131, 115.166684],
+    icon: "mdi mdi-presentation",
+  },
+  {
     id: 9,
     name: "Kunyit Restaurant",
     category: "dining",
     description: "Indonesian fine dining restaurant",
     coordinates: [-8.7328, 115.167162],
     icon: "mdi mdi-silverware",
+    logo: logoKunyit,
   },
 ];
 
