@@ -14,7 +14,7 @@
 
       <div class="space-y-4">
         <div
-          v-for="service in services"
+          v-for="service in wellnessServices"
           :key="service.id"
           class="border rounded-lg p-4"
         >
@@ -28,89 +28,105 @@
               <div>
                 <h3 class="font-medium">{{ service.title }}</h3>
                 <p class="text-gray-600 text-sm">{{ service.description }}</p>
-                <div class="mt-2 space-y-1">
-                  <p class="text-xs text-anvaya-blue">
-                    <i class="mdi mdi-clock-outline mr-1"></i>
-                    {{ service.operatingHours }}
-                  </p>
-                  <p
-                    v-if="service.additionalInfo"
-                    class="text-xs text-anvaya-blue italic"
-                  >
-                    {{ service.additionalInfo[0] }}
-                  </p>
-                </div>
+                <p class="text-gray-500 text-sm mt-1">
+                  {{ service.operatingHours }}
+                </p>
               </div>
             </div>
             <div class="flex gap-2">
               <button
                 @click="editService(service)"
-                class="p-2 text-anvaya-blue hover:bg-anvaya-blue/5 rounded-lg"
+                class="p-1.5 text-gray-500 hover:text-anvaya-blue rounded-lg hover:bg-anvaya-blue/10 transition-colors"
               >
-                <i class="mdi mdi-pencil"></i>
+                <i class="mdi mdi-pencil text-lg"></i>
               </button>
               <button
                 @click="deleteService(service.id)"
-                class="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                class="p-1.5 text-gray-500 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors"
               >
-                <i class="mdi mdi-delete"></i>
+                <i class="mdi mdi-delete text-lg"></i>
               </button>
             </div>
           </div>
         </div>
       </div>
     </div>
+
     <EditDataModal
-      v-if="showAddModal"
-      :is-open="showAddModal"
-      title="Wellness Service"
+      v-if="showAddModal || editingService"
+      :isOpen="showAddModal || !!editingService"
+      :title="editingService ? 'Edit Service' : 'Add New Service'"
       collection="wellness"
-      :initial-data="{
-        title: '',
-        description: '',
-        operatingHours: '',
-        image: '',
-        hasBooking: 'false',
-        additionalInfo: '[]',
-      }"
+      :document-id="editingService?.id"
+      :initialData="editingService || {}"
       :fields="{
-        title: { label: 'Title', type: 'text' },
-        description: { label: 'Description', type: 'textarea' },
-        operatingHours: { label: 'Operating Hours', type: 'text' },
-        image: { label: 'Image URL', type: 'text' },
-        hasBooking: {
-          label: 'Has Booking',
-          type: 'select',
-          options: ['true', 'false'],
-        },
-        additionalInfo: { label: 'Additional Info', type: 'textarea' },
+        title: { type: 'text', label: 'Title' },
+        description: { type: 'textarea', label: 'Description' },
+        operatingHours: { type: 'text', label: 'Operating Hours' },
+        image: { type: 'text', label: 'Image URL' },
+        hasBooking: { type: 'text', label: 'Has Booking' },
+        additionalInfo: { type: 'text', label: 'Additional Info' },
       }"
-      @close="showAddModal = false"
-      @saved="loadServices"
+      @close="handleModalClose"
+      @saved="handleSave"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  deleteDoc,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "@/config/firebase";
 import type { WellnessService } from "@/types/wellness";
 import EditDataModal from "@/components/EditDataModal.vue";
 
-const services = ref<WellnessService[]>([]);
+const wellnessServices = ref<WellnessService[]>([]);
 const showAddModal = ref(false);
 const editingService = ref<WellnessService | null>(null);
 
 async function loadServices() {
   try {
     const querySnapshot = await getDocs(collection(db, "wellness"));
-    services.value = querySnapshot.docs.map((doc) => ({
+    wellnessServices.value = querySnapshot.docs.map((doc) => ({
       ...doc.data(),
       id: doc.id,
-    })) as unknown as WellnessService[];
+    })) as WellnessService[];
   } catch (error) {
-    console.error("Error loading services:", error);
+    console.error("Error loading wellness services:", error);
+  }
+}
+
+function editService(service: WellnessService) {
+  editingService.value = service;
+}
+
+function handleAdd() {
+  showAddModal.value = true;
+}
+
+function handleModalClose() {
+  showAddModal.value = false;
+  editingService.value = null;
+}
+
+async function handleSave(data: Partial<WellnessService>) {
+  try {
+    if (editingService.value) {
+      await updateDoc(doc(db, "wellness", editingService.value.id), data);
+    } else {
+      await addDoc(collection(db, "wellness"), data);
+    }
+    await loadServices();
+    handleModalClose();
+  } catch (error) {
+    console.error("Error saving wellness service:", error);
   }
 }
 
@@ -123,14 +139,6 @@ async function deleteService(id: string) {
       console.error("Error deleting service:", error);
     }
   }
-}
-
-function editService(service: WellnessService) {
-  editingService.value = service;
-}
-
-function handleAdd() {
-  showAddModal.value = true;
 }
 
 onMounted(() => {

@@ -8,9 +8,10 @@
           <div class="flex">
             <div class="flex flex-shrink-0 items-center">
               <img
+                @click="router.push('/')"
                 src="https://www.theanvayabali.com/wp-content/themes/wcl/images/logo-theanvaya.svg"
                 alt="The Anvaya Logo"
-                class="h-8 w-auto"
+                class="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
               />
             </div>
             <!-- Navigation Links -->
@@ -98,7 +99,7 @@ const handleSignOut = async () => {
 
 const navLinks = [
   { title: "Dashboard", route: "backoffice-dashboard" },
-  { title: "Migrate", route: "backoffice-migrate" },
+  // { title: "Migrate", route: "backoffice-migrate" },
   { title: "Dining", route: "backoffice-dining" },
   { title: "Wellness", route: "backoffice-wellness" },
   { title: "Activities", route: "backoffice-activities" },

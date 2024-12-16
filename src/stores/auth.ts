@@ -64,5 +64,9 @@ export const useAuthStore = defineStore("auth", {
         return false;
       }
     },
+
+    setUser(user: User | null) {
+      this.user = user;
+    },
   },
 });

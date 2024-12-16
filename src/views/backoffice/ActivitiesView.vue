@@ -60,17 +60,20 @@
     </div>
 
     <EditDataModal
-      v-if="showAddModal"
-      :is-open="showAddModal"
-      title="Activity"
+      v-if="showAddModal || editingActivity"
+      :is-open="showAddModal || !!editingActivity"
+      :title="editingActivity ? 'Edit Activity' : 'Add Activity'"
       collection="activities"
-      :initial-data="{
-        title: '',
-        description: '',
-        duration: '',
-        groupSize: '',
-        image: '',
-      }"
+      :document-id="editingActivity?.id"
+      :initial-data="
+        editingActivity || {
+          title: '',
+          description: '',
+          duration: '',
+          groupSize: '',
+          image: '',
+        }
+      "
       :fields="{
         title: { label: 'Title', type: 'text' },
         description: { label: 'Description', type: 'textarea' },
@@ -78,15 +81,22 @@
         groupSize: { label: 'Group Size', type: 'text' },
         image: { label: 'Image URL', type: 'text' },
       }"
-      @close="showAddModal = false"
-      @saved="loadActivities"
+      @close="handleModalClose"
+      @saved="handleSave"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  updateDoc,
+  addDoc,
+} from "firebase/firestore";
 import { db } from "@/config/firebase";
 import type { Activity } from "@/types/activities";
 import EditDataModal from "@/components/EditDataModal.vue";
@@ -94,6 +104,25 @@ import EditDataModal from "@/components/EditDataModal.vue";
 const activities = ref<Activity[]>([]);
 const showAddModal = ref(false);
 const editingActivity = ref<Activity | null>(null);
+
+function handleModalClose() {
+  showAddModal.value = false;
+  editingActivity.value = null;
+}
+
+async function handleSave(data: Partial<Activity>) {
+  try {
+    if (editingActivity.value) {
+      await updateDoc(doc(db, "activities", editingActivity.value.id), data);
+    } else {
+      await addDoc(collection(db, "activities"), data);
+    }
+    await loadActivities();
+    handleModalClose();
+  } catch (error) {
+    console.error("Error saving activity:", error);
+  }
+}
 
 async function loadActivities() {
   try {
@@ -119,10 +148,12 @@ async function deleteActivity(id: string) {
 }
 
 function editActivity(activity: Activity) {
+  showAddModal.value = false;
   editingActivity.value = activity;
 }
 
 function handleAdd() {
+  editingActivity.value = null;
   showAddModal.value = true;
 }
 
