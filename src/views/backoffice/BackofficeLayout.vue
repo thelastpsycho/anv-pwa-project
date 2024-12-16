@@ -34,7 +34,7 @@
           <!-- Right side -->
           <div class="flex items-center">
             <button
-              @click="authStore.signOut"
+              @click="handleSignOut"
               class="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium"
             >
               Sign Out
@@ -83,12 +83,18 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 
 const route = useRoute();
+const router = useRouter();
 const authStore = useAuthStore();
 const mobileMenuOpen = ref(false);
+
+const handleSignOut = async () => {
+  await authStore.signOut();
+  router.push("/backoffice/login");
+};
 
 const navLinks = [
   { title: "Dashboard", route: "backoffice-dashboard" },
