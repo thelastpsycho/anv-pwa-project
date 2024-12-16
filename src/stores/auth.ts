@@ -1,59 +1,68 @@
 import { defineStore } from "pinia";
-import { getWifiCredentials } from "@/services/api";
+import { auth } from "@/config/firebase";
+import {
+  signInWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  onAuthStateChanged,
+  type User,
+} from "firebase/auth";
 
-// Master admin credentials
-const ADMIN_CREDENTIALS = {
-  username: "admin",
-  password: "admin",
-};
+interface State {
+  user: User | null;
+  loading: boolean;
+  roomNumber: string | null;
+  credentials: {
+    isAdmin?: boolean;
+  } | null;
+}
 
 export const useAuthStore = defineStore("auth", {
-  state: () => ({
-    isAuthenticated: false,
-    roomNumber: "",
-    credentials: null as any,
+  state: (): State => ({
+    user: null,
+    loading: true,
+    roomNumber: null,
+    credentials: null,
   }),
 
+  getters: {
+    isAuthenticated: (state) => !!state.user,
+  },
+
   actions: {
-    async login(roomNumber: string, password: string) {
-      // Check admin credentials first
-      if (
-        roomNumber === ADMIN_CREDENTIALS.username &&
-        password === ADMIN_CREDENTIALS.password
-      ) {
-        this.isAuthenticated = true;
-        this.roomNumber = "admin";
-        this.credentials = { isAdmin: true };
-        return true;
-      }
+    async init() {
+      return new Promise((resolve) => {
+        onAuthStateChanged(auth, (user) => {
+          this.user = user;
+          this.loading = false;
+          resolve(user);
+        });
+      });
+    },
 
+    async login(email: string, password: string) {
       try {
-        const response = await getWifiCredentials();
-
-        // Find matching credentials
-        const credential = response.data.find(
-          (cred) =>
-            cred.username.trim() === roomNumber && cred.value === password
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
         );
-
-        if (credential) {
-          this.isAuthenticated = true;
-          this.roomNumber = roomNumber;
-          this.credentials = credential;
-          return true;
-        }
-
-        return false;
+        this.user = userCredential.user;
+        return true;
       } catch (error) {
         console.error("Login error:", error);
         return false;
       }
     },
 
-    logout() {
-      this.isAuthenticated = false;
-      this.roomNumber = "";
-      this.credentials = null;
+    async signOut() {
+      try {
+        await firebaseSignOut(auth);
+        this.user = null;
+        return true;
+      } catch (error) {
+        console.error("Logout error:", error);
+        return false;
+      }
     },
   },
 });

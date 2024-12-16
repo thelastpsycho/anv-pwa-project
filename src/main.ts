@@ -29,7 +29,7 @@ window.addEventListener("appinstalled", () => {
 });
 
 // Service Worker registration
-if ("serviceWorker" in navigator) {
+if ("serviceWorker" in navigator && import.meta.env.PROD) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("/sw.js")
@@ -57,7 +57,7 @@ if ("serviceWorker" in navigator) {
         registration.update();
       })
       .catch((error) => {
-        console.error("SW registration failed:", error);
+        console.log("SW registration failed:", error);
       });
   });
 }

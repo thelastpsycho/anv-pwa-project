@@ -1,14 +1,30 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import PageHeader from "@/components/PageHeader.vue";
-import { attractions } from "@/data/attractions";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/config/firebase";
+import type { Attraction } from "@/types/attractions";
 
 const isLoaded = ref(false);
+const attractions = ref<Attraction[]>([]);
+
+async function loadAttractions() {
+  try {
+    const querySnapshot = await getDocs(collection(db, "attractions"));
+    attractions.value = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    })) as unknown as Attraction[];
+  } catch (error) {
+    console.error("Error loading attractions:", error);
+  }
+}
 
 onMounted(() => {
   setTimeout(() => {
     isLoaded.value = true;
   }, 100);
+  loadAttractions();
 });
 </script>
 

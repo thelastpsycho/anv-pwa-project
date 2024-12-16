@@ -1,5 +1,18 @@
+export interface DiningVenue {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+  hours: string;
+  dress: string;
+  cuisine: string;
+  capacity: string;
+  additionalInfo?: string;
+  logo?: string;
+}
+
 export interface TableReservation {
-  venueId: number;
+  venueId: string;
   date: string;
   time: string;
   guests: number;
@@ -7,9 +20,6 @@ export interface TableReservation {
   email: string;
   phone: string;
   specialRequests?: string;
-  id?: string;
-  status?: string;
-  createdAt?: string;
 }
 
 export interface ValidationErrors {

@@ -1,6 +1,27 @@
 <script setup lang="ts">
 import PageHeader from "@/components/PageHeader.vue";
-import { offers } from "@/data/offers";
+import { ref, onMounted } from "vue";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/config/firebase";
+import type { Offer } from "@/types/offers";
+
+const offers = ref<Offer[]>([]);
+
+async function loadOffers() {
+  try {
+    const querySnapshot = await getDocs(collection(db, "offers"));
+    offers.value = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    })) as unknown as Offer[];
+  } catch (error) {
+    console.error("Error loading offers:", error);
+  }
+}
+
+onMounted(() => {
+  loadOffers();
+});
 </script>
 
 <template>

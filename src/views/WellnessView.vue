@@ -2,17 +2,33 @@
 import { ref, onMounted } from "vue";
 import PageHeader from "@/components/PageHeader.vue";
 import SakantiLogo from "@/assets/Sakanti Spa.svg";
-import { wellnessServices } from "@/data/wellness";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/config/firebase";
+import type { WellnessService } from "@/types/wellness";
 
 const isLoaded = ref(false);
 const currentIndex = ref(0);
+const wellnessServices = ref<WellnessService[]>([]);
 let touchStartX = 0;
 let touchEndX = 0;
+
+async function loadServices() {
+  try {
+    const querySnapshot = await getDocs(collection(db, "wellness"));
+    wellnessServices.value = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    })) as unknown as WellnessService[];
+  } catch (error) {
+    console.error("Error loading wellness services:", error);
+  }
+}
 
 onMounted(() => {
   setTimeout(() => {
     isLoaded.value = true;
   }, 100);
+  loadServices();
 });
 
 const handleTouchStart = (e: TouchEvent) => {
@@ -28,7 +44,7 @@ const handleTouchEnd = () => {
   const diff = touchStartX - touchEndX;
 
   if (Math.abs(diff) > swipeThreshold) {
-    if (diff > 0 && currentIndex.value < wellnessServices.length - 1) {
+    if (diff > 0 && currentIndex.value < wellnessServices.value.length - 1) {
       // Swipe left
       currentIndex.value++;
     } else if (diff < 0 && currentIndex.value > 0) {
@@ -97,14 +113,14 @@ const handleTouchEnd = () => {
                 ></div>
                 <div class="absolute bottom-2 left-2">
                   <img
-                    v-if="service.id === 1"
+                    v-if="service.id === '1'"
                     :src="SakantiLogo"
                     :alt="`${service.title} Logo`"
                     class="h-12 dark:invert"
                   />
                 </div>
                 <div
-                  v-if="service.id !== 1"
+                  v-if="service.id !== '1'"
                   class="absolute inset-x-0 bottom-0 p-3 text-white"
                 >
                   <h3 class="font-medium text-sm uppercase">

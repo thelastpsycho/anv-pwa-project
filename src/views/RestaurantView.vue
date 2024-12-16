@@ -154,7 +154,7 @@
               View Menu
             </a>
             <button
-              @click="handleReserveClick({ id: venue.id, name: venue.name })"
+              @click="handleReserveClick(venue)"
               class="flex-1 py-2.5 bg-anvaya-blue text-white rounded-lg hover:bg-anvaya-blue/90 transition-colors font-medium"
             >
               Reserve Table
@@ -179,87 +179,28 @@
 import { ref, onMounted } from "vue";
 import PageHeader from "@/components/PageHeader.vue";
 import TableReservationModal from "@/components/TableReservationModal.vue";
-import { diningVenues } from "@/data/dining";
 import KunyitLogo from "@/assets/Kunyit Restaurant.svg";
 import SandsLogo from "@/assets/Sands Restaurant.svg";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/config/firebase";
+import type { DiningVenue } from "@/types/dining";
+import type { FBPromotion } from "@/types/promotions";
 
-// Define interface first
-interface FBPromotion {
-  id: number;
-  title: string;
-  description: string;
-  price?: string;
-  image: string;
-  validUntil: string;
-  fbLink: string;
-}
-
-// Then define variables
 const router = useRouter();
 const authStore = useAuthStore();
-const selectedVenue = ref<{ id: number; name: string } | null>(null);
+const selectedVenue = ref<DiningVenue | null>(null);
 const selectedPromo = ref<FBPromotion | null>(null);
+const diningVenues = ref<DiningVenue[]>([]);
+const fbPromotions = ref<FBPromotion[]>([]);
 
-// Define promotions data
-const fbPromotions: FBPromotion[] = [
-  {
-    id: 1,
-    title: "GOURMET SAVINGS DEAL",
-    description:
-      "Up to 20% off for food and beverage. GSD #1 Value IDR 2.000.000 pay IDR 1.700.000, GSD #2 Value IDR 5.000.000 pay IDR 4.000.000",
-    image:
-      "https://www.theanvayabali.com/wp-content/uploads/2023/01/Sands-Front-1050x700-1.jpg",
-    validUntil: "Limited Time Offer",
-    fbLink: "https://www.facebook.com/theanvayabali",
-  },
-  {
-    id: 2,
-    title: "ROMANCE UNDER THE STARS",
-    description:
-      "Create lasting memories with your loved one with a memorable dinner catered to your dietary preferences",
-    price: "IDR 2.500.000 net/couple",
-    image:
-      "https://www.theanvayabali.com/wp-content/uploads/2023/02/Romantic-Dinner.jpg",
-    validUntil: "Available Daily",
-    fbLink: "https://www.facebook.com/theanvayabali",
-  },
-  {
-    id: 3,
-    title: "KUTA SOCIETEA",
-    description:
-      "Savor the finest tea blends and exquisite pastries including Lemon Berries Cake, Delicate Raspberry Éclair, Vanilla Panna Cotta, and Fruit Tartlet",
-    price: "IDR 350.000 net/set (for 2 people)",
-    image:
-      "https://www.theanvayabali.com/wp-content/uploads/2023/01/Kunyit_Resturant_Front1050x700.jpg",
-    validUntil: "Available Daily",
-    fbLink: "https://www.facebook.com/theanvayabali",
-  },
-  {
-    id: 4,
-    title: "MEAT PLATTER",
-    description:
-      "Premium meat cuts including angus rib eye and lamb chop with four distinct sauces: BBQ, chimichurri, black pepper and kombu butter",
-    price: "IDR 999.000 net/portion",
-    image:
-      "https://www.theanvayabali.com/wp-content/uploads/2024/08/Meat-Platter-960x700-1-scaled.jpg",
-    validUntil: "Available at Sands Restaurant",
-    fbLink: "https://www.facebook.com/theanvayabali",
-  },
-];
-
-// Debug logs after data is defined
-console.log("Dining Venues:", diningVenues);
-console.log("FB Promotions:", fbPromotions);
-
-// Map the logos
 const logos: { [key: string]: string } = {
   "Kunyit Restaurant": KunyitLogo,
   "Sands Restaurant": SandsLogo,
 };
 
-const handleReserveClick = (venue: { id: number; name: string }) => {
+const handleReserveClick = (venue: DiningVenue) => {
   if (!authStore.isAuthenticated) {
     localStorage.setItem("lastPath", "/restaurant");
     router.push("/profile");
@@ -272,4 +213,33 @@ const handleReservationSuccess = () => {
   alert("Reservation confirmed! Check your email for details.");
   selectedVenue.value = null;
 };
+
+async function loadVenues() {
+  try {
+    const querySnapshot = await getDocs(collection(db, "dining"));
+    diningVenues.value = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    })) as unknown as DiningVenue[];
+  } catch (error) {
+    console.error("Error loading dining venues:", error);
+  }
+}
+
+async function loadPromotions() {
+  try {
+    const querySnapshot = await getDocs(collection(db, "promotions"));
+    fbPromotions.value = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    })) as unknown as FBPromotion[];
+  } catch (error) {
+    console.error("Error loading promotions:", error);
+  }
+}
+
+onMounted(() => {
+  loadVenues();
+  loadPromotions();
+});
 </script>

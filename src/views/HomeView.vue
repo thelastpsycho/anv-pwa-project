@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, onUnmounted } from "vue";
-import { specialOffers } from "@/data/specialOffers";
 import { useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
+import type { SpecialOffer } from "@/types/specialOffers";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/config/firebase";
 
 const isLoaded = ref(false);
 const authStore = useAuthStore();
@@ -216,46 +218,32 @@ const menuItems = [
 
 const currentIndex = ref(0);
 
-const displayOffers = computed(() => {
-  return [
-    ...specialOffers,
-    ...specialOffers,
-    ...specialOffers,
-    ...specialOffers,
-    ...specialOffers,
-  ];
+const specialOffers = ref<SpecialOffer[]>([]);
+
+async function loadSpecialOffers() {
+  try {
+    const querySnapshot = await getDocs(collection(db, "specialOffers"));
+    specialOffers.value = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    })) as unknown as SpecialOffer[];
+  } catch (error) {
+    console.error("Error loading special offers:", error);
+  }
+}
+
+onMounted(() => {
+  loadSpecialOffers();
 });
 
-const totalSlides = computed(() => specialOffers.length);
+const totalSlides = computed(() => specialOffers.value.length);
 
 const nextSlide = () => {
-  const isLastSlide = currentIndex.value === totalSlides.value * 3 - 1;
-
-  if (isLastSlide) {
-    // When reaching the last slide, quickly jump to the first set without animation
-    currentIndex.value = totalSlides.value;
-    // Then immediately move to the next slide with animation
-    requestAnimationFrame(() => {
-      currentIndex.value = totalSlides.value + 1;
-    });
-  } else {
-    currentIndex.value++;
-  }
+  currentIndex.value++;
 };
 
 const prevSlide = () => {
-  const isFirstSlide = currentIndex.value === totalSlides.value;
-
-  if (isFirstSlide) {
-    // When reaching the first slide, quickly jump to the last set without animation
-    currentIndex.value = totalSlides.value * 2;
-    // Then immediately move to the previous slide with animation
-    requestAnimationFrame(() => {
-      currentIndex.value = totalSlides.value * 2 - 1;
-    });
-  } else {
-    currentIndex.value--;
-  }
+  currentIndex.value--;
 };
 
 const touchStart = ref(0);
@@ -285,8 +273,7 @@ const handleTouchEnd = () => {
 
 // Initialize to the middle set
 onMounted(() => {
-  // Start from the middle set of slides
-  currentIndex.value = totalSlides.value;
+  currentIndex.value = 0;
 });
 
 // Add transition control
@@ -297,9 +284,9 @@ const handleTransitionEnd = () => {
 
 // Offer Details Modal
 const router = useRouter();
-const selectedOffer = ref<(typeof specialOffers)[0] | null>(null);
+const selectedOffer = ref<SpecialOffer | null>(null);
 
-const handleOfferAction = (offer: (typeof specialOffers)[0]) => {
+const handleOfferAction = (offer: SpecialOffer) => {
   if (offer.type === "activity") {
     router.push({ name: "activities" });
   }
@@ -469,19 +456,19 @@ const toggleDarkMode = () => {
           <div
             class="flex transition-transform duration-500 ease-out"
             :style="{
-              transform: `translateX(calc(50vw - ${currentIndex * 240}px - 120px))`,
+              transform: `translateX(calc(50vw - ${(currentIndex % specialOffers.length) * 240}px - 120px))`,
               touchAction: 'pan-y',
             }"
             @transitionend="handleTransitionEnd"
           >
             <div
-              v-for="(offer, index) in displayOffers"
+              v-for="(offer, index) in specialOffers"
               :key="`${offer.id}-${index}`"
               class="flex-shrink-0 w-60 px-2 transition-all duration-500"
               :class="[
-                currentIndex === index
+                currentIndex % specialOffers.length === index
                   ? 'scale-110 opacity-100 blur-none'
-                  : Math.abs(currentIndex - index) <= 1
+                  : Math.abs((currentIndex % specialOffers.length) - index) <= 1
                     ? 'scale-90 opacity-40 blur-[1px]'
                     : 'scale-75 opacity-20 blur-[2px]',
               ]"

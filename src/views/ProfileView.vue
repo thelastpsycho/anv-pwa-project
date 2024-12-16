@@ -163,7 +163,7 @@ const handleLogin = async () => {
 };
 
 const handleLogout = () => {
-  authStore.logout();
+  authStore.signOut();
   roomNumber.value = "";
   password.value = "";
 };

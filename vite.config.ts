@@ -30,69 +30,26 @@ export default defineConfig({
   plugins: [
     vue(),
     VitePWA({
-      registerType: "prompt",
-      strategies: "generateSW",
-      includeAssets: ["favicon.ico", "apple-touch-icon.png", "masked-icon.svg"],
+      registerType: "autoUpdate",
+      devOptions: {
+        enabled: false,
+      },
       manifest: {
-        name: "The Anvaya Bali",
+        name: "The Anvaya App",
         short_name: "Anvaya",
-        description: "The Anvaya Beach Resort Bali",
-        theme_color: "#89a8b2",
-        background_color: "#ffffff",
-        display: "standalone",
-        start_url: "/",
-        orientation: "portrait",
+        theme_color: "#1E3A8A",
         icons: [
           {
-            src: "pwa-192x192.png",
+            src: "/android-chrome-192x192.png",
             sizes: "192x192",
             type: "image/png",
           },
           {
-            src: "pwa-512x512.png",
+            src: "/android-chrome-512x512.png",
             sizes: "512x512",
             type: "image/png",
           },
-          {
-            src: "pwa-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "any maskable",
-          },
         ],
-      },
-      workbox: {
-        cleanupOutdatedCaches: true,
-        skipWaiting: true,
-        clientsClaim: true,
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/www\.theanvayabali\.com\/.*/i,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "anvaya-images",
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
-              },
-            },
-          },
-          {
-            urlPattern: /^https:\/\/api\.theanvayabali\.com\/.*/i,
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "anvaya-api",
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 5 * 60, // 5 minutes
-              },
-            },
-          },
-        ],
-      },
-      devOptions: {
-        enabled: true,
-        type: "module",
       },
     }),
   ],

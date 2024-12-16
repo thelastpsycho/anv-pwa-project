@@ -6,7 +6,7 @@ import { sendWhatsAppMessage } from "@/utils/whatsapp";
 import type { TableReservation, ValidationErrors } from "@/types/dining";
 
 const props = defineProps<{
-  venueId: number;
+  venueId: string;
   venueName: string;
   isOpen: boolean;
 }>();
@@ -24,7 +24,7 @@ const reservation = ref<Partial<TableReservation>>({
   date: "",
   time: "",
   guests: 2,
-  name: authStore.user?.name || "",
+  name: authStore.user?.displayName || "",
   email: "",
   phone: "",
   specialRequests: "",

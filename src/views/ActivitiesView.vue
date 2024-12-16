@@ -58,7 +58,28 @@
 
 <script setup lang="ts">
 import PageHeader from "@/components/PageHeader.vue";
-import { activities } from "@/data/activities";
+import { ref, onMounted } from "vue";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/config/firebase";
+import type { Activity } from "@/types/activities";
+
+const activities = ref<Activity[]>([]);
+
+async function loadActivities() {
+  try {
+    const querySnapshot = await getDocs(collection(db, "activities"));
+    activities.value = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    })) as unknown as Activity[];
+  } catch (error) {
+    console.error("Error loading activities:", error);
+  }
+}
+
+onMounted(() => {
+  loadActivities();
+});
 </script>
 
 <style scoped>

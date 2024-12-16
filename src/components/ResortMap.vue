@@ -25,8 +25,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import L from "leaflet";
-import { resortPoints, categoryColors } from "@/data/mapPoints";
-import type { MapPoint } from "@/data/mapPoints";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/config/firebase";
+import type { MapPoint } from "@/types/map";
 import logoKunyit from "@/assets/Kunyit Restaurant.svg";
 import logoSands from "@/assets/Sands Restaurant.svg";
 import logoSakanti from "@/assets/Sakanti Spa.svg";
@@ -36,14 +37,36 @@ import "leaflet/dist/leaflet.css";
 
 const map = ref<L.Map | null>(null);
 const markers = ref<L.Marker[]>([]);
+const mapPoints = ref<MapPoint[]>([]);
 const categories = ["dining", "wellness", "facility", "pool", "entrance"];
 const activeCategories = ref(categories);
+
+const categoryColors: Record<string, string> = {
+  dining: "#4CAF50",
+  wellness: "#2196F3",
+  facility: "#9C27B0",
+  pool: "#00BCD4",
+  entrance: "#FF9800",
+};
 
 const venueLogos = {
   "Kunyit Restaurant": logoKunyit,
   "Sands Restaurant": logoSands,
   "Sakanti Spa": logoSakanti,
 } as const;
+
+async function loadMapPoints() {
+  try {
+    const querySnapshot = await getDocs(collection(db, "mapPoints"));
+    mapPoints.value = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    })) as MapPoint[];
+    updateMarkers();
+  } catch (error) {
+    console.error("Error loading map points:", error);
+  }
+}
 
 const toggleCategory = (category: string) => {
   const index = activeCategories.value.indexOf(category);
@@ -103,10 +126,10 @@ const updateMarkers = () => {
   markers.value = [];
 
   // Add new markers based on active categories
-  resortPoints
+  mapPoints.value
     .filter((point) => activeCategories.value.includes(point.category))
     .forEach((point) => {
-      const marker = L.marker(point.coordinates, {
+      const marker = L.marker(point.coordinates as [number, number], {
         icon: createCustomIcon(point),
       })
         .bindPopup(
@@ -211,7 +234,7 @@ onMounted(async () => {
   }).addTo(map.value as L.Map);
 
   // Add initial markers
-  updateMarkers();
+  await loadMapPoints();
 });
 </script>
 

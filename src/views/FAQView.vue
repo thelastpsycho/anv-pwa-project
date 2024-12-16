@@ -101,21 +101,35 @@
 <script setup lang="ts">
 import PageHeader from "@/components/PageHeader.vue";
 import { ref, computed, onMounted } from "vue";
-import { faqCategories as faqData } from "@/data/faqs";
-import type { FAQ } from "@/data/faqs";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/config/firebase";
+import type { FAQCategory, FAQ } from "@/types/faqs";
 
-const faqCategories = ref(faqData);
 const searchQuery = ref("");
 const isLoaded = ref(false);
-const expandedCategories = ref<number[]>([]);
+const expandedCategories = ref<string[]>([]);
+const faqCategories = ref<FAQCategory[]>([]);
+
+async function loadFAQs() {
+  try {
+    const querySnapshot = await getDocs(collection(db, "faqs"));
+    faqCategories.value = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    })) as unknown as FAQCategory[];
+  } catch (error) {
+    console.error("Error loading FAQs:", error);
+  }
+}
 
 onMounted(() => {
   setTimeout(() => {
     isLoaded.value = true;
   }, 100);
+  loadFAQs();
 });
 
-const toggleCategory = (categoryId: number) => {
+const toggleCategory = (categoryId: string) => {
   const index = expandedCategories.value.indexOf(categoryId);
   if (index === -1) {
     expandedCategories.value.push(categoryId);
@@ -148,7 +162,7 @@ const toggleFAQ = (faq: FAQ) => {
   faq.isOpen = !faq.isOpen;
 };
 
-const scrollToCategory = (categoryId: number) => {
+const scrollToCategory = (categoryId: string) => {
   const element = document.getElementById(`category-${categoryId}`);
   if (element) {
     element.scrollIntoView({ behavior: "smooth" });

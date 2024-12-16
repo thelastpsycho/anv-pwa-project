@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
+import { useRoute } from "vue-router";
 import BottomNav from "@/components/BottomNav.vue";
 import SplashScreen from "@/components/SplashScreen.vue";
 import PWAUpdateNotification from "@/components/PWAUpdateNotification.vue";
@@ -7,6 +8,9 @@ import { useAppStore } from "@/stores/app";
 
 const showContent = ref(false);
 const appStore = useAppStore();
+const route = useRoute();
+
+const isBackoffice = computed(() => route.path.startsWith("/backoffice"));
 
 onMounted(() => {
   appStore.initTheme();
@@ -29,7 +33,7 @@ const handleSplashFinished = () => {
           </Transition>
         </router-view>
       </main>
-      <BottomNav />
+      <BottomNav v-if="!isBackoffice" />
       <PWAUpdateNotification />
     </div>
   </Transition>
