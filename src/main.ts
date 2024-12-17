@@ -28,40 +28,6 @@ window.addEventListener("appinstalled", () => {
   appStore.isInstalled = true;
 });
 
-// Service Worker registration
-if ("serviceWorker" in navigator && import.meta.env.PROD) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/sw.js")
-      .then((registration) => {
-        console.log("SW registered:", registration);
-
-        // Check for updates
-        registration.addEventListener("updatefound", () => {
-          const newWorker = registration.installing;
-          if (newWorker) {
-            newWorker.addEventListener("statechange", () => {
-              if (
-                newWorker.state === "installed" &&
-                navigator.serviceWorker.controller
-              ) {
-                // New content is available
-                appStore.setServiceWorkerUpdated(true);
-                console.log("New content is available; please refresh.");
-              }
-            });
-          }
-        });
-
-        // Force check for updates
-        registration.update();
-      })
-      .catch((error) => {
-        console.log("SW registration failed:", error);
-      });
-  });
-}
-
 // Online/Offline status handlers
 window.addEventListener("online", () => appStore.updateOnlineStatus(true));
 window.addEventListener("offline", () => appStore.updateOnlineStatus(false));
