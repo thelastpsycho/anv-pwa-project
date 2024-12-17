@@ -96,8 +96,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/config/firebase";
 import { useAuthStore } from "@/stores/auth";
 
 const router = useRouter();
@@ -114,11 +112,6 @@ async function handleLogin() {
   error.value = "";
 
   try {
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      email.value,
-      password.value
-    );
     // Check if we can connect to Firestore
     try {
       await fetch("https://firestore.googleapis.com", {
@@ -131,7 +124,7 @@ async function handleLogin() {
       );
     }
 
-    authStore.setUser(userCredential.user);
+    await authStore.loginBackoffice(email.value, password.value);
     router.push({ name: "backoffice-dashboard" });
   } catch (e: any) {
     error.value =

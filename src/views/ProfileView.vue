@@ -149,21 +149,28 @@ onMounted(() => {
 });
 
 const handleLogin = async () => {
-  if (!roomNumber.value || !password.value) {
-    error.value = "Please enter both room number and password";
-    return;
-  }
+  error.value = "";
+  try {
+    if (!roomNumber.value || !password.value) {
+      error.value = "Please enter both room number and password";
+      return;
+    }
 
-  const success = await authStore.login(roomNumber.value, password.value);
-  if (!success) {
-    error.value = "Invalid room number or password";
-  } else {
-    handleLoginSuccess();
+    const success = await authStore.loginProfile(
+      roomNumber.value.trim(),
+      password.value
+    );
+    if (success) {
+      handleLoginSuccess();
+    }
+  } catch (err: any) {
+    console.error("Login error:", err);
+    error.value = err.message || "Failed to authenticate. Please try again.";
   }
 };
 
 const handleLogout = () => {
-  authStore.signOut();
+  authStore.logout();
   roomNumber.value = "";
   password.value = "";
 };
@@ -174,7 +181,6 @@ const togglePassword = () => {
 
 const handleLoginSuccess = () => {
   const lastPath = localStorage.getItem("lastPath");
-  console.log("Last path:", lastPath);
   if (lastPath) {
     localStorage.removeItem("lastPath");
     try {

@@ -1,16 +1,22 @@
 import { defineStore } from "pinia";
-import { auth } from "@/config/firebase";
+import { auth, db } from "@/config/backofficeAuth";
 import {
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
   onAuthStateChanged,
   type User,
 } from "firebase/auth";
+import { authenticateWithWifi } from "@/services/wifiAuth";
+
+interface ProfileUser {
+  roomNumber: string;
+}
 
 interface State {
-  user: User | null;
+  backofficeUser: User | null;
+  profileUser: ProfileUser | null;
   loading: boolean;
-  roomNumber: string | null;
+  isBackoffice: boolean;
   credentials: {
     isAdmin?: boolean;
   } | null;
@@ -18,55 +24,72 @@ interface State {
 
 export const useAuthStore = defineStore("auth", {
   state: (): State => ({
-    user: null,
+    backofficeUser: null,
+    profileUser: null,
     loading: true,
-    roomNumber: null,
+    isBackoffice: false,
     credentials: null,
   }),
 
   getters: {
-    isAuthenticated: (state) => !!state.user,
+    isAuthenticated: (state) => !!state.backofficeUser || !!state.profileUser,
+    roomNumber: (state) => state.profileUser?.roomNumber || null,
   },
 
   actions: {
     async init() {
       return new Promise((resolve) => {
         onAuthStateChanged(auth, (user) => {
-          this.user = user;
+          if (user) {
+            this.backofficeUser = user;
+            this.isBackoffice = true;
+          }
           this.loading = false;
           resolve(user);
         });
       });
     },
 
-    async login(email: string, password: string) {
+    async loginBackoffice(email: string, password: string) {
       try {
         const userCredential = await signInWithEmailAndPassword(
           auth,
           email,
           password
         );
-        this.user = userCredential.user;
+        this.backofficeUser = userCredential.user;
+        this.isBackoffice = true;
         return true;
       } catch (error) {
-        console.error("Login error:", error);
-        return false;
+        console.error("Backoffice login error:", error);
+        throw error;
       }
     },
 
-    async signOut() {
+    async loginProfile(roomNumber: string, password: string) {
       try {
-        await firebaseSignOut(auth);
-        this.user = null;
-        return true;
+        const isValid = await authenticateWithWifi(roomNumber, password);
+        if (isValid) {
+          this.profileUser = { roomNumber };
+          this.isBackoffice = false;
+          this.credentials = { isAdmin: false };
+          return true;
+        }
+        throw new Error("Invalid credentials");
       } catch (error) {
-        console.error("Logout error:", error);
-        return false;
+        console.error("Profile login error:", error);
+        throw error;
       }
     },
 
-    setUser(user: User | null) {
-      this.user = user;
+    logout() {
+      if (this.isBackoffice) {
+        auth.signOut();
+        this.backofficeUser = null;
+      } else {
+        this.profileUser = null;
+      }
+      this.isBackoffice = false;
     },
   },
 });

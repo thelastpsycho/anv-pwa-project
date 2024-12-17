@@ -3,7 +3,7 @@
     <PageHeader title="Dining" />
 
     <!-- FB Promotions Section -->
-    <div class="mb-8">
+    <div class="mb-8 mt-4">
       <h2
         class="text-lg font-medium text-anvaya-blue dark:text-anvaya-light mb-4"
       >
