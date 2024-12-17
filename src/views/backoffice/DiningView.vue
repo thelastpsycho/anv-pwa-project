@@ -59,29 +59,30 @@
       </div>
     </div>
     <EditDataModal
-      v-if="showAddModal"
-      :is-open="showAddModal"
+      v-if="showAddModal || editingVenue"
+      :is-open="showAddModal || !!editingVenue"
       title="Dining Venue"
       collection="dining"
-      :initial-data="{
-        name: '',
-        description: '',
-        hours: '',
-        cuisine: '',
-        image: '',
-        logo: '',
-        additionalInfo: '',
-      }"
+      :document-id="editingVenue?.id"
+      :initial-data="
+        editingVenue || {
+          name: '',
+          description: '',
+          hours: '',
+          cuisine: '',
+          image: '',
+          menuLink: '',
+        }
+      "
       :fields="{
         name: { label: 'Name', type: 'text' },
         description: { label: 'Description', type: 'textarea' },
         hours: { label: 'Operating Hours', type: 'text' },
         cuisine: { label: 'Cuisine Type', type: 'text' },
         image: { label: 'Image URL', type: 'text' },
-        logo: { label: 'Logo', type: 'text' },
-        additionalInfo: { label: 'Additional Info', type: 'text' },
+        menuLink: { label: 'Menu Link', type: 'text' },
       }"
-      @close="showAddModal = false"
+      @close="handleModalClose"
       @saved="loadVenues"
     />
   </div>
@@ -122,11 +123,17 @@ async function deleteVenue(id: string) {
 }
 
 function editVenue(venue: DiningVenue) {
+  showAddModal.value = false;
   editingVenue.value = venue;
 }
 
 function handleAdd() {
   showAddModal.value = true;
+}
+
+function handleModalClose() {
+  showAddModal.value = false;
+  editingVenue.value = null;
 }
 
 onMounted(() => {

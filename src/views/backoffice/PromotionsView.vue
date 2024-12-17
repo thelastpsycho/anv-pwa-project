@@ -60,18 +60,21 @@
     </div>
 
     <EditDataModal
-      v-if="showAddModal"
-      :is-open="showAddModal"
+      v-if="showAddModal || editingPromotion"
+      :is-open="showAddModal || !!editingPromotion"
       title="F&B Promotion"
       collection="promotions"
-      :initial-data="{
-        title: '',
-        description: '',
-        price: '',
-        image: '',
-        validUntil: '',
-        fbLink: '',
-      }"
+      :document-id="editingPromotion?.id"
+      :initial-data="
+        editingPromotion || {
+          title: '',
+          description: '',
+          price: '',
+          image: '',
+          validUntil: '',
+          fbLink: '',
+        }
+      "
       :fields="{
         title: { label: 'Title', type: 'text' },
         description: { label: 'Description', type: 'textarea' },
@@ -80,7 +83,7 @@
         validUntil: { label: 'Valid Until', type: 'text' },
         fbLink: { label: 'Facebook Link', type: 'text' },
       }"
-      @close="showAddModal = false"
+      @close="handleModalClose"
       @saved="loadPromotions"
     />
   </div>
@@ -121,11 +124,17 @@ async function deletePromotion(id: string) {
 }
 
 function editPromotion(promotion: FBPromotion) {
+  showAddModal.value = false;
   editingPromotion.value = promotion;
 }
 
 function handleAdd() {
   showAddModal.value = true;
+}
+
+function handleModalClose() {
+  showAddModal.value = false;
+  editingPromotion.value = null;
 }
 
 onMounted(() => {
