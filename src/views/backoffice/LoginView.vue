@@ -5,6 +5,15 @@
     <div class="w-full max-w-md">
       <!-- Login Form -->
       <div class="bg-white rounded-lg shadow-md border border-gray-100 p-8">
+        <!-- <div class="mb-6 text-center">
+          <img
+            src="https://www.theanvayabali.com/wp-content/themes/wcl/images/logo-theanvaya.svg"
+            alt="The Anvaya Logo"
+            class="h-12 mx-auto mb-4"
+          />
+          <h2 class="text-xl font-medium text-gray-900">Backoffice Login</h2>
+        </div> -->
+
         <form @submit.prevent="handleLogin" class="space-y-4">
           <div>
             <div class="relative">

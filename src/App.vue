@@ -14,6 +14,9 @@ const isBackoffice = computed(() => route.path.startsWith("/backoffice"));
 
 onMounted(() => {
   appStore.initTheme();
+  if (isBackoffice.value) {
+    showContent.value = true;
+  }
 });
 
 const handleSplashFinished = () => {
@@ -22,10 +25,10 @@ const handleSplashFinished = () => {
 </script>
 
 <template>
-  <SplashScreen @finished="handleSplashFinished" />
+  <SplashScreen v-if="!isBackoffice" @finished="handleSplashFinished" />
 
   <Transition name="fade">
-    <div v-if="showContent">
+    <div v-if="showContent || isBackoffice">
       <main class="min-h-screen bg-white dark:bg-gray-900">
         <router-view v-slot="{ Component }">
           <Transition name="page" mode="out-in">

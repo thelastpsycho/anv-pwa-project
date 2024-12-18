@@ -136,6 +136,10 @@ const router = createRouter({
         // Add more routes for other data management
       ],
     },
+    {
+      path: "/backend",
+      redirect: "/backoffice",
+    },
   ],
 });
 
