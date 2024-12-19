@@ -1,11 +1,13 @@
-import { db } from "@/config/firebase";
-import { collection, addDoc, doc, setDoc } from "firebase/firestore";
+import { migrateActivities } from './migrations/activitiesMigration';
+import { migrateFAQs } from './migrations/faqMigration';
 
 export async function migrateAllData() {
   try {
-    // Migrate amenities
-    const amenitiesRef = collection(db, "amenities");
-    // Add migration logic here
+    // Migrate activities
+    await migrateActivities();
+    // Migrate FAQs
+    await migrateFAQs();
+    // ... other migrations
     console.log("✅ Migration completed");
   } catch (error) {
     console.error("Migration failed:", error);

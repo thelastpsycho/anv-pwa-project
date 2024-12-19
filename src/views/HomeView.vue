@@ -179,6 +179,12 @@ const menuItems = [
   //   route: "map",
   // },
   {
+    id: "information",
+    title: "Information",
+    icon: "mdi mdi-information-outline",
+    route: "information",
+  },
+  {
     id: "activities",
     title: "Activities",
     icon: "mdi mdi-compass-outline",
@@ -195,12 +201,6 @@ const menuItems = [
     title: "Wellness",
     icon: "mdi mdi-flower-tulip-outline",
     route: "wellness",
-  },
-  {
-    id: "information",
-    title: "Information",
-    icon: "mdi mdi-information-outline",
-    route: "faq",
   },
   {
     id: "whatson",

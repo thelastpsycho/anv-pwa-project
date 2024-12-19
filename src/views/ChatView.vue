@@ -30,7 +30,7 @@ const chatOptions: ChatOption[] = [
     description: "Chat with our guest service team",
     icon: "mdi mdi-whatsapp",
     action: () => {
-      window.location.href = "https://wa.me/62811389938";
+      window.location.href = "https://wa.me/6281138311485";
     },
   },
   {

@@ -1,5 +1,5 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
   "include": [
     "env.d.ts",
     "src/shims-vue.d.ts",
@@ -12,6 +12,7 @@
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
+    "module": "esnext",
     "paths": {
       "@/*": ["./src/*"]
     }

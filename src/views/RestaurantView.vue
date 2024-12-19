@@ -148,8 +148,10 @@
           </div>
           <div class="flex gap-3 mt-6">
             <a
-              href="#"
+              :href="venue.menuLink"
+              target="_blank"
               class="flex-1 py-2.5 bg-anvaya-blue/10 dark:bg-anvaya-light/10 text-anvaya-blue dark:text-anvaya-light rounded-lg hover:bg-anvaya-blue/20 dark:hover:bg-anvaya-light/20 transition-colors font-medium text-center"
+              :class="{ 'opacity-50 cursor-not-allowed': !venue.menuLink }"
             >
               View Menu
             </a>

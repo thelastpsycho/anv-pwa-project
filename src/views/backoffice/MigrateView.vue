@@ -34,17 +34,16 @@ const loading = ref(false);
 const migrated = ref(false);
 
 async function handleMigration() {
-  if (confirm("Are you sure you want to migrate the data?")) {
-    loading.value = true;
-    try {
-      await migrateAllData();
-      migrated.value = true;
-    } catch (error) {
-      console.error("Migration error:", error);
-      alert("Migration failed. Check console for details.");
-    } finally {
-      loading.value = false;
-    }
+  if (loading.value) return;
+  
+  loading.value = true;
+  try {
+    await migrateAllData();
+    migrated.value = true;
+  } catch (error) {
+    console.error('Migration failed:', error);
+  } finally {
+    loading.value = false;
   }
 }
 </script>

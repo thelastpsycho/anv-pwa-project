@@ -37,6 +37,18 @@
                     <i class="mdi mdi-silverware mr-1"></i>
                     {{ venue.cuisine }}
                   </p>
+                  <p class="text-xs text-anvaya-blue">
+                    <i class="mdi mdi-book-open-page-variant mr-1"></i>
+                    <a 
+                      v-if="venue.menuLink" 
+                      :href="venue.menuLink" 
+                      target="_blank"
+                      class="hover:underline"
+                    >
+                      View Menu
+                    </a>
+                    <span v-else class="text-gray-400">No menu available</span>
+                  </p>
                 </div>
               </div>
             </div>

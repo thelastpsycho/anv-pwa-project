@@ -99,7 +99,7 @@ const handleSignOut = async () => {
 
 const navLinks = [
   { title: "Dashboard", route: "backoffice-dashboard" },
-  // { title: "Migrate", route: "backoffice-migrate" },
+  { title: "Migrate", route: "backoffice-migrate" },
   { title: "Dining", route: "backoffice-dining" },
   { title: "Wellness", route: "backoffice-wellness" },
   { title: "Activities", route: "backoffice-activities" },

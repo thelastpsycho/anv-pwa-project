@@ -91,5 +91,14 @@ export const useAuthStore = defineStore("auth", {
       }
       this.isBackoffice = false;
     },
+
+    async signOut() {
+      try {
+        await firebaseSignOut(auth);
+      } catch (error) {
+        console.error('Error signing out:', error);
+        throw error;
+      }
+    }
   },
 });
