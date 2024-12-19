@@ -42,6 +42,9 @@ export default defineConfig({
       devOptions: {
         enabled: false,
       },
+      workbox: {
+        sourcemap: false
+      },
       manifest: {
         name: "The Anvaya App",
         short_name: "Anvaya",

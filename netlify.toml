@@ -6,6 +6,7 @@
   NODE_VERSION = "18"
   NPM_VERSION = "10"
   ROLLUP_SKIP_NODE_RESOLUTION = "true"
+  NODE_OPTIONS = "--max-old-space-size=4096"
 
 [[redirects]]
   from = "/*"
