@@ -180,7 +180,7 @@ const menuItems = [
   // },
   {
     id: "activities",
-    title: "Activitiesxxxxx",
+    title: "Activities",
     icon: "mdi mdi-compass-outline",
     route: "activities",
   },
