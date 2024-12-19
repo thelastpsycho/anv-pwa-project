@@ -226,9 +226,22 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import PageHeader from "@/components/PageHeader.vue";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/config/firebase";
 import type { FAQ, FAQCategory } from "@/types/faqs";
+
+const staticFAQs: FAQCategory[] = [
+  {
+    id: '1',
+    title: 'General',
+    faqs: [
+      {
+        id: '1',
+        question: 'What are the check-in and check-out times?',
+        answer: 'Check-in time is 2:00 PM and check-out time is 12:00 PM (noon).'
+      },
+      // Add more FAQs as needed
+    ]
+  }
+];
 
 const tabs = [
   { id: 'faq', label: 'FAQ' },
@@ -264,20 +277,8 @@ function toggleFAQ(faq: { question: string }) {
   }
 }
 
-async function loadFAQs() {
-  try {
-    const querySnapshot = await getDocs(collection(db, "faqs"));
-    faqCategories.value = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as FAQCategory[];
-  } catch (error) {
-    console.error("Error loading FAQs:", error);
-  }
-}
-
 onMounted(() => {
-  loadFAQs();
+  faqCategories.value = staticFAQs;
 });
 </script>
 
