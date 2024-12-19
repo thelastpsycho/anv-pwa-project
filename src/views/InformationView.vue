@@ -8,7 +8,7 @@
         <button
           v-for="tab in tabs"
           :key="tab.id"
-          @click="activeTab = tab.id"
+          @click="handleTabClick(tab.id)"
           :class="[
             'px-4 py-2 rounded-lg text-sm whitespace-nowrap transition-colors',
             activeTab === tab.id
@@ -246,7 +246,8 @@ const staticFAQs: FAQCategory[] = [
 const tabs = [
   { id: 'faq', label: 'FAQ' },
   { id: 'safety', label: 'Safety & Security' },
-  { id: 'info', label: 'Things to Know' }
+  { id: 'info', label: 'Things to Know' },
+  { id: 'guide', label: 'Safe Travel Guide' }
 ];
 
 const activeTab = ref('faq');
@@ -274,6 +275,14 @@ function toggleFAQ(faq: { question: string }) {
     expandedFAQs.value.push(faq.question);
   } else {
     expandedFAQs.value.splice(index, 1);
+  }
+}
+
+function handleTabClick(tabId: string) {
+  if (tabId === 'guide') {
+    window.open('https://anvayabali.com/hotelinformation/buku_saku.html', '_blank');
+  } else {
+    activeTab.value = tabId;
   }
 }
 

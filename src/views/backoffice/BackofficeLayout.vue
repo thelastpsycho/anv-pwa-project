@@ -103,9 +103,10 @@ const navLinks = [
   { title: "Dining", route: "backoffice-dining" },
   { title: "Wellness", route: "backoffice-wellness" },
   { title: "Activities", route: "backoffice-activities" },
-  { title: "Offers", route: "backoffice-offers" },
-  { title: "Promotions", route: "backoffice-promotions" },
+  { title: "Whats'on", route: "backoffice-offers" },
+  { title: "FB Promo", route: "backoffice-promotions" },
   { title: "Map", route: "backoffice-map" },
   { title: "FAQs", route: "backoffice-faqs" },
+  { title: "Trending", route: "backoffice-trending" },
 ];
 </script>

@@ -4,11 +4,13 @@ import { useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
 import type { SpecialOffer } from "@/types/specialOffers";
+import type { TrendingItem } from "@/types/trending";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/config/firebase";
 
 const isLoaded = ref(false);
 const authStore = useAuthStore();
+const trendingItems = ref<TrendingItem[]>([]);
 let weatherInterval: number;
 
 const weatherCodes: Record<number, string> = {
@@ -141,27 +143,13 @@ const fetchWeather = async () => {
 };
 
 onMounted(() => {
-  // Check if this is a page reload or navigation
-  const pageLoadTime = sessionStorage.getItem("pageLoadTime");
-  const currentTime = Date.now().toString();
-
-  if (!pageLoadTime) {
-    // First load of the page
-    sessionStorage.setItem("pageLoadTime", currentTime);
-    fetchWeather();
-  } else {
-    // Navigation back to page - use cached data
-    const cachedWeather = localStorage.getItem("weatherData");
-    if (cachedWeather) {
-      weather.value = JSON.parse(cachedWeather);
-    } else {
-      fetchWeather();
-    }
-  }
-
-  // Set up interval for every 15 minutes
-  weatherInterval = setInterval(fetchWeather, 15 * 60 * 1000);
-  isLoaded.value = true;
+  setTimeout(() => {
+    isLoaded.value = true;
+  }, 100);
+  
+  fetchWeather();
+  weatherInterval = setInterval(fetchWeather, 900000); // 15 minutes
+  loadTrendingItems();
 });
 
 onUnmounted(() => {
@@ -284,9 +272,9 @@ const handleTransitionEnd = () => {
 
 // Offer Details Modal
 const router = useRouter();
-const selectedOffer = ref<SpecialOffer | null>(null);
+const selectedOffer = ref<TrendingItem | null>(null);
 
-const handleOfferAction = (offer: SpecialOffer) => {
+const handleOfferAction = (offer: TrendingItem) => {
   if (offer.type === "activity") {
     router.push({ name: "activities" });
   }
@@ -299,6 +287,19 @@ const isDarkMode = computed(() => appStore.isDarkMode);
 const toggleDarkMode = () => {
   appStore.toggleDarkMode();
 };
+
+// Load trending items
+async function loadTrendingItems() {
+  try {
+    const querySnapshot = await getDocs(collection(db, "trending"));
+    trendingItems.value = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as TrendingItem[];
+  } catch (error) {
+    console.error("Error loading trending items:", error);
+  }
+}
 </script>
 
 <template>
@@ -443,87 +444,66 @@ const toggleDarkMode = () => {
       </div>
     </div>
 
-    <!-- Special Offers -->
-    <div class="mt-8">
-      <h2 class="text-xl font-medium text-anvaya-blue mb-4">TRENDING</h2>
-      <div class="relative">
-        <div
-          class="overflow-hidden"
-          @touchstart="handleTouchStart"
-          @touchmove="handleTouchMove"
-          @touchend="handleTouchEnd"
-        >
+    <!-- Trending Section -->
+    <div class="mb-8">
+      <h2 class="text-lg font-medium text-anvaya-blue dark:text-anvaya-light mb-4">
+        Trending
+      </h2>
+      <div class="overflow-x-auto pb-4">
+        <div class="flex space-x-4">
           <div
-            class="flex transition-transform duration-500 ease-out"
-            :style="{
-              transform: `translateX(calc(50vw - ${(currentIndex % specialOffers.length) * 240}px - 120px))`,
-              touchAction: 'pan-y',
-            }"
-            @transitionend="handleTransitionEnd"
+            v-for="item in trendingItems"
+            :key="item.id"
+            class="flex-shrink-0 w-64 bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg group hover:shadow-xl transition-all duration-300 cursor-pointer border border-anvaya-gray/10 dark:border-gray-700"
+            @click="selectedOffer = item"
           >
-            <div
-              v-for="(offer, index) in specialOffers"
-              :key="`${offer.id}-${index}`"
-              class="flex-shrink-0 w-60 px-2 transition-all duration-500"
-              :class="[
-                currentIndex % specialOffers.length === index
-                  ? 'scale-110 opacity-100 blur-none'
-                  : Math.abs((currentIndex % specialOffers.length) - index) <= 1
-                    ? 'scale-90 opacity-40 blur-[1px]'
-                    : 'scale-75 opacity-20 blur-[2px]',
-              ]"
-            >
-              <div
-                class="mb-12 bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-anvaya-gray/20 dark:border-gray-700 group hover:shadow-md transition-all duration-300"
-                @click="selectedOffer = offer"
-              >
-                <!-- Image Section -->
-                <div class="relative h-64 overflow-hidden">
-                  <img
-                    :src="offer.image"
-                    :alt="offer.title"
-                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div
-                    class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
-                  ></div>
-                  <div class="absolute bottom-0 left-0 right-0 p-4">
-                    <div class="flex items-center gap-2">
-                      <span class="text-white/90 text-xs">
-                        <i
-                          :class="[
-                            offer.type === 'activity'
-                              ? 'mdi mdi-calendar-clock'
-                              : 'mdi mdi-tag-outline',
-                            'mr-1',
-                          ]"
-                        ></i>
-                        {{ offer.validUntil }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Content Section -->
-                <div class="p-4">
-                  <div class="mb-2">
-                    <h3
-                      class="font-medium text-anvaya-blue dark:text-anvaya-light text-md"
-                    >
-                      {{ offer.title }}
-                    </h3>
-                  </div>
-                  <p class="text-xs text-gray-600 dark:text-gray-400">
-                    {{ offer.description }}
-                  </p>
-                  <button
-                    class="mt-4 w-full py-1 bg-anvaya-blue/10 dark:bg-anvaya-light/10 text-anvaya-blue dark:text-anvaya-light rounded-lg hover:bg-anvaya-blue/20 dark:hover:bg-anvaya-light/20 transition-colors text-xs"
-                  >
-                    {{
-                      offer.type === "activity" ? "Book Now" : "View Details"
-                    }}
-                  </button>
-                </div>
+            <div class="relative h-40">
+              <img
+                :src="item.image"
+                :alt="item.title"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+              <div class="absolute top-2 right-2">
+                <span class="px-1.5 py-0.5 bg-anvaya-blue/90 text-[10px] rounded-full text-white">
+                  {{ item.validUntil }}
+                </span>
+              </div>
+              <div class="absolute top-2 left-2">
+                <span 
+                  class="px-1.5 py-0.5 bg-black/50 text-[10px] rounded-full text-white flex items-center gap-1"
+                >
+                  <i 
+                    :class="[
+                      item.type === 'activity' ? 'mdi mdi-run' : 
+                      item.type === 'event' ? 'mdi mdi-calendar' : 
+                      'mdi mdi-tag'
+                    ]"
+                  ></i>
+                  {{ item.type }}
+                </span>
+              </div>
+              <div class="absolute inset-x-0 bottom-0 p-3 text-white">
+                <h3 class="font-medium text-[11px] uppercase">
+                  {{ item.title }}
+                </h3>
+                <p class="text-[10px] text-white/80 mt-1 line-clamp-2">
+                  {{ item.description }}
+                </p>
+              </div>
+            </div>
+            <div class="p-3">
+              <div class="flex items-center justify-between">
+                <button 
+                  class="text-[10px] text-anvaya-blue dark:text-anvaya-light flex items-center gap-1"
+                >
+                  <i class="mdi mdi-information-outline"></i>
+                  Learn More
+                </button>
+                <span class="text-[10px] text-gray-500 dark:text-gray-400">
+                  <i class="mdi mdi-clock-outline mr-1"></i>
+                  {{ new Date(item.createdAt).toLocaleDateString() }}
+                </span>
               </div>
             </div>
           </div>

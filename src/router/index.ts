@@ -133,6 +133,12 @@ const router = createRouter({
           component: () => import("@/views/backoffice/PromotionsView.vue"),
           beforeEnter: requireAuth,
         },
+        {
+          path: "trending",
+          name: "backoffice-trending",
+          component: () => import("@/views/backoffice/TrendingView.vue"),
+          beforeEnter: requireAuth,
+        },
         // Add more routes for other data management
       ],
     },
