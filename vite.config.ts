@@ -14,7 +14,11 @@ export default defineConfig({
         target: "http://111.68.124.187:9090",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
-        secure: false
+        secure: false,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
       },
     },
   },

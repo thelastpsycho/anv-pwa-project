@@ -78,6 +78,9 @@ export const useAuthStore = defineStore("auth", {
         throw new Error("Invalid credentials");
       } catch (error) {
         console.error("Profile login error:", error);
+        if (error instanceof Error) {
+          throw new Error(`Authentication failed: ${error.message}`);
+        }
         throw error;
       }
     },
