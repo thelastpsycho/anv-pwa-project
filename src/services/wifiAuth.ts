@@ -30,18 +30,21 @@ export async function authenticateWithWifi(
       credentials: 'include'
     });
 
+    const responseText = await response.text();
+    console.log('Raw response:', responseText);
+
     if (!response.ok) {
       console.error('Response status:', response.status);
-      console.error('Response text:', await response.text());
+      console.error('Response text:', responseText);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     let data: WifiResponse;
     try {
-      data = await response.json();
+      data = JSON.parse(responseText);
     } catch (error) {
       console.error('Error parsing JSON:', error);
-      console.error('Raw response:', await response.text());
+      console.error('Raw response:', responseText);
       throw new Error('Invalid JSON response from server');
     }
 

@@ -447,7 +447,7 @@ async function loadTrendingItems() {
     <!-- Trending Section -->
     <div class="mb-8">
       <h2 class="text-lg font-medium text-anvaya-blue dark:text-anvaya-light mb-4">
-        Trending Now
+        Trending
       </h2>
       <div class="overflow-x-auto pb-4">
         <div class="flex space-x-4">
