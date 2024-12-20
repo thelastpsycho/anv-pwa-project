@@ -10,12 +10,10 @@ export default defineConfig({
     host: true,
     port: 5173,
     proxy: {
-      '/odbc/get_wifi': {
+      '/odbc': {
         target: 'http://111.68.124.187:9090',
         changeOrigin: true,
-        headers: {
-          'Accept': 'application/json'
-        }
+        secure: false
       }
     }
   },

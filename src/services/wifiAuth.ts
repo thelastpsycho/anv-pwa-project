@@ -18,7 +18,12 @@ export async function authenticateWithWifi(
   password: string
 ): Promise<boolean> {
   try {
-    const response = await fetch('/.netlify/functions/wifi-proxy', {
+    // Use different endpoints for dev and prod
+    const endpoint = import.meta.env.DEV 
+      ? '/odbc/get_wifi'  // This will be proxied by Vite
+      : '/.netlify/functions/wifi-proxy';
+
+    const response = await fetch(endpoint, {
       method: 'GET',
       headers: {
         'Accept': 'application/json'

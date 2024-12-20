@@ -21,7 +21,7 @@
                   'bg-gray-100 dark:bg-gray-800'
               ]"
             >
-              <p class="text-sm">{{ message.text }}</p>
+              <p class="text-sm" v-html="formatMessage(message.text)"></p>
               <span class="text-[10px] opacity-70 mt-1 block">
                 {{ new Date(message.timestamp).toLocaleTimeString() }}
               </span>
@@ -141,6 +141,25 @@ async function sendMessage() {
   } finally {
     isTyping.value = false;
   }
+}
+
+function formatMessage(text: string): string {
+  // First handle bullet points (lines starting with --)
+  const withBullets = text.split('\n').map(line => {
+    if (line.trim().startsWith('--')) {
+      return `<div class="flex items-start gap-2">
+        <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-anvaya-blue/60 flex-shrink-0"></span>
+        <span>${line.trim().substring(2)}</span>
+      </div>`;
+    }
+    return line;
+  }).join('\n');
+  
+  // Then handle URLs
+  return withBullets.replace(
+    /(https?:\/\/[^\s]+)/g,
+    '<a href="$1" target="_blank" class="underline hover:text-anvaya-blue/80 transition-colors">$1</a>'
+  );
 }
 
 onMounted(() => {
