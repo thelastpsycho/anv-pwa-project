@@ -108,5 +108,6 @@ const navLinks = [
   { title: "Map", route: "backoffice-map" },
   { title: "FAQs", route: "backoffice-faqs" },
   { title: "Trending", route: "backoffice-trending" },
+  { title: "Chat Logs", route: "backoffice-chat-logs" },
 ];
 </script>

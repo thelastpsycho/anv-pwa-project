@@ -198,6 +198,7 @@ function handleAddFAQ(categoryId: string) {
     id: Date.now().toString(),
     question: "",
     answer: "",
+    category: categoryId
   };
 }
 
@@ -213,6 +214,7 @@ async function handleFAQSaved(formData: Record<string, any>) {
       id: editingFAQ.value?.id || Date.now().toString(),
       question: formData.question,
       answer: formData.answer,
+      category: currentCategoryId.value
     };
 
     const faqIndex = faqs.findIndex((f) => f.id === newFaq.id);

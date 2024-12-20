@@ -36,40 +36,26 @@
         </div>
       </div>
 
-      <!-- FAQ Categories -->
-      <div v-for="category in filteredCategories" :key="category.id" class="space-y-4">
-        <h3 class="text-lg font-medium text-anvaya-blue dark:text-anvaya-light">
-          {{ category.title }}
-        </h3>
-        <div class="space-y-3">
-          <div
-            v-for="faq in category.faqs"
-            :key="faq.question"
-            class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-anvaya-gray/10 dark:border-gray-700"
-          >
-            <button
-              class="w-full text-left flex justify-between items-start gap-4"
-              @click="toggleFAQ(faq)"
-            >
-              <span class="text-sm font-medium text-anvaya-blue dark:text-anvaya-light">
-                {{ faq.question }}
-              </span>
-              <i
-                :class="[
-                  'mdi',
-                  expandedFAQs.includes(faq.question)
-                    ? 'mdi-chevron-up'
-                    : 'mdi-chevron-down',
-                  'text-anvaya-blue/60 dark:text-anvaya-light/60 text-xl flex-shrink-0',
-                ]"
-              ></i>
-            </button>
-            <div
-              v-show="expandedFAQs.includes(faq.question)"
-              class="mt-2 text-sm text-gray-600 dark:text-gray-400"
-            >
-              {{ faq.answer }}
-            </div>
+      <!-- FAQ List -->
+      <div class="space-y-4">
+        <div v-if="faqs.length === 0" class="text-center text-gray-500 py-8">
+          Loading FAQs...
+        </div>
+        <div
+          v-for="item in filteredFAQs"
+          :key="item.id"
+          class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm"
+        >
+          <h3 class="font-medium text-anvaya-blue dark:text-anvaya-light mb-2">
+            {{ item.question }}
+          </h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            {{ item.answer }}
+          </p>
+          <div class="mt-2 flex items-center gap-2">
+            <span class="text-xs px-2 py-0.5 bg-anvaya-blue/10 dark:bg-anvaya-light/10 text-anvaya-blue dark:text-anvaya-light rounded-full">
+              {{ item.category }}
+            </span>
           </div>
         </div>
       </div>
@@ -226,22 +212,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import PageHeader from "@/components/PageHeader.vue";
-import type { FAQ, FAQCategory } from "@/types/faqs";
-
-const staticFAQs: FAQCategory[] = [
-  {
-    id: '1',
-    title: 'General',
-    faqs: [
-      {
-        id: '1',
-        question: 'What are the check-in and check-out times?',
-        answer: 'Check-in time is 2:00 PM and check-out time is 12:00 PM (noon).'
-      },
-      // Add more FAQs as needed
-    ]
-  }
-];
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { db } from '@/config/firebase';
+import type { FAQ } from '@/types/faqs';
 
 const tabs = [
   { id: 'faq', label: 'FAQ' },
@@ -252,31 +225,33 @@ const tabs = [
 
 const activeTab = ref('faq');
 const searchQuery = ref("");
-const faqCategories = ref<FAQCategory[]>([]);
-const expandedFAQs = ref<string[]>([]);
+const faqs = ref<FAQ[]>([]);
 
-const filteredCategories = computed(() => {
-  if (!searchQuery.value) return faqCategories.value;
-
-  const query = searchQuery.value.toLowerCase();
-  return faqCategories.value.map(category => ({
-    ...category,
-    faqs: category.faqs.filter(
-      faq =>
-        faq.question.toLowerCase().includes(query) ||
-        faq.answer.toLowerCase().includes(query)
-    )
-  })).filter(category => category.faqs.length > 0);
-});
-
-function toggleFAQ(faq: { question: string }) {
-  const index = expandedFAQs.value.indexOf(faq.question);
-  if (index === -1) {
-    expandedFAQs.value.push(faq.question);
-  } else {
-    expandedFAQs.value.splice(index, 1);
+async function loadFAQs() {
+  try {
+    const q = query(
+      collection(db, 'faqs'),
+      orderBy('priority', 'asc')
+    );
+    const snapshot = await getDocs(q);
+    faqs.value = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as FAQ[];
+    console.log('Loaded FAQs:', faqs.value); // Debug log
+  } catch (error) {
+    console.error('Error loading FAQs:', error);
   }
 }
+
+const filteredFAQs = computed(() => {
+  const query = searchQuery.value.toLowerCase();
+  return faqs.value.filter(
+    item => 
+      item.question.toLowerCase().includes(query) || 
+      item.answer.toLowerCase().includes(query)
+  );
+});
 
 function handleTabClick(tabId: string) {
   if (tabId === 'guide') {
@@ -287,7 +262,7 @@ function handleTabClick(tabId: string) {
 }
 
 onMounted(() => {
-  faqCategories.value = staticFAQs;
+  loadFAQs();
 });
 </script>
 

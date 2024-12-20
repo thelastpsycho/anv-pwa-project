@@ -3,6 +3,7 @@ export interface FAQ {
   question: string;
   answer: string;
   isOpen?: boolean;
+  category: string;
 }
 
 export interface FAQCategory {

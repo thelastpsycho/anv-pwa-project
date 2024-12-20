@@ -500,9 +500,9 @@ async function loadTrendingItems() {
                   <i class="mdi mdi-information-outline"></i>
                   Learn More
                 </button>
-                <span class="text-[10px] text-gray-500 dark:text-gray-400">
+                <span class="text-xs text-gray-500 flex items-center">
                   <i class="mdi mdi-clock-outline mr-1"></i>
-                  {{ new Date(item.createdAt).toLocaleDateString() }}
+                  {{ item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'No date' }}
                 </span>
               </div>
             </div>

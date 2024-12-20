@@ -16,9 +16,9 @@
             <div 
               :class="[
                 'max-w-[80%] rounded-xl p-3',
-                message.isUser ? 
+                message.role === 'user' ? 
                   'ml-auto bg-anvaya-blue text-white' : 
-                  'bg-gray-100 dark:bg-gray-800'
+                  'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
               ]"
             >
               <p class="text-sm" v-html="formatMessage(message.text)"></p>
@@ -46,7 +46,7 @@
               v-model="newMessage"
               type="text"
               placeholder="Type your message..."
-              class="flex-1 px-4 py-2 rounded-xl border border-anvaya-gray/10 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:border-anvaya-blue/30"
+              class="flex-1 px-4 py-2 rounded-xl border border-anvaya-gray/10 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-anvaya-blue/30"
             />
             <button
               type="submit"
@@ -65,13 +65,13 @@
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { generateGeminiResponse } from '@/services/gemini';
+import { collection, addDoc, updateDoc, doc } from 'firebase/firestore';
+import { db } from '@/config/firebase';
+import { useAuthStore } from '@/stores/auth';
+import type { ChatMessage, ChatSession } from '@/types/chat';
 
-interface ChatMessage {
-  id: string;
-  text: string;
-  isUser: boolean;
-  timestamp: number;
-}
+const authStore = useAuthStore();
+const sessionId = ref<string>('');
 
 const isLoaded = ref(false);
 const newMessage = ref('');
@@ -80,7 +80,7 @@ const messages = ref<ChatMessage[]>([
   {
     id: '1',
     text: 'Hello! How can I assist you today?',
-    isUser: false,
+    role: 'assistant',
     timestamp: Date.now()
   }
 ]);
@@ -100,44 +100,84 @@ function scrollToBottom() {
 async function sendMessage() {
   if (!newMessage.value.trim()) return;
   
-  // Add user message
-  const userMessage = newMessage.value;
-  messages.value.push({
+  const userMessage = {
     id: Date.now().toString(),
-    text: userMessage,
-    isUser: true,
+    text: newMessage.value,
+    role: 'user' as const,
     timestamp: Date.now()
-  });
+  };
+
+  // Add user message
+  messages.value.push(userMessage);
   scrollToBottom();
 
-  // Clear input
+  // Clear input immediately after sending
+  const messageToSend = newMessage.value;
   newMessage.value = '';
   
   // Show typing indicator
   isTyping.value = true;
   scrollToBottom();
-
+  
   try {
+    if (!sessionId.value) {
+      // Create new chat session
+      const sessionRef = await addDoc(collection(db, 'chatSessions'), {
+        roomNumber: authStore.profileUser?.roomNumber || null,
+        startedAt: Date.now(),
+        lastMessageAt: Date.now(),
+        messages: [userMessage],
+        status: 'active'
+      });
+      sessionId.value = sessionRef.id;
+    }
+
     // Get response from Gemini
-    const response = await generateGeminiResponse(userMessage);
+    const response = await generateGeminiResponse(messageToSend, messages.value);
     
-    // Add AI response
-    messages.value.push({
+    const aiMessage = {
       id: (Date.now() + 1).toString(),
       text: response,
-      isUser: false,
+      role: 'assistant' as const,
       timestamp: Date.now()
+    };
+
+    // Add AI response
+    messages.value.push(aiMessage);
+
+    // Update chat session
+    await updateDoc(doc(db, 'chatSessions', sessionId.value), {
+      lastMessageAt: Date.now(),
+      messages: [...messages.value]
     });
+
     scrollToBottom();
   } catch (error) {
-    // Handle error
+    console.error('Chat error:', error);
     messages.value.push({
-      id: (Date.now() + 1).toString(),
-      text: "I apologize, but I'm having trouble processing your request at the moment. Please try again later.",
-      isUser: false,
+      id: Date.now().toString(),
+      text: "I apologize, but our live chat is currently unavailable. Please come back later.",
+      role: 'assistant',
       timestamp: Date.now()
     });
     scrollToBottom();
+    
+    // End the session if Gemini is unavailable
+    if (sessionId.value) {
+      updateDoc(doc(db, 'chatSessions', sessionId.value), {
+        status: 'ended',
+        endReason: 'service_unavailable'
+      }).catch(console.error);
+    }
+    
+    // Disable input
+    isTyping.value = false;
+    newMessage.value = '';
+    const input = document.querySelector('input');
+    if (input) {
+      input.disabled = true;
+      input.placeholder = 'Chat is currently unavailable';
+    }
   } finally {
     isTyping.value = false;
   }
@@ -172,6 +212,12 @@ onMounted(() => {
 onUnmounted(() => {
   if (loadTimeout) {
     clearTimeout(loadTimeout);
+  }
+  // Mark session as ended when leaving
+  if (sessionId.value) {
+    updateDoc(doc(db, 'chatSessions', sessionId.value), {
+      status: 'ended'
+    }).catch(console.error);
   }
 });
 </script> 

@@ -1,42 +1,8 @@
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '@/config/firebase';
-import type { Activity } from '@/types/activities';
-import type { Offer } from '@/types/offers';
-import type { TrendingItem } from '@/types/trending';
+import type { ChatMessage } from '@/types/chat';
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
 
-// Function to fetch data from Firebase
-async function getContextData() {
-  try {
-    // Fetch activities
-    const activitiesSnap = await getDocs(collection(db, 'activities'));
-    const activities = activitiesSnap.docs.map(doc => ({
-      ...doc.data(),
-      id: doc.id,
-    })) as Activity[];
-
-    // Fetch offers
-    const offersSnap = await getDocs(collection(db, 'offers'));
-    const offers = offersSnap.docs.map(doc => ({
-      ...doc.data(),
-      id: doc.id,
-    })) as Offer[];
-
-    // Fetch trending
-    const trendingSnap = await getDocs(collection(db, 'trending'));
-    const trending = trendingSnap.docs.map(doc => ({
-      ...doc.data(),
-      id: doc.id,
-    })) as TrendingItem[];
-
-    return { activities, offers, trending };
-  } catch (error) {
-    console.error('Error fetching context data:', error);
-    return { activities: [], offers: [], trending: [] };
-  }
-}
 
 // Base context
 const BASE_CONTEXT = `
@@ -63,7 +29,7 @@ You are a helpful hotel information assistant for The Anvaya Beach Resort Bali. 
   - Only state facts from provided context
   - No pricing information
   - No speculation
-  - if your answer is a list, starts with --
+  - if your answer is a list, starts separate the list with "--"
 
 3. Prohibited Topics:
   - Bookings and reservations
@@ -73,21 +39,22 @@ You are a helpful hotel information assistant for The Anvaya Beach Resort Bali. 
   - External services or locations
 `;
 
-export async function generateGeminiResponse(prompt: string): Promise<string> {
+export async function generateGeminiResponse(
+  prompt: string, 
+  messageHistory: ChatMessage[] = []
+): Promise<string> {
   try {
-    // Get dynamic context data
-    const contextData = await getContextData();
+    // Get last 5 messages for context
+    const conversationContext = messageHistory
+      .slice(-10)
+      .filter((_, index, array) => array.length - index <= 5)
+      .map(msg => `${msg.role === 'user' ? 'Guest' : 'Assistant'}: ${msg.text}`)
+      .join('\n\n');
     
     // Create dynamic context
     const dynamicContext = `
-Current Activities:
-${contextData.activities.map(a => `- ${a.title}: ${a.description}`).join('\n')}
-
-Current Offers:
-${contextData.offers.map(o => `- ${o.title}: ${o.description}`).join('\n')}
-
-Trending Now:
-${contextData.trending.map(t => `- ${t.title}: ${t.description}`).join('\n')}
+Chat History:
+${conversationContext}
 `;
 
     const response = await fetch(`${API_URL}?key=${GEMINI_API_KEY}`, {

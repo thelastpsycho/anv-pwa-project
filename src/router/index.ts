@@ -67,6 +67,7 @@ const router = createRouter({
     {
       path: "/backoffice",
       component: () => import("@/views/backoffice/BackofficeLayout.vue"),
+      meta: { requiresAuth: true, requiresAdmin: true },
       children: [
         {
           path: "",
@@ -144,6 +145,11 @@ const router = createRouter({
           name: "backoffice-trending",
           component: () => import("@/views/backoffice/TrendingView.vue"),
           beforeEnter: requireAuth,
+        },
+        {
+          path: "chat-logs",
+          name: "backoffice-chat-logs",
+          component: () => import("@/views/backoffice/ChatLogsView.vue")
         },
         // Add more routes for other data management
       ],
