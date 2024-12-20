@@ -18,7 +18,11 @@ export async function authenticateWithWifi(
   password: string
 ): Promise<boolean> {
   try {
-    const response = await fetch('/odbc/get_wifi', {
+    const baseUrl = import.meta.env.PROD 
+      ? 'http://111.68.124.187:9090'
+      : '';
+    
+    const response = await fetch(`${baseUrl}/odbc/get_wifi`, {
       method: 'GET',
       headers: {
         'Accept': 'application/json'
