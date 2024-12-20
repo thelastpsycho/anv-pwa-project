@@ -11,7 +11,7 @@
       
       <div class="mt-4 flex flex-col h-[calc(100vh-200px)]">
         <!-- Chat Messages Container -->
-        <div class="flex-1 overflow-y-auto mb-4 space-y-4">
+        <div ref="chatContainer" class="flex-1 overflow-y-auto mb-4 space-y-4">
           <div v-for="message in messages" :key="message.id" class="flex gap-3">
             <div 
               :class="[
@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted, nextTick } from 'vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { generateGeminiResponse } from '@/services/gemini';
 
@@ -85,6 +85,18 @@ const messages = ref<ChatMessage[]>([
   }
 ]);
 
+const chatContainer = ref<HTMLElement | null>(null);
+
+let loadTimeout: number;
+
+function scrollToBottom() {
+  nextTick(() => {
+    if (chatContainer.value) {
+      chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+    }
+  });
+}
+
 async function sendMessage() {
   if (!newMessage.value.trim()) return;
   
@@ -96,12 +108,14 @@ async function sendMessage() {
     isUser: true,
     timestamp: Date.now()
   });
+  scrollToBottom();
 
   // Clear input
   newMessage.value = '';
   
   // Show typing indicator
   isTyping.value = true;
+  scrollToBottom();
 
   try {
     // Get response from Gemini
@@ -114,6 +128,7 @@ async function sendMessage() {
       isUser: false,
       timestamp: Date.now()
     });
+    scrollToBottom();
   } catch (error) {
     // Handle error
     messages.value.push({
@@ -122,14 +137,22 @@ async function sendMessage() {
       isUser: false,
       timestamp: Date.now()
     });
+    scrollToBottom();
   } finally {
     isTyping.value = false;
   }
 }
 
 onMounted(() => {
-  setTimeout(() => {
+  loadTimeout = setTimeout(() => {
     isLoaded.value = true;
+    scrollToBottom();
   }, 100);
+});
+
+onUnmounted(() => {
+  if (loadTimeout) {
+    clearTimeout(loadTimeout);
+  }
 });
 </script> 

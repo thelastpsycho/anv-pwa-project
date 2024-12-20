@@ -1,7 +1,45 @@
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/config/firebase';
+import type { Activity } from '@/types/activities';
+import type { Offer } from '@/types/offers';
+import type { TrendingItem } from '@/types/trending';
+
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
 
-const HOTEL_CONTEXT = `
+// Function to fetch data from Firebase
+async function getContextData() {
+  try {
+    // Fetch activities
+    const activitiesSnap = await getDocs(collection(db, 'activities'));
+    const activities = activitiesSnap.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id,
+    })) as Activity[];
+
+    // Fetch offers
+    const offersSnap = await getDocs(collection(db, 'offers'));
+    const offers = offersSnap.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id,
+    })) as Offer[];
+
+    // Fetch trending
+    const trendingSnap = await getDocs(collection(db, 'trending'));
+    const trending = trendingSnap.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id,
+    })) as TrendingItem[];
+
+    return { activities, offers, trending };
+  } catch (error) {
+    console.error('Error fetching context data:', error);
+    return { activities: [], offers: [], trending: [] };
+  }
+}
+
+// Base context
+const BASE_CONTEXT = `
 You are a helpful hotel assistant for The Anvaya Beach Resort Bali. Follow these guidelines:
 
 1. Knowledge Scope:
@@ -36,6 +74,21 @@ You are a helpful hotel assistant for The Anvaya Beach Resort Bali. Follow these
 
 export async function generateGeminiResponse(prompt: string): Promise<string> {
   try {
+    // Get dynamic context data
+    const contextData = await getContextData();
+    
+    // Create dynamic context
+    const dynamicContext = `
+Current Activities:
+${contextData.activities.map(a => `- ${a.title}: ${a.description}`).join('\n')}
+
+Current Offers:
+${contextData.offers.map(o => `- ${o.title}: ${o.description}`).join('\n')}
+
+Trending Now:
+${contextData.trending.map(t => `- ${t.title}: ${t.description}`).join('\n')}
+`;
+
     const response = await fetch(`${API_URL}?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: {
@@ -44,7 +97,7 @@ export async function generateGeminiResponse(prompt: string): Promise<string> {
       body: JSON.stringify({
         contents: [{
           parts: [{
-            text: `${HOTEL_CONTEXT}\n\nUser message: ${prompt}\n\nRemember to stay within the defined scope and guidelines.`
+            text: `${BASE_CONTEXT}\n\n${dynamicContext}\n\nUser message: ${prompt}\n\nRemember to stay within the defined scope and guidelines.`
           }]
         }]
       })

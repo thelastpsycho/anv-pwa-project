@@ -10,17 +10,14 @@ export default defineConfig({
     host: true,
     port: 5173,
     proxy: {
-      "/api": {
-        target: "http://111.68.124.187:9090",
+      '/odbc/get_wifi': {
+        target: 'http://111.68.124.187:9090',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
-        secure: false,
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          'Accept': 'application/json'
         }
-      },
-    },
+      }
+    }
   },
   optimizeDeps: {
     include: ["vue", "vue-router", "pinia", "@vueuse/core"],

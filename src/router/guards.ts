@@ -1,26 +1,20 @@
 import { useAuthStore } from "@/stores/auth";
-import type { NavigationGuardNext, RouteLocationNormalized } from "vue-router";
+import type { NavigationGuard } from "vue-router";
 
-export async function requireAuth(
-  to: RouteLocationNormalized,
-  from: RouteLocationNormalized,
-  next: NavigationGuardNext
-) {
+export const requireAuth: NavigationGuard = (to, from, next) => {
   const authStore = useAuthStore();
-
-  if (to.name === "backoffice-login") {
-    next();
-    return;
-  }
-
-  if (authStore.loading) {
-    await authStore.init();
-  }
+  const isLiveChat = to.name === 'live-chat';
+  const isBackoffice = to.path.startsWith('/backoffice');
 
   if (!authStore.isAuthenticated) {
-    localStorage.setItem("intendedRoute", to.fullPath);
-    next({ name: "backoffice-login" });
-  } else {
-    next();
+    if (isLiveChat) {
+      next('/profile');
+      return;
+    }
+    if (isBackoffice) {
+      next('/backoffice/login');
+      return;
+    }
   }
-}
+  next();
+};
