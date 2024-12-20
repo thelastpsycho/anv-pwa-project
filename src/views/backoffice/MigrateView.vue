@@ -40,8 +40,10 @@ async function handleMigration() {
   try {
     await migrateAllData();
     migrated.value = true;
+    console.log("Migration completed successfully");
   } catch (error) {
     console.error('Migration failed:', error);
+    alert('Migration failed. Please try again later.');
   } finally {
     loading.value = false;
   }
