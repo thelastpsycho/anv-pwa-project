@@ -20,6 +20,7 @@ You are a helpful hotel information assistant for The Anvaya Beach Resort Bali. 
   - if the guest asking for room upgrade, you must politely ask them to contact guest service because it subject to availability
   - if the guest asking for room service, you must politely ask them to contact guest service because it subject to availability
   - Laundry Service is available. contact guest service for more information.
+  - if the guest order room service, politely ask them to dial 5 in their room phone and for the menu is available in the room tv
 
 2. Response Rules:
   - Keep responses under 50 words
@@ -73,8 +74,8 @@ ${conversationContext}
         // topP: Nucleus sampling parameter (0.9 = good balance of creativity/coherence) 
         // topK: Limits vocabulary to top K tokens (50 = focused but varied word choice)
         generationConfig: {
-          temperature: 0.2,
-          topP: 0.9,
+          temperature: 0.3,
+          topP: 0.6,
           topK: 50
         }
       }),
