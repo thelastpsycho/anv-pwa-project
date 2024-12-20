@@ -18,11 +18,7 @@ export async function authenticateWithWifi(
   password: string
 ): Promise<boolean> {
   try {
-    const baseUrl = import.meta.env.PROD 
-      ? 'http://111.68.124.187:9090'
-      : '';
-    
-    const response = await fetch(`${baseUrl}/odbc/get_wifi`, {
+    const response = await fetch('/.netlify/functions/wifi-proxy', {
       method: 'GET',
       headers: {
         'Accept': 'application/json'
