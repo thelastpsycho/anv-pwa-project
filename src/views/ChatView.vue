@@ -44,6 +44,7 @@ const chatOptions: ChatOption[] = [
         router.push("/profile");
         return;
       }
+      router.push("/live-chat");
     },
   },
   {

@@ -5,4 +5,5 @@ export interface TrendingItem {
   image: string;
   validUntil: string;
   type: 'activity' | 'promotion' | 'event';
+  createdAt: string | Date;
 } 

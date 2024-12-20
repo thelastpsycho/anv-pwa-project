@@ -16,6 +16,12 @@ const router = createRouter({
       component: () => import("@/views/ChatView.vue"),
     },
     {
+      path: "/live-chat",
+      name: "live-chat",
+      component: () => import("@/views/LiveChatView.vue"),
+      beforeEnter: requireAuth,
+    },
+    {
       path: "/map",
       name: "map",
       component: () => import("@/views/MapView.vue"),

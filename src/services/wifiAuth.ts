@@ -13,13 +13,15 @@ interface WifiResponse {
   description: string;
 }
 
+const WIFI_API_URL = import.meta.env.VITE_WIFI_API_URL || '/api/odbc/get_wifi';
+
 export async function authenticateWithWifi(
   roomNumber: string,
   password: string
 ): Promise<boolean> {
   try {
     console.log("Attempting to authenticate with WiFi API...");
-    const response = await fetch("/api/odbc/get_wifi_all", {
+    const response = await fetch(WIFI_API_URL, {
       method: "GET",
       headers: {
         Accept: "application/json",
