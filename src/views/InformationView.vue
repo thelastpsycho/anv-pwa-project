@@ -38,8 +38,9 @@
 
       <!-- FAQ List -->
       <div class="space-y-4">
-        <div v-if="faqs.length === 0" class="text-center text-gray-500 py-8">
-          Loading FAQs...
+        <div v-if="filteredFAQs.length === 0" class="text-center text-gray-500 py-8">
+          <p v-if="searchQuery">No FAQs found matching your search.</p>
+          <p v-else>Loading FAQs...</p>
         </div>
         <div
           v-for="item in filteredFAQs"
@@ -214,7 +215,8 @@ import { ref, computed, onMounted } from "vue";
 import PageHeader from "@/components/PageHeader.vue";
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '@/config/firebase';
-import type { FAQ } from '@/types/faqs';
+
+import type { FAQCategory, FAQ } from "@/types/faqs"
 
 const tabs = [
   { id: 'faq', label: 'FAQ' },
@@ -226,21 +228,21 @@ const tabs = [
 const activeTab = ref('faq');
 const searchQuery = ref("");
 const faqs = ref<FAQ[]>([]);
+const faqCategories = ref<FAQCategory[]>([]);
 
 async function loadFAQs() {
   try {
-    const q = query(
-      collection(db, 'faqs'),
-      orderBy('priority', 'asc')
-    );
-    const snapshot = await getDocs(q);
-    faqs.value = snapshot.docs.map(doc => ({
+    const querySnapshot = await getDocs(collection(db, "faqs"));
+    faqCategories.value = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
       id: doc.id,
-      ...doc.data()
-    })) as FAQ[];
-    console.log('Loaded FAQs:', faqs.value); // Debug log
+      faqs: doc.data().faqs || [],
+    })) as unknown as FAQCategory[];
+    faqs.value = faqCategories.value.reduce((allFaqs: FAQ[], category) => {
+      return [...allFaqs, ...category.faqs];
+    }, []);
   } catch (error) {
-    console.error('Error loading FAQs:', error);
+    console.error("Error loading FAQs:", error);
   }
 }
 

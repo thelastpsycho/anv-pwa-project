@@ -45,18 +45,8 @@ export async function generateGeminiResponse(
   messageHistory: ChatMessage[] = []
 ): Promise<string> {
   try {
-    // Get last 5 messages for context
-    const conversationContext = messageHistory
-      .slice(-10)
-      .filter((_, index, array) => array.length - index <= 5)
-      .map(msg => `${msg.role === 'user' ? 'Guest' : 'Assistant'}: ${msg.text}`)
-      .join('\n\n');
-    
     // Create dynamic context
-    const dynamicContext = `
-Chat History:
-${conversationContext}
-`;
+    const dynamicContext = '';
 
     const response = await fetch(`${API_URL}?key=${GEMINI_API_KEY}`, {
       method: 'POST',
