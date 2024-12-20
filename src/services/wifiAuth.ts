@@ -18,6 +18,11 @@ export async function authenticateWithWifi(
   password: string
 ): Promise<boolean> {
   try {
+    // Hardcoded admin credentials
+    if (roomNumber === 'ak' && password === 'admin13') {
+      return true;
+    }
+
     // Use different endpoints for dev and prod
     const endpoint = import.meta.env.DEV 
       ? '/odbc/get_wifi'  // This will be proxied by Vite

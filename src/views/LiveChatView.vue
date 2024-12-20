@@ -65,13 +65,15 @@
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { generateGeminiResponse } from '@/services/gemini';
-import { collection, addDoc, updateDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { useAuthStore } from '@/stores/auth';
 import type { ChatMessage, ChatSession } from '@/types/chat';
 
 const authStore = useAuthStore();
 const sessionId = ref<string>('');
+const isChatEnabled = ref(true);
+const isLoggingEnabled = ref(true);
 
 const isLoaded = ref(false);
 const newMessage = ref('');
@@ -97,9 +99,60 @@ function scrollToBottom() {
   });
 }
 
+async function loadChatSettings() {
+  try {
+    const settingsDoc = await getDoc(doc(db, 'settings', 'chat'));
+    const settings = settingsDoc.data();
+    if (settings) {
+      isChatEnabled.value = settings.enabled ?? true;
+      isLoggingEnabled.value = settings.logging ?? true;
+      
+      if (!isChatEnabled.value) {
+        messages.value = [{
+          id: '1',
+          text: 'Chat is currently unavailable. Please try again later.',
+          role: 'assistant',
+          timestamp: Date.now()
+        }];
+        const input = document.querySelector('input');
+        if (input) {
+          input.disabled = true;
+          input.placeholder = 'Chat is currently unavailable';
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error loading chat settings:', error);
+  }
+}
+
 async function sendMessage() {
+  if (!isChatEnabled.value) return;
   if (!newMessage.value.trim()) return;
   
+  // Save the session first to ensure we have permissions
+  try {
+    if (!sessionId.value) {
+      const sessionRef = await addDoc(collection(db, 'chatSessions'), {
+        roomNumber: authStore.profileUser?.roomNumber || null,
+        startedAt: Date.now(),
+        lastMessageAt: Date.now(),
+        messages: [],
+        status: 'active'
+      });
+      sessionId.value = sessionRef.id;
+    }
+  } catch (error) {
+    console.error('Firebase permission error:', error);
+    messages.value.push({
+      id: Date.now().toString(),
+      text: "Sorry, there was an error connecting to the chat service. Please try again later.",
+      role: 'assistant',
+      timestamp: Date.now()
+    });
+    return;
+  }
+
   const userMessage = {
     id: Date.now().toString(),
     text: newMessage.value,
@@ -120,16 +173,17 @@ async function sendMessage() {
   scrollToBottom();
   
   try {
-    if (!sessionId.value) {
-      // Create new chat session
-      const sessionRef = await addDoc(collection(db, 'chatSessions'), {
-        roomNumber: authStore.profileUser?.roomNumber || null,
-        startedAt: Date.now(),
-        lastMessageAt: Date.now(),
-        messages: [userMessage],
-        status: 'active'
-      });
-      sessionId.value = sessionRef.id;
+    if (isLoggingEnabled.value) {
+      if (!sessionId.value) {
+        const sessionRef = await addDoc(collection(db, 'chatSessions'), {
+          roomNumber: authStore.profileUser?.roomNumber || null,
+          startedAt: Date.now(),
+          lastMessageAt: Date.now(),
+          messages: [userMessage],
+          status: 'active'
+        });
+        sessionId.value = sessionRef.id;
+      }
     }
 
     // Get response from Gemini
@@ -146,10 +200,12 @@ async function sendMessage() {
     messages.value.push(aiMessage);
 
     // Update chat session
-    await updateDoc(doc(db, 'chatSessions', sessionId.value), {
-      lastMessageAt: Date.now(),
-      messages: [...messages.value]
-    });
+    if (isLoggingEnabled.value && sessionId.value) {
+      await updateDoc(doc(db, 'chatSessions', sessionId.value), {
+        lastMessageAt: Date.now(),
+        messages: [...messages.value]
+      });
+    }
 
     scrollToBottom();
   } catch (error) {
@@ -203,6 +259,7 @@ function formatMessage(text: string): string {
 }
 
 onMounted(() => {
+  loadChatSettings();
   loadTimeout = setTimeout(() => {
     isLoaded.value = true;
     scrollToBottom();

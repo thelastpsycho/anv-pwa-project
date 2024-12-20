@@ -3,12 +3,50 @@
     <div class="bg-white p-6 rounded-lg shadow">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-lg font-medium">Chat Logs</h2>
-        <input
-          type="search"
-          v-model="searchQuery"
-          placeholder="Search messages..."
-          class="px-3 py-1.5 text-xs rounded-lg border border-gray-200 focus:outline-none focus:border-anvaya-blue/30"
-        />
+        <div class="flex items-center gap-4">
+          <!-- Chat Availability Toggle -->
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-gray-600">Chat Available</span>
+            <button
+              @click="toggleChatAvailability"
+              :class="[
+                'relative inline-flex h-5 w-9 items-center rounded-full transition-colors',
+                isChatEnabled ? 'bg-green-500' : 'bg-gray-300'
+              ]"
+            >
+              <span
+                :class="[
+                  'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
+                  isChatEnabled ? 'translate-x-5' : 'translate-x-1'
+                ]"
+              />
+            </button>
+          </div>
+          <!-- Logging Toggle -->
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-gray-600">Record Logs</span>
+            <button
+              @click="toggleLogging"
+              :class="[
+                'relative inline-flex h-5 w-9 items-center rounded-full transition-colors',
+                isLoggingEnabled ? 'bg-green-500' : 'bg-gray-300'
+              ]"
+            >
+              <span
+                :class="[
+                  'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
+                  isLoggingEnabled ? 'translate-x-5' : 'translate-x-1'
+                ]"
+              />
+            </button>
+          </div>
+          <input
+            type="search"
+            v-model="searchQuery"
+            placeholder="Search messages..."
+            class="px-3 py-1.5 text-xs rounded-lg border border-gray-200 focus:outline-none focus:border-anvaya-blue/30"
+          />
+        </div>
       </div>
 
       <!-- Chat Sessions -->
@@ -96,7 +134,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import type { ChatSession } from '@/types/chat';
 
@@ -105,6 +143,8 @@ const searchQuery = ref('');
 const expandedSessions = ref<string[]>([]);
 const currentPage = ref(1);
 const itemsPerPage = 10;
+const isChatEnabled = ref(true);
+const isLoggingEnabled = ref(true);
 
 const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage);
 const endIndex = computed(() => Math.min(startIndex.value + itemsPerPage, filteredSessions.value.length));
@@ -184,7 +224,48 @@ function formatMessage(text: string): string {
   );
 }
 
+// Load settings on mount
+async function loadSettings() {
+  try {
+    const settingsDoc = await getDoc(doc(db, 'settings', 'chat'));
+    const settings = settingsDoc.data();
+    if (settings) {
+      isChatEnabled.value = settings.enabled ?? true;
+      isLoggingEnabled.value = settings.logging ?? true;
+    }
+  } catch (error) {
+    console.error('Error loading chat settings:', error);
+  }
+}
+
+async function toggleChatAvailability() {
+  try {
+    isChatEnabled.value = !isChatEnabled.value;
+    await setDoc(doc(db, 'settings', 'chat'), {
+      enabled: isChatEnabled.value,
+      logging: isLoggingEnabled.value
+    }, { merge: true });
+  } catch (error) {
+    console.error('Error updating chat availability:', error);
+    isChatEnabled.value = !isChatEnabled.value; // Revert on error
+  }
+}
+
+async function toggleLogging() {
+  try {
+    isLoggingEnabled.value = !isLoggingEnabled.value;
+    await setDoc(doc(db, 'settings', 'chat'), {
+      enabled: isChatEnabled.value,
+      logging: isLoggingEnabled.value
+    }, { merge: true });
+  } catch (error) {
+    console.error('Error updating logging settings:', error);
+    isLoggingEnabled.value = !isLoggingEnabled.value; // Revert on error
+  }
+}
+
 onMounted(() => {
   loadChatSessions();
+  loadSettings();
 });
 </script> 
