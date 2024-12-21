@@ -10,4 +10,6 @@ export interface Activity {
   duration?: string;
   instructor?: string;
   requirements?: string;
+  image: string;
+  dayOfWeek: string;
 }

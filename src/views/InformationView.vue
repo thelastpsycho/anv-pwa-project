@@ -30,7 +30,7 @@
             v-model="searchQuery"
             type="text"
             placeholder="Search information..."
-            class="w-full px-4 py-2.5 pl-10 bg-white dark:bg-gray-800 rounded-xl border border-anvaya-gray/10 dark:border-gray-700 focus:outline-none focus:border-anvaya-blue/30 dark:focus:border-anvaya-light/30 text-sm"
+            class="w-full px-4 py-2.5 pl-10 bg-white dark:bg-gray-800 rounded-xl border border-anvaya-gray/10 dark:border-gray-700 focus:outline-none focus:border-anvaya-blue/30 dark:focus:border-anvaya-light/30 text-sm dark:text-anvaya-light"
           />
           <i class="mdi mdi-magnify absolute left-3.5 top-2.5 text-anvaya-blue/60 dark:text-anvaya-light/60 text-lg"></i>
         </div>
@@ -38,7 +38,7 @@
 
       <!-- FAQ List -->
       <div class="space-y-4">
-        <div v-if="filteredFAQs.length === 0" class="text-center text-gray-500 py-8">
+        <div v-if="filteredFAQs.length === 0" class="text-center text-gray-500 dark:text-anvaya-light py-8">
           <p v-if="searchQuery">No FAQs found matching your search.</p>
           <p v-else>Loading FAQs...</p>
         </div>

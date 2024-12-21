@@ -4,6 +4,18 @@
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-lg font-medium">Chat Logs</h2>
         <div class="flex items-center gap-4">
+          <!-- AI Engine Toggle -->
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-gray-600">AI Engine:</span>
+            <select
+              v-model="selectedEngine"
+              class="px-2 py-1.5 text-xs rounded-lg border border-gray-200 focus:outline-none focus:border-anvaya-blue/30"
+              @change="updateAIEngine"
+            >
+              <option value="gemini">Gemini</option>
+              <option value="openai">OpenAI</option>
+            </select>
+          </div>
           <!-- Chat Availability Toggle -->
           <div class="flex items-center gap-2">
             <span class="text-xs text-gray-600">Chat Available</span>
@@ -145,6 +157,7 @@ const currentPage = ref(1);
 const itemsPerPage = 10;
 const isChatEnabled = ref(true);
 const isLoggingEnabled = ref(true);
+const selectedEngine = ref('gemini');
 
 const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage);
 const endIndex = computed(() => Math.min(startIndex.value + itemsPerPage, filteredSessions.value.length));
@@ -232,6 +245,7 @@ async function loadSettings() {
     if (settings) {
       isChatEnabled.value = settings.enabled ?? true;
       isLoggingEnabled.value = settings.logging ?? true;
+      selectedEngine.value = settings.engine ?? 'gemini';
     }
   } catch (error) {
     console.error('Error loading chat settings:', error);
@@ -261,6 +275,21 @@ async function toggleLogging() {
   } catch (error) {
     console.error('Error updating logging settings:', error);
     isLoggingEnabled.value = !isLoggingEnabled.value; // Revert on error
+  }
+}
+
+async function updateAIEngine() {
+  try {
+    await setDoc(doc(db, 'settings', 'chat'), {
+      enabled: isChatEnabled.value,
+      logging: isLoggingEnabled.value,
+      engine: selectedEngine.value
+    }, { merge: true });
+  } catch (error) {
+    console.error('Error updating AI engine:', error);
+    // Revert on error
+    const settings = await getDoc(doc(db, 'settings', 'chat'));
+    selectedEngine.value = settings.data()?.engine || 'gemini';
   }
 }
 

@@ -1,3 +1,5 @@
+import "./utils/console-override";
+
 import "./assets/main.css";
 import "@mdi/font/css/materialdesignicons.css";
 

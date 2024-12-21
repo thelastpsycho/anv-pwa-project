@@ -79,13 +79,6 @@
               <span class="text-xs">{{ activity.location }}</span>
             </div>
           </div>
-
-          <!-- <button
-            @click="bookActivity(activity)"
-            class="w-full mt-3 py-2 bg-anvaya-blue/10 dark:bg-anvaya-light/10 text-anvaya-blue dark:text-anvaya-light rounded-lg hover:bg-anvaya-blue/20 dark:hover:bg-anvaya-light/20 transition-colors font-medium text-sm"
-          >
-            Join Activity
-          </button> -->
         </div>
       </div>
     </div>
@@ -97,6 +90,7 @@ import PageHeader from "@/components/PageHeader.vue";
 import { ref, computed, onMounted } from "vue";
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/config/firebase';
+import type { Activity } from '@/types/activities';
 
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1520&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 
@@ -127,7 +121,7 @@ const getCurrentDay = () => {
 const selectedDay = ref(getCurrentDay());
 const selectedPeriod = ref('all');
 
-const activities = ref([]);
+const activities = ref<Activity[]>([]);
 
 async function loadActivities() {
   try {
@@ -135,7 +129,7 @@ async function loadActivities() {
     activities.value = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
-    }));
+    })) as Activity[];
   } catch (error) {
     console.error('Error loading activities:', error);
   }
@@ -154,11 +148,7 @@ const filteredActivities = computed(() => {
   );
   console.log('Activities for day:', dayActivities);
   
-  if (selectedPeriod.value === 'all') {
-    return dayActivities;
-  }
-  
-  return dayActivities.filter(activity => {
+  const filtered = selectedPeriod.value === 'all' ? dayActivities : dayActivities.filter(activity => {
     const hour = parseInt(activity.time.split(' ')[0]);
     console.log('Filtering activity:', activity.title, 'at hour:', hour);
     
@@ -167,6 +157,13 @@ const filteredActivities = computed(() => {
       (selectedPeriod.value === 'midday' && hour >= 11 && hour <= 13) ||
       (selectedPeriod.value === 'afternoon' && hour >= 14 && hour <= 17)
     );
+  });
+  
+  // Sort by time
+  return filtered.sort((a, b) => {
+    const timeA = new Date(`2000/01/01 ${a.time}`).getTime();
+    const timeB = new Date(`2000/01/01 ${b.time}`).getTime();
+    return timeA - timeB;
   });
 });
 

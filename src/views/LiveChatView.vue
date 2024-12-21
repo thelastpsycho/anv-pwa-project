@@ -65,6 +65,7 @@
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { generateGeminiResponse } from '@/services/gemini';
+import { generateOpenAIResponse } from '@/services/openai';
 import { collection, addDoc, updateDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { useAuthStore } from '@/stores/auth';
@@ -186,8 +187,17 @@ async function sendMessage() {
       }
     }
 
-    // Get response from Gemini
-    const response = await generateGeminiResponse(messageToSend, messages.value);
+    // Get current engine setting
+    const settingsDoc = await getDoc(doc(db, 'settings', 'chat'));
+    const engine = settingsDoc.data()?.engine || 'gemini';
+    
+    // Get response from AI
+    const response = await (engine === 'gemini' 
+      ? generateGeminiResponse(messageToSend, messages.value)
+      : generateOpenAIResponse(messageToSend, messages.value).catch(error => {
+          console.error('OpenAI error, falling back to Gemini:', error);
+          return generateGeminiResponse(messageToSend, messages.value);
+        }));
     
     const aiMessage = {
       id: (Date.now() + 1).toString(),
