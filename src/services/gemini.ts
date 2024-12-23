@@ -14,11 +14,14 @@ export async function generateGeminiResponse(
 ): Promise<string> {
   try {
     const BASE_CONTEXT = getBaseContext();
-    const { activitiesContext, faqContext, conversationContext } = await getDynamicContext(messageHistory);
+    const { activitiesContext, faqContext, conversationContext, menusContext } = await getDynamicContext(messageHistory);
     
     const dynamicContext = `
 Available Activities:
 ${activitiesContext}
+
+Restaurant Menus:
+${menusContext}
 
 Frequently Asked Questions:
 ${faqContext}
@@ -32,6 +35,7 @@ ${conversationContext}
       baseContext: BASE_CONTEXT,
       faqs: faqContext,
       activities: activitiesContext,
+      menus: menusContext,
       chatHistory: conversationContext,
       userPrompt: prompt,
       fullText: `${BASE_CONTEXT}\n\n${dynamicContext}\n\nUser message: ${prompt}\n\nRemember to stay within the defined scope and guidelines.`

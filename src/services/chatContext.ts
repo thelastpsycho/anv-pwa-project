@@ -3,6 +3,17 @@ import { db } from '@/config/firebase';
 import type { Activity } from '@/types/activities';
 import type { ChatMessage } from '@/types/chat';
 
+interface MenuItem {
+  main_title: string;
+  description: string;
+  price_1: number;
+}
+
+interface MenuResponse {
+  status: string;
+  data: MenuItem[];
+}
+
 // Get current time information
 const getCurrentTimeInfo = () => {
   const now = new Date();
@@ -55,6 +66,32 @@ Current Time Information:
 
 // Get dynamic context (activities and FAQs)
 export const getDynamicContext = async (messageHistory: ChatMessage[] = []) => {
+  // Fetch restaurant menus
+  const [kunyitMenu, sandsMenu, beverageMenu] = await Promise.all([
+    fetch('https://menu.anvayabali.com/api/v1/kunyit-menus').then(res => res.json()),
+    fetch('https://menu.anvayabali.com/api/v1/sands-menus').then(res => res.json()),
+    fetch('https://menu.anvayabali.com/api/v1/beverage-menus').then(res => res.json()),
+  ]) as [MenuResponse, MenuResponse, MenuResponse];
+
+  // Format menus context
+  const menusContext = `
+Restaurant Menus:
+
+BEVERAGE MENU:
+${beverageMenu.data.map(item => `
+Dish: ${item.main_title}
+Description: ${item.description}`).join('\n')}
+
+KUNYIT RESTAURANT (Indonesian Cuisine):
+${kunyitMenu.data.map(item => `
+Dish: ${item.main_title}
+Description: ${item.description}`).join('\n')}
+
+SANDS RESTAURANT (International Cuisine):
+${sandsMenu.data.map(item => `
+Dish: ${item.main_title}
+Description: ${item.description}`).join('\n')}`;
+
   // Get activities data
   const activitiesSnapshot = await getDocs(collection(db, 'activities'));
   const activitiesData = activitiesSnapshot.docs.map(doc => ({
@@ -104,6 +141,7 @@ Duration: ${activity.duration || '1 hour'}`).join('\n')}
   return {
     activitiesContext,
     faqContext,
-    conversationContext
+    conversationContext,
+    menusContext
   };
 }; 

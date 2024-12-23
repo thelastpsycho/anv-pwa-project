@@ -13,7 +13,7 @@ export async function generateOpenAIResponse(
 ): Promise<string> {
   try {
     const BASE_CONTEXT = getBaseContext();
-    const { activitiesContext, faqContext, conversationContext } = await getDynamicContext(messageHistory);
+    const { activitiesContext, faqContext, conversationContext, menusContext } = await getDynamicContext(messageHistory);
 
     const conversationHistory = messageHistory
       .slice(-5)
@@ -25,6 +25,9 @@ export async function generateOpenAIResponse(
     const dynamicContext = `
 Available Activities:
 ${activitiesContext}
+
+Restaurant Menus:
+${menusContext}
 
 Frequently Asked Questions:
 ${faqContext}
@@ -44,6 +47,7 @@ ${conversationContext}
         messages: [
           { role: 'system', content: BASE_CONTEXT },
           { role: 'system', content: `Available Activities:\n${activitiesContext}` },
+          { role: 'system', content: `Restaurant Menus:\n${menusContext}` },
           { role: 'system', content: `FAQs:\n${faqContext}` },
           ...conversationHistory,
           { role: 'user', content: prompt }
