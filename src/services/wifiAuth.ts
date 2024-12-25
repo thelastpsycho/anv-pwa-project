@@ -41,6 +41,15 @@ interface WifiResponse {
   description: string;
 }
 
+// Admin credentials list
+const ADMIN_CREDENTIALS = {
+  'oka': 'oka11',
+  'suwantra': 'ketut11',
+  'antara': 'antara11',
+  'ayin': 'kiano24',
+  'gede':'gede13',
+} as const;
+
 export async function authenticateWithWifi(
   roomNumber: string,
   password: string
@@ -51,8 +60,10 @@ export async function authenticateWithWifi(
       return true;
     }
 
-    // Hardcoded admin credentials
-    if (roomNumber === 'ak' && password === 'admin13') {
+    // Check admin credentials
+    const normalizedUsername = roomNumber.toLowerCase();
+    if (normalizedUsername in ADMIN_CREDENTIALS && 
+        ADMIN_CREDENTIALS[normalizedUsername as keyof typeof ADMIN_CREDENTIALS] === password) {
       saveAuthState();
       return true;
     }

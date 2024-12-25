@@ -171,170 +171,81 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <div
-    class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-  >
-    <div class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-md">
-      <div class="p-6">
-        <h3
-          class="text-xl font-medium text-anvaya-blue dark:text-anvaya-light mb-6"
-        >
-          Reserve Table at {{ venueName }}
-        </h3>
+  <div v-if="isOpen" class="fixed inset-0 bg-black/50 z-50 overflow-y-auto">
+    <div class="min-h-screen px-4 py-4 flex items-center justify-center">
+      <div class="relative bg-white dark:bg-gray-800 rounded-lg w-full max-w-sm shadow-lg">
+        <!-- Header -->
+        <div class="p-4 pb-3 border-b dark:border-gray-700">
+          <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+            Table Reservation
+          </h3>
+        </div>
 
-        <form @submit.prevent="handleSubmit" class="space-y-4">
+        <!-- Form -->
+        <div class="p-4 space-y-3">
           <div class="grid grid-cols-2 gap-4">
-            <div class="space-y-2">
-              <label
-                class="text-sm font-medium text-anvaya-blue dark:text-anvaya-light"
-              >
+            <!-- Date & Time -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Date
               </label>
               <input
-                v-model="reservation.date"
                 type="date"
-                required
-                @blur="validateField('date')"
-                class="w-full h-[42px] px-4 rounded-lg border border-anvaya-gray/10 dark:border-gray-700 focus:outline-none focus:border-anvaya-blue/30 dark:focus:border-anvaya-light/30 bg-white dark:bg-gray-800 text-anvaya-blue dark:text-anvaya-light"
+                v-model="reservation.date"
+                class="w-full px-2 py-1.5 text-sm rounded-lg border"
               />
-              <p v-if="errors.date" class="text-red-500 text-xs mt-1">
-                {{ errors.date }}
-              </p>
             </div>
-
-            <div class="space-y-2">
-              <label
-                class="text-sm font-medium text-anvaya-blue dark:text-anvaya-light"
-              >
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Time
               </label>
-              <select
+              <input
+                type="time"
                 v-model="reservation.time"
-                required
-                @blur="validateField('time')"
-                class="w-full h-[42px] px-4 rounded-lg border border-anvaya-gray/10 dark:border-gray-700 focus:outline-none focus:border-anvaya-blue/30 dark:focus:border-anvaya-light/30 bg-white dark:bg-gray-800 text-anvaya-blue dark:text-anvaya-light"
-              >
-                <option value="">Select time</option>
-                <option
-                  v-for="time in availableTimes"
-                  :key="time"
-                  :value="time"
-                >
-                  {{ time }}
-                </option>
-              </select>
-              <p v-if="errors.time" class="text-red-500 text-xs mt-1">
-                {{ errors.time }}
-              </p>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-4">
-            <div class="space-y-2">
-              <label
-                class="text-sm font-medium text-anvaya-blue dark:text-anvaya-light"
-              >
-                Name
-              </label>
-              <input
-                v-model="reservation.name"
-                type="text"
-                required
-                @blur="validateField('name')"
-                class="w-full px-4 py-2.5 rounded-lg border border-anvaya-gray/10 dark:border-gray-700 focus:outline-none focus:border-anvaya-blue/30 dark:focus:border-anvaya-light/30 bg-white dark:bg-gray-800 text-anvaya-blue dark:text-anvaya-light"
-              />
-              <p v-if="errors.name" class="text-red-500 text-xs mt-1">
-                {{ errors.name }}
-              </p>
-            </div>
-
-            <div class="space-y-2">
-              <label
-                class="text-sm font-medium text-anvaya-blue dark:text-anvaya-light"
-              >
-                Phone
-              </label>
-              <input
-                v-model="reservation.phone"
-                type="tel"
-                required
-                @blur="validateField('phone')"
-                placeholder="e.g. 08123456789"
-                class="w-full px-4 py-2.5 rounded-lg border border-anvaya-gray/10 dark:border-gray-700 focus:outline-none focus:border-anvaya-blue/30 dark:focus:border-anvaya-light/30 bg-white dark:bg-gray-800 text-anvaya-blue dark:text-anvaya-light"
-              />
-              <p v-if="errors.phone" class="text-red-500 text-xs mt-1">
-                {{ errors.phone }}
-              </p>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-4">
-            <div class="space-y-2">
-              <label
-                class="text-sm font-medium text-anvaya-blue dark:text-anvaya-light"
-              >
-                Email
-              </label>
-              <input
-                v-model="reservation.email"
-                type="email"
-                required
-                @blur="validateField('email')"
-                class="w-full px-4 py-2.5 rounded-lg border border-anvaya-gray/10 dark:border-gray-700 focus:outline-none focus:border-anvaya-blue/30 dark:focus:border-anvaya-light/30 bg-white dark:bg-gray-800 text-anvaya-blue dark:text-anvaya-light"
-              />
-              <p v-if="errors.email" class="text-red-500 text-xs mt-1">
-                {{ errors.email }}
-              </p>
-            </div>
-
-            <div class="space-y-2">
-              <label
-                class="text-sm font-medium text-anvaya-blue dark:text-anvaya-light"
-              >
-                Number of Guests
-              </label>
-              <input
-                v-model="reservation.guests"
-                type="number"
-                min="1"
-                max="10"
-                required
-                @blur="validateField('guests')"
-                class="w-full px-4 py-2.5 rounded-lg border border-anvaya-gray/10 dark:border-gray-700 focus:outline-none focus:border-anvaya-blue/30 dark:focus:border-anvaya-light/30 bg-white dark:bg-gray-800 text-anvaya-blue dark:text-anvaya-light"
+                class="w-full px-2 py-1.5 text-sm rounded-lg border"
               />
             </div>
           </div>
 
-          <div class="space-y-2">
-            <label
-              class="text-sm font-medium text-anvaya-blue dark:text-anvaya-light"
-            >
-              Special Requests
+          <!-- Guests -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Number of Guests
+            </label>
+            <input
+              type="number"
+              v-model="reservation.guests"
+              class="w-full px-2 py-1.5 text-sm rounded-lg border"
+            />
+          </div>
+
+          <!-- Special Requests -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Special Requests (Optional)
             </label>
             <textarea
               v-model="reservation.specialRequests"
-              rows="3"
-              class="w-full px-4 py-2.5 rounded-lg border border-anvaya-gray/10 dark:border-gray-700 focus:outline-none focus:border-anvaya-blue/30 dark:focus:border-anvaya-light/30 bg-white dark:bg-gray-800 text-anvaya-blue dark:text-anvaya-light"
+              class="w-full px-2 py-1.5 text-sm rounded-lg border h-16 resize-none"
             ></textarea>
           </div>
+        </div>
 
-          <div class="flex gap-3 mt-6">
-            <button
-              type="button"
-              @click="$emit('close')"
-              class="flex-1 py-2.5 bg-anvaya-blue/10 dark:bg-anvaya-light/10 text-anvaya-blue dark:text-anvaya-light rounded-lg hover:bg-anvaya-blue/20 dark:hover:bg-anvaya-light/20 transition-colors font-medium"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              class="flex-1 py-2.5 bg-anvaya-blue text-white rounded-lg hover:bg-anvaya-blue/90 transition-colors font-medium"
-              :disabled="isSubmitting"
-            >
-              {{ isSubmitting ? "Submitting..." : "Reserve" }}
-            </button>
-          </div>
-        </form>
+        <!-- Footer -->
+        <div class="p-4 pt-3 border-t dark:border-gray-700 flex justify-end gap-2">
+          <button
+            @click="$emit('close')"
+            class="px-3 py-1.5 text-xs rounded-lg border hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            @click="handleSubmit"
+            class="px-3 py-1.5 text-xs bg-anvaya-blue text-white rounded-lg hover:bg-anvaya-blue/90"
+          >
+            Confirm Reservation
+          </button>
+        </div>
       </div>
     </div>
   </div>

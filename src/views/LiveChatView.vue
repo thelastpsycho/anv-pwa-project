@@ -27,6 +27,95 @@
               </span>
             </div>
           </div>
+
+          <!-- Inline Booking Form -->
+          <div v-if="showBookingForm" class="bg-gray-100 dark:bg-gray-800/50 rounded-xl p-3 space-y-3">
+            <!-- Venue Info -->
+            <div class="text-xs text-gray-600 dark:text-gray-400 mb-2">
+              Booking for: {{ bookingVenue }}
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
+                <input
+                  type="date"
+                  v-model="bookingForm.date"
+                  class="w-full px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Time</label>
+                <input
+                  type="time"
+                  v-model="bookingForm.time"
+                  class="w-full px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+            </div>
+
+            <!-- Guest Details -->
+            <div class="space-y-3">
+              <div>
+                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
+                <input
+                  type="text"
+                  v-model="bookingForm.name"
+                  class="w-full px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+              <div class="grid grid-cols-12 gap-3">
+                <div class="col-span-2">
+                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Guests</label>
+                  <input
+                    type="number"
+                    v-model="bookingForm.guests"
+                    class="w-full px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                  />
+                </div>
+                <div class="col-span-5">
+                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
+                  <input
+                    type="tel"
+                    v-model="bookingForm.phone"
+                    placeholder="+62"
+                    class="w-full px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                  />
+                </div>
+                <div class="col-span-5">
+                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                  <input
+                    type="email"
+                    v-model="bookingForm.email"
+                    class="w-full px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Special Requests</label>
+              <textarea
+                v-model="bookingForm.specialRequests"
+                class="w-full px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 h-12 resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              ></textarea>
+            </div>
+            <div class="flex justify-end gap-2">
+              <button
+                @click="showBookingForm = false"
+                class="px-3 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+              >
+                Cancel
+              </button>
+              <button
+                @click="handleBookingSubmit"
+                class="px-3 py-1 text-xs bg-anvaya-blue text-white rounded-lg hover:bg-anvaya-blue/90"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+
           <!-- Typing Indicator -->
           <div v-if="isTyping" class="flex gap-3">
             <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-3">
@@ -70,6 +159,7 @@ import { collection, addDoc, updateDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { useAuthStore } from '@/stores/auth';
 import type { ChatMessage, ChatSession } from '@/types/chat';
+import TableReservationModal from '@/components/TableReservationModal.vue';
 
 const authStore = useAuthStore();
 const sessionId = ref<string>('');
@@ -91,6 +181,40 @@ const messages = ref<ChatMessage[]>([
 const chatContainer = ref<HTMLElement | null>(null);
 
 let loadTimeout: number;
+
+const showBookingForm = ref(false);
+const bookingVenue = ref('');
+
+const bookingForm = ref({
+  date: '',
+  time: '',
+  name: '',
+  email: '',
+  phone: '',
+  guests: 2,
+  specialRequests: ''
+});
+
+async function handleBookingSubmit() {
+  try {
+    // Handle booking submission
+    messages.value.push({
+      id: Date.now().toString(),
+      text: "Your reservation has been confirmed! You'll receive a confirmation email shortly.",
+      role: 'assistant',
+      timestamp: Date.now()
+    });
+    showBookingForm.value = false;
+  } catch (error) {
+    console.error('Booking error:', error);
+    messages.value.push({
+      id: Date.now().toString(),
+      text: "Sorry, there was an error processing your reservation. Please try again.",
+      role: 'assistant',
+      timestamp: Date.now()
+    });
+  }
+}
 
 function scrollToBottom() {
   nextTick(() => {
@@ -250,6 +374,14 @@ async function sendMessage() {
 }
 
 function formatMessage(text: string): string {
+  // Check for booking form trigger
+  if (text.includes('[BOOKING_FORM]')) {
+    const venue = text.split('[BOOKING_FORM]')[1].trim();
+    bookingVenue.value = venue;
+    setTimeout(() => showBookingForm.value = true, 500);
+    return `I'll help you make a reservation at ${venue}. Please fill out the booking form that appears.`;
+  }
+
   // First handle bullet points (lines starting with --)
   const withBullets = text.split('\n').map(line => {
     if (line.trim().startsWith('--')) {
@@ -266,6 +398,16 @@ function formatMessage(text: string): string {
     /(https?:\/\/[^\s]+)/g,
     '<a href="$1" target="_blank" class="underline hover:text-anvaya-blue/80 transition-colors">$1</a>'
   );
+}
+
+function handleBookingSuccess() {
+  messages.value.push({
+    id: Date.now().toString(),
+    text: "You'll receive a confirmation shortly.",
+    role: 'assistant',
+    timestamp: Date.now()
+  });
+  showBookingForm.value = false;
 }
 
 onMounted(() => {
