@@ -4,7 +4,7 @@
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-xl font-medium">Offers</h2>
         <button
-          @click="showAddModal = true"
+          @click="handleAdd"
           class="px-4 py-2 bg-anvaya-blue text-white rounded-lg hover:bg-anvaya-blue/90"
         >
           Add Offer
@@ -59,12 +59,20 @@
       </div>
     </div>
     <EditDataModal
-      v-if="editingOffer"
-      :is-open="!!editingOffer"
+      v-if="editingOffer || showAddModal"
+      :is-open="!!editingOffer || showAddModal"
       title="Offer"
       collection="offers"
-      :document-id="editingOffer.id.toString()"
-      :initial-data="editingOffer"
+      :document-id="editingOffer?.id?.toString()"
+      :initial-data="editingOffer || {
+        title: '',
+        description: '',
+        category: 'staycation',
+        price: '',
+        image: '',
+        date: '',
+        details: ''
+      }"
       :fields="{
         title: { label: 'Title', type: 'text' },
         description: { label: 'Description', type: 'textarea' },
@@ -78,7 +86,7 @@
         date: { label: 'Date/Validity', type: 'text' },
         details: { label: 'Details', type: 'textarea' },
       }"
-      @close="editingOffer = null"
+      @close="handleModalClose"
       @saved="loadOffers"
     />
   </div>
@@ -120,6 +128,16 @@ async function deleteOffer(id: string) {
 
 function editOffer(offer: Offer) {
   editingOffer.value = offer;
+}
+
+function handleAdd() {
+  editingOffer.value = null;
+  showAddModal.value = true;
+}
+
+function handleModalClose() {
+  showAddModal.value = false;
+  editingOffer.value = null;
 }
 
 onMounted(() => {

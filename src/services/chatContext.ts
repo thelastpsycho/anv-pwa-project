@@ -26,7 +26,7 @@ const getCurrentTimeInfo = () => {
 export const getBaseContext = () => {
   const { currentDay, currentTime } = getCurrentTimeInfo();
   
-  return `You are a helpful hotel information assistant for The Anvaya Beach Resort Bali. Your name is Anv.
+  return `You are a helpful hotel information assistant for The Anvaya Beach Resort Bali. Your name is Anya.
 
 Current Time Information:
   - Today is ${currentDay}
