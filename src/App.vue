@@ -5,6 +5,7 @@ import BottomNav from "@/components/BottomNav.vue";
 import SplashScreen from "@/components/SplashScreen.vue";
 import PWAUpdateNotification from "@/components/PWAUpdateNotification.vue";
 import { useAppStore } from "@/stores/app";
+import CookieConsent from "@/components/CookieConsent.vue";
 
 const showContent = ref(false);
 const appStore = useAppStore();
@@ -38,6 +39,7 @@ const handleSplashFinished = () => {
       </main>
       <BottomNav v-if="!isBackoffice" />
       <PWAUpdateNotification />
+      <CookieConsent />
     </div>
   </Transition>
 </template>

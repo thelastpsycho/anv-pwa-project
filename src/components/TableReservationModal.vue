@@ -24,7 +24,7 @@ const reservation = ref<Partial<TableReservation>>({
   date: "",
   time: "",
   guests: 2,
-  name: authStore.user?.displayName || "",
+  name: authStore.backofficeUser?.displayName || "",
   email: "",
   phone: "",
   specialRequests: "",

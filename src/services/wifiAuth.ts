@@ -48,6 +48,7 @@ const ADMIN_CREDENTIALS = {
   'antara': 'antara11',
   'ayin': 'kiano24',
   'gede':'gede13',
+  'ak': 'ak13',
 } as const;
 
 export async function authenticateWithWifi(
