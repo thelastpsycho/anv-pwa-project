@@ -1,23 +1,47 @@
 <template>
-  <div class="resort-map">
+  <div class="resort-map relative">
     <div id="map" class="h-[70vh] w-full rounded-xl overflow-hidden"></div>
 
-    <!-- Category Filter -->
-    <div class="flex gap-2 mt-4 overflow-x-auto pb-2">
-      <button
-        v-for="category in categories"
-        :key="category"
-        @click="toggleCategory(category)"
-        class="px-3 py-1.5 rounded-lg text-xs whitespace-nowrap flex items-center gap-1"
-        :class="[
-          activeCategories.includes(category)
-            ? 'bg-anvaya-blue text-white'
-            : 'bg-anvaya-blue/10 text-anvaya-blue',
-        ]"
-      >
-        <i :class="getCategoryIcon(category)"></i>
-        {{ category.charAt(0).toUpperCase() + category.slice(1) }}
-      </button>
+    <!-- Location Button -->
+    <button
+      @click="centerOnLocation"
+      class="absolute bottom-4 right-4 z-[400] p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+      :class="{ 'text-anvaya-blue': isLocating }"
+    >
+      <i class="mdi mdi-crosshairs-gps text-lg"></i>
+    </button>
+
+    <!-- Category Filter Overlay -->
+    <div class="absolute top-4 left-1/2 -translate-x-1/2 z-[400]">
+      <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full shadow-lg border border-gray-100 dark:border-gray-700 p-1.5">
+        <div class="flex items-center gap-1">
+          <button
+            v-for="category in categories"
+            :key="category"
+            @click="toggleCategory(category)"
+            class="p-1.5 rounded-full text-xs whitespace-nowrap flex items-center transition-all duration-200 relative group"
+            :class="[
+              activeCategories.includes(category)
+                ? 'bg-anvaya-blue text-white'
+                : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300',
+            ]"
+          >
+            <i :class="[getCategoryIcon(category), 'text-base']"></i>
+            <span 
+              class="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center text-[9px] rounded-full bg-anvaya-blue text-white"
+              v-if="getPointCount(category) > 0"
+            >
+              {{ getPointCount(category) }}
+            </span>
+            <!-- Tooltip -->
+            <span 
+              class="absolute left-1/2 -translate-x-1/2 -bottom-8 bg-gray-900/90 text-white px-2 py-1 rounded text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              {{ category.charAt(0).toUpperCase() + category.slice(1) }}
+            </span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -38,8 +62,12 @@ import "leaflet/dist/leaflet.css";
 const map = ref<L.Map | null>(null);
 const markers = ref<L.Marker[]>([]);
 const mapPoints = ref<MapPoint[]>([]);
+const locationMarker = ref<L.Marker | null>(null);
+const locationCircle = ref<L.Circle | null>(null);
+const isLocating = ref(false);
+const hasRequestedPermission = ref(false);
 const categories = ["dining", "wellness", "facility", "pool", "entrance"];
-const activeCategories = ref(categories);
+const activeCategories = ref<string[]>([...categories]);
 
 const categoryColors: Record<string, string> = {
   dining: "#4CAF50",
@@ -69,11 +97,10 @@ async function loadMapPoints() {
 }
 
 const toggleCategory = (category: string) => {
-  const index = activeCategories.value.indexOf(category);
-  if (index === -1) {
-    activeCategories.value.push(category);
+  if (activeCategories.value.includes(category)) {
+    activeCategories.value = activeCategories.value.filter(cat => cat !== category);
   } else {
-    activeCategories.value.splice(index, 1);
+    activeCategories.value = [...activeCategories.value, category];
   }
   updateMarkers();
 };
@@ -168,7 +195,108 @@ const parseKMLCoordinates = async () => {
   }
 };
 
+// Add this function to get point count per category
+function getPointCount(category: string): number {
+  return mapPoints.value.filter(point => point.category === category).length;
+}
+
+// Function to handle location
+async function centerOnLocation() {
+  if (!map.value) return;
+  
+  isLocating.value = true;
+  
+  try {
+    // Check permission first
+    const hasPermission = await requestLocationPermission();
+    if (!hasPermission) {
+      throw new Error('Location permission denied');
+    }
+    
+    const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+      });
+    });
+    
+    const { latitude, longitude, accuracy } = position.coords;
+    
+    // Remove existing location markers
+    if (locationMarker.value) locationMarker.value.remove();
+    if (locationCircle.value) locationCircle.value.remove();
+    
+    // Add accuracy circle
+    locationCircle.value = L.circle([latitude, longitude], {
+      radius: accuracy,
+      color: '#89a8b2',
+      fillColor: '#89a8b2',
+      fillOpacity: 0.15,
+      weight: 1
+    }).addTo(map.value);
+    
+    // Add location marker
+    locationMarker.value = L.marker([latitude, longitude], {
+      icon: L.divIcon({
+        html: '<div class="w-4 h-4 bg-anvaya-blue rounded-full border-2 border-white shadow-lg"></div>',
+        className: 'location-marker',
+        iconSize: [16, 16],
+        iconAnchor: [8, 8]
+      })
+    }).addTo(map.value);
+    
+    // Center map on location
+    map.value.setView([latitude, longitude], 18);
+    
+  } catch (error) {
+    console.error('Location error:', error);
+    alert('Unable to get your location. Please check your device settings.');
+  } finally {
+    isLocating.value = false;
+  }
+}
+
+// Function to check and request location permission
+async function requestLocationPermission(): Promise<boolean> {
+  if (!navigator.permissions || !navigator.permissions.query) {
+    // Fallback for browsers that don't support permissions API
+    return new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        () => resolve(true),
+        () => resolve(false)
+      );
+    });
+  }
+  
+  try {
+    const result = await navigator.permissions.query({ name: 'geolocation' });
+    if (result.state === 'granted') return true;
+    if (result.state === 'prompt') {
+      return new Promise((resolve) => {
+        navigator.geolocation.getCurrentPosition(
+          () => resolve(true),
+          () => resolve(false)
+        );
+      });
+    }
+    return false;
+  } catch (error) {
+    console.error('Permission check error:', error);
+    return false;
+  }
+}
+
 onMounted(async () => {
+  // Request location permission on mount for mobile devices
+  if (!hasRequestedPermission.value && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+    hasRequestedPermission.value = true;
+    const hasPermission = await requestLocationPermission();
+    if (hasPermission) {
+      centerOnLocation();
+    }
+  }
+
   // Get coordinates from KML
   const anvayaBounds = await parseKMLCoordinates();
 
@@ -239,6 +367,25 @@ onMounted(async () => {
 </script>
 
 <style>
+/* Location marker pulse animation */
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  70% { transform: scale(2); opacity: 0; }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+.location-marker::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #89a8b2;
+  border-radius: 50%;
+  animation: pulse 2s ease-out infinite;
+}
+
 /* Hide leaflet attribution */
 .leaflet-control-attribution {
   display: none;

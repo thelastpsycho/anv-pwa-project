@@ -1,7 +1,9 @@
 <template>
-  <div class="map-view px-4 pb-12">
+  <div class="map-view pb-12">
     <PageHeader title="Resort Map" />
-    <ResortMap />
+    <div class="px-4 mb-12">
+      <ResortMap />
+    </div>
   </div>
 </template>
 
