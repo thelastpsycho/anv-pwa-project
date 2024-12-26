@@ -234,7 +234,7 @@ async function centerOnLocation() {
       fillColor: '#89a8b2',
       fillOpacity: 0.15,
       weight: 1
-    }).addTo(map.value);
+    }).addTo(map.value as L.Map);
     
     // Add location marker
     locationMarker.value = L.marker([latitude, longitude], {
@@ -244,7 +244,7 @@ async function centerOnLocation() {
         iconSize: [16, 16],
         iconAnchor: [8, 8]
       })
-    }).addTo(map.value);
+    }).addTo(map.value as L.Map);
     
     // Center map on location
     map.value.setView([latitude, longitude], 18);
