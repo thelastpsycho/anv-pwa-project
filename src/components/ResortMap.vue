@@ -230,8 +230,8 @@ async function centerOnLocation() {
     // Add accuracy circle
     locationCircle.value = L.circle([latitude, longitude], {
       radius: accuracy,
-      color: '#89a8b2',
-      fillColor: '#89a8b2',
+      color: '#ef4444',
+      fillColor: '#ef4444',
       fillOpacity: 0.15,
       weight: 1
     }).addTo(map.value as L.Map);
@@ -239,7 +239,7 @@ async function centerOnLocation() {
     // Add location marker
     locationMarker.value = L.marker([latitude, longitude], {
       icon: L.divIcon({
-        html: '<div class="w-4 h-4 bg-anvaya-blue rounded-full border-2 border-white shadow-lg"></div>',
+        html: '<div class="w-4 h-4 bg-red-500 rounded-full border-2 border-white shadow-lg"></div>',
         className: 'location-marker',
         iconSize: [16, 16],
         iconAnchor: [8, 8]
@@ -381,7 +381,7 @@ onMounted(async () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: #89a8b2;
+  background: #ef4444;
   border-radius: 50%;
   animation: pulse 2s ease-out infinite;
 }

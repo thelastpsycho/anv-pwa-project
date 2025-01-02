@@ -116,7 +116,7 @@
 </div>
 
 <!-- Settings Tab -->
-<div v-if="activeTab === 'settings'" class="space-y-8">
+<div v-if="activeTab === 'settings'" class="space-y-6">
   <!-- Toggle Cards -->
   <div class="grid grid-cols-2 gap-6">
     <!-- Chat Availability Card -->
@@ -163,25 +163,45 @@
       </p>
     </div>
   </div>
-</div>
 
-<!-- Log Cleanup -->
-<div>
-  <h3 class="text-sm font-medium text-gray-700 mb-4">Log Cleanup</h3>
-  <div class="space-y-3">
-    <p class="text-sm text-gray-600">Remove old chat logs based on age:</p>
-    <div class="flex flex-wrap gap-3">
-      <button
-      v-for="option in cleanupOptions"
-      :key="option.days"
-      @click="confirmCleanup(option.days, option.label)"
-      class="px-4 py-2 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 flex items-center gap-2"
-      >
-      <i class="mdi mdi-delete-clock text-gray-500"></i>
-      Older than {{ option.label }}
-    </button>
+  <!-- Export Section -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <h3 class="text-lg font-medium text-gray-900 mb-4">Export Data</h3>
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600">Export all chat logs as JSON</p>
+          <p class="text-xs text-gray-500 mt-1">Downloads all chat history in JSON format</p>
+        </div>
+        <button
+          @click="exportChatLogs"
+          class="px-4 py-2 bg-anvaya-blue text-white text-sm rounded-lg hover:bg-anvaya-blue/90 transition-colors flex items-center gap-2"
+          :disabled="isExporting"
+        >
+          <i class="mdi mdi-download"></i>
+          {{ isExporting ? 'Exporting...' : 'Export JSON' }}
+        </button>
+      </div>
+    </div>
   </div>
-</div>
+
+  <!-- Cleanup Section -->
+  <div>
+    <h3 class="text-sm font-medium text-gray-700 mb-4">Log Cleanup</h3>
+    <div class="space-y-3">
+      <p class="text-sm text-gray-600">Remove old chat logs based on age:</p>
+      <div class="flex flex-wrap gap-3">
+        <button
+        v-for="option in cleanupOptions"
+        :key="option.days"
+        @click="confirmCleanup(option.days, option.label)"
+        class="px-4 py-2 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 flex items-center gap-2"
+        >
+        <i class="mdi mdi-delete-clock text-gray-500"></i>
+        Older than {{ option.label }}
+      </button>
+    </div>
+  </div>
 </div>
 
 <div>
@@ -204,6 +224,7 @@
 </div>
 </div>
 </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -218,7 +239,8 @@ import {
   setDoc, 
   where, 
   deleteDoc,
-  Timestamp 
+  Timestamp,
+  limit 
 } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import type { ChatSession } from '@/types/chat';
@@ -407,6 +429,64 @@ const tabs = [
 { id: 'settings', label: 'Settings' }
 ];
 const activeTab = ref('logs');
+const isExporting = ref(false);
+
+interface ChatExportData {
+  id: string;
+  roomNumber: string | null;
+  startedAt: number;
+  lastMessageAt: number;
+  messages: {
+    id: string;
+    text: string;
+    role: 'user' | 'assistant';
+    timestamp: number;
+  }[];
+  status: 'active' | 'ended';
+}
+
+async function exportChatLogs() {
+  try {
+    isExporting.value = true;
+    
+    // Get all chat sessions with proper query
+    const chatRef = collection(db, "chatSessions");
+    const q = query(chatRef, orderBy("lastMessageAt", "desc"));
+    const querySnapshot = await getDocs(q);
+    
+    const chatData = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as ChatExportData[];
+    
+    // Create Blob and download
+    const exportData = {
+      exportedAt: new Date().toISOString(),
+      totalChats: chatData.length,
+      chats: chatData
+    };
+    
+    const jsonString = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    link.download = `anvaya-chat-logs-${timestamp}.json`;
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+  } catch (error) {
+    console.error('Error exporting chat logs:', error);
+    alert('Failed to export chat logs: ' + (error as Error).message);
+  } finally {
+    isExporting.value = false;
+  }
+}
 
 async function updateEngine(engine: string) {
   selectedEngine.value = engine;

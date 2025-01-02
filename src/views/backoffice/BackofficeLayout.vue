@@ -33,7 +33,11 @@
           </div>
 
           <!-- Right side -->
-          <div class="flex items-center">
+          <div v-if="currentUser" class="flex items-center">
+            <div class="flex flex-col items-end mr-4">
+              <span class="text-xs text-gray-500">Logged in as</span>
+              <span class="text-sm text-gray-700 font-medium">{{ currentUser?.email }}</span>
+            </div>
             <button
               @click="handleSignOut"
               class="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium"
@@ -83,7 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { auth } from "@/config/firebase";
@@ -92,9 +96,17 @@ const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 const mobileMenuOpen = ref(false);
+const currentUser = ref(auth.currentUser);
 
 const isAdmin = computed(() => {
-  return auth.currentUser?.email === 'andikrisnatha@gmail.com';
+  return currentUser.value?.email === 'andikrisnatha@gmail.com';
+});
+
+// Listen for auth state changes
+onMounted(() => {
+  auth.onAuthStateChanged((user) => {
+    currentUser.value = user;
+  });
 });
 
 const handleSignOut = async () => {
@@ -102,7 +114,7 @@ const handleSignOut = async () => {
   router.push("/backoffice/login");
 };
 
-const navLinks = [
+const navLinks = computed(() => [
   { title: "Dashboard", route: "backoffice-dashboard" },
   // { title: "Migrate", route: "backoffice-migrate" },
   { title: "Dining", route: "backoffice-dining" },
@@ -114,5 +126,5 @@ const navLinks = [
   { title: "FAQs", route: "backoffice-faqs" },
   { title: "Trending", route: "backoffice-trending" },
   ...(isAdmin.value ? [{ title: "Chat Logs", route: "backoffice-chat-logs" }] : []),
-];
+]);
 </script>
