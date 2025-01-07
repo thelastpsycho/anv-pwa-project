@@ -13,7 +13,12 @@ export default defineConfig({
       '/odbc': {
         target: 'http://111.68.124.187:9090',
         changeOrigin: true,
-        secure: false
+        secure: false,
+        configure: (proxy, _options) => {
+          proxy.on('error', (err) => {
+            console.error('Proxy error:', err);
+          });
+        }
       }
     }
   },
