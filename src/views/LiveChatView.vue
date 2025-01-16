@@ -235,7 +235,7 @@ async function loadChatSettings() {
       if (!isChatEnabled.value) {
         messages.value = [{
           id: '1',
-          text: 'Chat is currently unavailable. Please try again later.',
+          text: 'Chat is currently unavailable. Please try again later. or contact us via WhatsApp at https://wa.me/6281138311485',
           role: 'assistant',
           timestamp: Date.now()
         }];
