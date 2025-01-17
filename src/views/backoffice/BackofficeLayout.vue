@@ -125,6 +125,8 @@ const navLinks = computed(() => [
   { title: "Map", route: "backoffice-map" },
   { title: "FAQs", route: "backoffice-faqs" },
   { title: "Trending", route: "backoffice-trending" },
+  { title: "Around us", route: "backoffice-attractions" },
+  
   ...(isAdmin.value ? [{ title: "Chat Logs", route: "backoffice-chat-logs" }] : []),
 ]);
 </script>
