@@ -207,20 +207,12 @@
 <div>
   <h3 class="text-sm font-medium text-gray-700 mb-4">Chat Engine</h3>
   <div class="flex bg-gray-100 rounded-lg p-1 w-fit">
-    <button
-    v-for="engine in ['gemini', 'openai']"
-    :key="engine"
-    @click="updateEngine(engine)"
-    :class="[
-    'px-4 py-2 text-xs rounded-md transition-all capitalize',
-    selectedEngine === engine
-    ? 'bg-white text-anvaya-blue shadow-sm'
-    : 'text-gray-500 hover:text-gray-700'
-    ]"
-    >
-    {{ engine }}
-  </button>
-</div>
+    <select v-model="selectedEngine" @change="updateEngine(selectedEngine)">
+      <option value="gemini">Gemini</option>
+      <option value="openai">OpenAI</option>
+      <option value="deepseek">DeepSeek</option>
+    </select>
+  </div>
 </div>
 </div>
 </div>

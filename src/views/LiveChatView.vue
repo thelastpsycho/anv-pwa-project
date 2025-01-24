@@ -155,6 +155,7 @@ import { ref, onMounted, onUnmounted, nextTick } from 'vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { generateGeminiResponse } from '@/services/gemini';
 import { generateOpenAIResponse } from '@/services/openai';
+import { generateDeepSeekResponse } from '@/services/deepseek';
 import { collection, addDoc, updateDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { useAuthStore } from '@/stores/auth';
@@ -318,10 +319,12 @@ async function sendMessage() {
     // Get response from AI
     const response = await (engine === 'gemini' 
       ? generateGeminiResponse(messageToSend, messages.value)
-      : generateOpenAIResponse(messageToSend, messages.value).catch(error => {
-          console.error('OpenAI error, falling back to Gemini:', error);
-          return generateGeminiResponse(messageToSend, messages.value);
-        }));
+      : engine === 'deepseek'
+        ? generateDeepSeekResponse(messageToSend, messages.value)
+        : generateOpenAIResponse(messageToSend, messages.value).catch(error => {
+            console.error('OpenAI error, falling back to Gemini:', error);
+            return generateGeminiResponse(messageToSend, messages.value);
+          }));
     
     const aiMessage = {
       id: (Date.now() + 1).toString(),
@@ -375,12 +378,12 @@ async function sendMessage() {
 
 function formatMessage(text: string): string {
   // Check for booking form trigger
-  if (text.includes('[BOOKING_FORM]')) {
-    const venue = text.split('[BOOKING_FORM]')[1].trim();
-    bookingVenue.value = venue;
-    setTimeout(() => showBookingForm.value = true, 500);
-    return `I'll help you make a reservation at ${venue}. Please fill out the booking form that appears.`;
-  }
+  // if (text.includes('[BOOKING_FORM]')) {
+  //   const venue = text.split('[BOOKING_FORM]')[1].trim();
+  //   bookingVenue.value = venue;
+  //   setTimeout(() => showBookingForm.value = true, 500);
+  //   return `I'll help you make a reservation at ${venue}. Please fill out the booking form that appears.`;
+  // }
 
   // First handle bullet points (lines starting with --)
   const withBullets = text.split('\n').map(line => {
