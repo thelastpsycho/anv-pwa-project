@@ -6,6 +6,7 @@ import SplashScreen from "@/components/SplashScreen.vue";
 import PWAUpdateNotification from "@/components/PWAUpdateNotification.vue";
 import { useAppStore } from "@/stores/app";
 import CookieConsent from "@/components/CookieConsent.vue";
+import { trackEvent } from '@/utils/analytics';
 
 const showContent = ref(false);
 const appStore = useAppStore();
@@ -23,6 +24,9 @@ onMounted(() => {
 const handleSplashFinished = () => {
   showContent.value = true;
 };
+
+// Example usage
+trackEvent('user_action', 'button_click', 'login_button');
 </script>
 
 <template>
