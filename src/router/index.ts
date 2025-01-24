@@ -161,10 +161,21 @@ const router = createRouter({
   ],
 });
 
-router.afterEach((to) => {
+// Add this page tracking
+router.beforeEach((to) => {
+  // Set page title if exists
+  if (to.meta.title) {
+    document.title = `${to.meta.title} - The Anvaya`;
+  }
+});
+
+router.afterEach((to, from) => {
   if (import.meta.env.PROD && window.gtag) {
-    window.gtag('config', import.meta.env.VITE_GA_MEASUREMENT_ID, {
+    window.gtag('event', 'page_view', {
+      page_title: to.meta.title || 'The Anvaya',
       page_path: to.fullPath,
+      page_location: window.location.href,
+      from_path: from.fullPath
     });
   }
 });
