@@ -67,6 +67,11 @@ export default defineConfig({
           },
         ],
       },
+      includeAssets: ['favicon.ico', 'robots.txt'],
+      injectRegister: 'auto',
+      injectManifest: {
+        injectionPoint: undefined,
+      },
     }),
   ],
   resolve: {

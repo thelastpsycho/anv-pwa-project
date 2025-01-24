@@ -10,6 +10,7 @@ import App from "./App.vue";
 import router from "./router";
 import { useAppStore } from "./stores/app";
 import type { BeforeInstallPromptEvent } from "@/types";
+import { initializeGoogleAnalytics } from './utils/analytics';
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -35,5 +36,10 @@ window.addEventListener("online", () => appStore.updateOnlineStatus(true));
 window.addEventListener("offline", () => appStore.updateOnlineStatus(false));
 
 app.use(router);
+
+// Add this after creating the app but before mounting
+if (import.meta.env.PROD) {
+  initializeGoogleAnalytics();
+}
 
 app.mount("#app");

@@ -161,4 +161,12 @@ const router = createRouter({
   ],
 });
 
+router.afterEach((to) => {
+  if (import.meta.env.PROD && window.gtag) {
+    window.gtag('config', import.meta.env.VITE_GA_MEASUREMENT_ID, {
+      page_path: to.fullPath,
+    });
+  }
+});
+
 export default router;
