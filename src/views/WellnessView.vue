@@ -156,10 +156,11 @@ const handleTouchEnd = () => {
                     v-if="service.hasBooking"
                     class="w-full mt-4 py-2.5 bg-anvaya-blue/10 dark:bg-anvaya-light/10 text-anvaya-blue dark:text-anvaya-light rounded-lg hover:bg-anvaya-blue/20 dark:hover:bg-anvaya-light/20 transition-colors font-small"
                   >
-                    Book
-                    {{
+                  <a href="https://anvayabali.com/sakantispa/" target="_blank">Show Menu</a>
+                    
+                    <!-- {{
                       service.title === "Sakanti Spa" ? "Treatment" : "Session"
-                    }}
+                    }} -->
                   </button>
                 </div>
               </div>
