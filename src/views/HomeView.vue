@@ -186,11 +186,7 @@ const menuItems = [
   },
   {
     id: "wellness",
-<<<<<<< HEAD
-    title: "Wellness",
-=======
     title: "Wellness & Spa",
->>>>>>> dev
     icon: "mdi mdi-flower-tulip-outline",
     route: "wellness",
   },
