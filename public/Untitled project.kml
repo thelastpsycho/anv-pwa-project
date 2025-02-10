@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>Untitled project</name>
+	<gx:CascadingStyle kml:id="__managed_style_2F372EDF0C34FE4EF49D">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<displayMode>hide</displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_1D3A6BF52F34FE4EF49D">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<displayMode>hide</displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_09CCD7792F34FE4EF49D">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_1D3A6BF52F34FE4EF49D</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_2F372EDF0C34FE4EF49D</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Placemark id="007A80D4E934FE4EF49A">
+		<name>The Anvaya Bali</name>
+		<LookAt>
+			<longitude>115.1654774906222</longitude>
+			<latitude>-8.732051176868762</latitude>
+			<altitude>7.008183284137075</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>668.3722936720733</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_09CCD7792F34FE4EF49D</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						115.1673827762128,-8.732338009029755,0 115.1671575630729,-8.732290255510051,0 115.1668379563234,-8.732248614354496,0 115.1668673148401,-8.732028855355907,0 115.1664527004342,-8.731815043153215,0 115.1663564821502,-8.732159533768444,0 115.1660020513372,-8.732070397880568,0 115.166045644405,-8.731798433929889,0 115.1652698151601,-8.731536489979653,0 115.1651716179441,-8.731832206784491,0 115.1644837616805,-8.731670893453545,0 115.1645694693604,-8.731344206478427,0 115.164731048489,-8.730890904096862,0 115.1643005506588,-8.730775750247288,0 115.1640144630379,-8.730846584241617,0 115.1626070050232,-8.730423515511202,0 115.1618765718168,-8.730866127030536,0 115.1619158399907,-8.731961026295501,0 115.1624263558972,-8.732590011365264,0 115.1630393488643,-8.732473487191466,0 115.1638783987949,-8.732063751037277,0 115.1640490007957,-8.732171167847802,0 115.164061697239,-8.732343940560336,0 115.1646228806888,-8.732451051704768,0 115.1658938665883,-8.732723929744473,0 115.1659660306734,-8.73253990994176,0 115.1659720296478,-8.732432854652279,0 115.1663449944369,-8.732492382077382,0 115.1662484233251,-8.733347447976218,0 115.1668314841877,-8.733389217509298,0 115.1668082720764,-8.733116758927126,0 115.1672745684078,-8.73315449660338,0 115.1673827762128,-8.732338009029755,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+</Document>
+</kml>
