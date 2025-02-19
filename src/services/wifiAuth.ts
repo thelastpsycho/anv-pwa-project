@@ -2,6 +2,12 @@ import { ref } from 'vue';
 
 const AUTH_STORAGE_KEY = 'wifi_auth';
 const AUTH_EXPIRY_DAYS = 3;
+const AUTH_CONFIG = {
+  BASE_URL: 'https://api.hospitality.mykg.id',
+  USER_ID: 'iptv-anvaya',
+  PASSWORD: 'iptvanvaya',
+  HOTEL_ID: '103'
+} as const;
 
 const isAuthenticated = ref(false);
 
@@ -51,6 +57,28 @@ const ADMIN_CREDENTIALS = {
   'ak': 'ak13',
 } as const;
 
+async function getAuthToken() {
+  const response = await fetch(`${AUTH_CONFIG.BASE_URL}/api/Login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      "UserId": AUTH_CONFIG.USER_ID,
+      "UserPassword": AUTH_CONFIG.PASSWORD,
+      "Attribute": 3600,
+      "Attribute1": "__EXTENDED_TIME"
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to get auth token');
+  }
+
+  const data = await response.json();
+  return data.access_token;
+}
+
 export async function authenticateWithWifi(
   roomNumber: string,
   password: string
@@ -69,41 +97,39 @@ export async function authenticateWithWifi(
       return true;
     }
 
-    // Use different endpoints for dev and prod
-    const endpoint = import.meta.env.DEV 
-      ? '/odbc/get_wifi'  // This will be proxied by Vite
-      : '/.netlify/functions/wifi-proxy';
 
-    const response = await fetch(endpoint, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json'
+    const token = await getAuthToken();
+
+    // Updated hotelId to 103
+    const response = await fetch(
+      `${AUTH_CONFIG.BASE_URL}/api/IpTv/GuestInformation?hotelId=${AUTH_CONFIG.HOTEL_ID}&userId=${AUTH_CONFIG.USER_ID}&roomNo=${roomNumber}`, 
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       }
-    });
-
-    if (!response.ok) {
-      throw new Error('Authentication failed');
-    }
-
-    const data: WifiResponse = await response.json();
-    
-    // Find matching credential
-    const credential = data.data.find(
-      (cred) => cred.username.trim() === roomNumber && cred.value === password
     );
 
-    if (credential) {
-      saveAuthState();
+    if (!response.ok) {
+      throw new Error('Failed to verify guest');
     }
 
-    return !!credential;
+    const guestData = await response.json();
+    
+    // Verify guest credentials
+    if (guestData && guestData.roomNumber === roomNumber) {
+      saveAuthState();
+      return true;
+    }
+
+    return false;
   } catch (error) {
     console.error('Authentication error:', error);
     throw new Error('Unable to authenticate. Please try again.');
   }
 }
 
-// Export auth state for components
+
 export const useWifiAuth = () => {
   loadStoredAuth();
   return {
