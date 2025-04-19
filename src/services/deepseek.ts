@@ -10,14 +10,23 @@ export async function generateDeepSeekResponse(
 ): Promise<string> {
   try {
     const BASE_CONTEXT = getBaseContext();
-    const { activitiesContext, faqContext, conversationContext, menusContext } = await getDynamicContext(messageHistory);
+    const { formattedContext } = await getDynamicContext(messageHistory);
 
+    // Format conversation history for DeepSeek
     const conversationHistory = messageHistory
       .slice(-5)
       .map(msg => ({
         role: msg.role === 'user' ? 'user' : 'assistant',
         content: msg.text
       }));
+
+    // Log the complete context being sent to DeepSeek
+    console.log('Complete DeepSeek Context:', {
+      baseContext: BASE_CONTEXT,
+      dynamicContext: formattedContext,
+      conversationHistory,
+      userPrompt: prompt
+    });
 
     const response = await fetch(API_URL, {
       method: 'POST',
@@ -29,9 +38,7 @@ export async function generateDeepSeekResponse(
         model: 'deepseek-chat',
         messages: [
           { role: 'system', content: BASE_CONTEXT },
-          { role: 'system', content: `Available Activities:\n${activitiesContext}` },
-          { role: 'system', content: `Restaurant Menus:\n${menusContext}` },
-          { role: 'system', content: `FAQs:\n${faqContext}` },
+          { role: 'system', content: formattedContext },
           ...conversationHistory,
           { role: 'user', content: prompt }
         ],

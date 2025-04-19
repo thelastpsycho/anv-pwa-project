@@ -14,31 +14,14 @@ export async function generateGeminiResponse(
 ): Promise<string> {
   try {
     const BASE_CONTEXT = getBaseContext();
-    const { activitiesContext, faqContext, conversationContext, menusContext } = await getDynamicContext(messageHistory);
-    
-    const dynamicContext = `
-Available Activities:
-${activitiesContext}
-
-Restaurant Menus:
-${menusContext}
-
-Frequently Asked Questions:
-${faqContext}
-
-Chat History:
-${conversationContext}
-`;
+    const { formattedContext } = await getDynamicContext(messageHistory);
     
     // Log the complete context being sent to Gemini
     console.log('Complete Gemini Context:', {
       baseContext: BASE_CONTEXT,
-      faqs: faqContext,
-      activities: activitiesContext,
-      menus: menusContext,
-      chatHistory: conversationContext,
+      dynamicContext: formattedContext,
       userPrompt: prompt,
-      fullText: `${BASE_CONTEXT}\n\n${dynamicContext}\n\nUser message: ${prompt}\n\nRemember to stay within the defined scope and guidelines.`
+      fullText: `${BASE_CONTEXT}\n\n${formattedContext}\n\nUser message: ${prompt}\n\nRemember to stay within the defined scope and guidelines.`
     });
     
     const response = await fetch(`${API_URL}?key=${GEMINI_API_KEY}`, {
@@ -49,7 +32,7 @@ ${conversationContext}
       body: JSON.stringify({
         contents: [{
           parts: [{
-            text: `${BASE_CONTEXT}\n\n${dynamicContext}\n\nUser message: ${prompt}\n\nRemember to stay within the defined scope and guidelines.`
+            text: `${BASE_CONTEXT}\n\n${formattedContext}\n\nUser message: ${prompt}\n\nRemember to stay within the defined scope and guidelines.`
           }]
         }],
         // Configuration for response generation:

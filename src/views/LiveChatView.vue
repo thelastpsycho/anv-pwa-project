@@ -378,12 +378,12 @@ async function sendMessage() {
 
 function formatMessage(text: string): string {
   // Check for booking form trigger
-  // if (text.includes('[BOOKING_FORM]')) {
-  //   const venue = text.split('[BOOKING_FORM]')[1].trim();
-  //   bookingVenue.value = venue;
-  //   setTimeout(() => showBookingForm.value = true, 500);
-  //   return `I'll help you make a reservation at ${venue}. Please fill out the booking form that appears.`;
-  // }
+  if (text.includes('[BOOKING_FORM]')) {
+    const venue = text.split('[BOOKING_FORM]')[1].trim();
+    bookingVenue.value = venue;
+    setTimeout(() => showBookingForm.value = true, 500);
+    return `I'll help you make a reservation at ${venue}. Please fill out the booking form that appears.`;
+  }
 
   // First handle bullet points (lines starting with --)
   const withBullets = text.split('\n').map(line => {

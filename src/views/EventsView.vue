@@ -70,12 +70,9 @@ onMounted(() => {
             <div
               v-for="(detail, index) in offer.details"
               :key="index"
-              class="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400"
+              class="text-sm text-gray-600 dark:text-gray-400"
             >
-              <i
-                class="mdi mdi-check text-anvaya-blue dark:text-anvaya-light mt-0.5"
-              ></i>
-              <span>{{ detail }}</span>
+              {{ detail }}
             </div>
           </div>
 
