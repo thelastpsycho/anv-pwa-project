@@ -58,26 +58,39 @@ const ADMIN_CREDENTIALS = {
 } as const;
 
 async function getAuthToken() {
-  const response = await fetch(`${AUTH_CONFIG.BASE_URL}/api/Login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      "UserId": AUTH_CONFIG.USER_ID,
-      "UserPassword": AUTH_CONFIG.PASSWORD,
-      "Attribute": 3600,
-      "Attribute1": "__EXTENDED_TIME"
-    })
-  });
+  try {
+    const response = await fetch(`${AUTH_CONFIG.BASE_URL}/api/Login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "UserId": AUTH_CONFIG.USER_ID,
+        "UserPassword": AUTH_CONFIG.PASSWORD,
+        "Attribute": 3600,
+        "Attribute1": "__EXTENDED_TIME"
+      })
+    });
+    
+    // Check if the request was successful
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    const authToken = data.authToken; 
 
-  if (!response.ok) {
-    throw new Error('Failed to get auth token');
+    console.log('Auth Token:', authToken);
+    
+    return authToken; 
+  } catch (error) {
+    console.error('Error fetching auth token:', error);
   }
-
-  const data = await response.json();
-  return data.access_token;
 }
+  
+
+
 
 export async function authenticateWithWifi(
   roomNumber: string,

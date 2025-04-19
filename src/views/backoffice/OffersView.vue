@@ -71,7 +71,7 @@
         price: '',
         image: '',
         date: '',
-        details: ''
+        details: []
       }"
       :fields="{
         title: { label: 'Title', type: 'text' },
@@ -84,7 +84,11 @@
         price: { label: 'Price', type: 'text' },
         image: { label: 'Image URL', type: 'text' },
         date: { label: 'Date/Validity', type: 'text' },
-        details: { label: 'Details', type: 'textarea' },
+        details: { 
+          label: 'Details', 
+          type: 'array',
+          placeholder: 'Enter each detail on a new line'
+        },
       }"
       @close="handleModalClose"
       @saved="loadOffers"
@@ -106,10 +110,20 @@ const editingOffer = ref<Offer | null>(null);
 async function loadOffers() {
   try {
     const querySnapshot = await getDocs(collection(db, "offers"));
-    offers.value = querySnapshot.docs.map((doc) => ({
-      ...doc.data(),
-      id: doc.id,
-    })) as unknown as Offer[];
+    offers.value = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        ...data,
+        id: doc.id,
+        details: Array.isArray(data.details) 
+          ? data.details 
+          : data.details 
+            ? typeof data.details === 'string'
+              ? [data.details]
+              : data.details.split('').filter(Boolean)
+            : []
+      };
+    }) as unknown as Offer[];
   } catch (error) {
     console.error("Error loading offers:", error);
   }

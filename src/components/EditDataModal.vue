@@ -52,6 +52,15 @@
                 {{ opt }}
               </option>
             </select>
+
+            <textarea
+              v-else-if="field.type === 'array'"
+              v-model="formData[key]"
+              rows="4"
+              :placeholder="field.placeholder || 'Enter each item on a new line'"
+              class="w-full px-3 py-1.5 text-sm rounded-lg border focus:outline-none focus:ring-1 focus:ring-anvaya-blue dark:bg-gray-700 dark:border-gray-600"
+              @input="handleArrayInput($event, key)"
+            ></textarea>
           </div>
           <div class="flex justify-end gap-2">
             <button
@@ -91,8 +100,9 @@ const props = defineProps<{
     string,
     {
       label: string;
-      type: "text" | "textarea" | "number" | "select";
+      type: "text" | "textarea" | "number" | "select" | "array";
       options?: string[];
+      placeholder?: string;
     }
   >;
 }>();
@@ -117,6 +127,11 @@ async function handleSubmit() {
           acc[key] = value.split(",").map(Number);
         } else if (value === "true" || value === "false") {
           acc[key] = value === "true";
+        } else if (props.fields[key]?.type === "array") {
+          // Handle array type fields
+          acc[key] = typeof value === "string" 
+            ? value.split('\n').filter(item => item.trim() !== '')
+            : value;
         } else {
           acc[key] = value;
         }
@@ -140,6 +155,13 @@ async function handleSubmit() {
   }
 }
 
+function handleArrayInput(event: Event, key: string) {
+  const textarea = event.target as HTMLTextAreaElement;
+  // Split by newlines and filter out empty lines
+  const array = textarea.value.split('\n').filter(item => item.trim() !== '');
+  formData.value[key] = array;
+}
+
 onMounted(() => {
   formData.value = Object.entries(props.initialData).reduce(
     (acc, [key, value]) => {
@@ -147,6 +169,9 @@ onMounted(() => {
         acc[key] = value.toString();
       } else if (key === "coordinates" && Array.isArray(value)) {
         acc[key] = value.join(",");
+      } else if (Array.isArray(value)) {
+        // Join array values with newlines for the textarea
+        acc[key] = value.join('\n');
       } else {
         acc[key] = value;
       }

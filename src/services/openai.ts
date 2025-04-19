@@ -13,8 +13,9 @@ export async function generateOpenAIResponse(
 ): Promise<string> {
   try {
     const BASE_CONTEXT = getBaseContext();
-    const { activitiesContext, faqContext, conversationContext, menusContext } = await getDynamicContext(messageHistory);
+    const { formattedContext } = await getDynamicContext(messageHistory);
 
+    // Format conversation history for OpenAI
     const conversationHistory = messageHistory
       .slice(-5)
       .map(msg => ({
@@ -22,19 +23,13 @@ export async function generateOpenAIResponse(
         content: msg.text
       }));
 
-    const dynamicContext = `
-Available Activities:
-${activitiesContext}
-
-Restaurant Menus:
-${menusContext}
-
-Frequently Asked Questions:
-${faqContext}
-
-Chat History:
-${conversationContext}
-`;
+    // Log the complete context being sent to OpenAI
+    console.log('Complete OpenAI Context:', {
+      baseContext: BASE_CONTEXT,
+      dynamicContext: formattedContext,
+      conversationHistory,
+      userPrompt: prompt
+    });
 
     const response = await fetch(API_URL, {
       method: 'POST',
@@ -46,9 +41,7 @@ ${conversationContext}
         model: 'gpt-4-turbo-preview',
         messages: [
           { role: 'system', content: BASE_CONTEXT },
-          { role: 'system', content: `Available Activities:\n${activitiesContext}` },
-          { role: 'system', content: `Restaurant Menus:\n${menusContext}` },
-          { role: 'system', content: `FAQs:\n${faqContext}` },
+          { role: 'system', content: formattedContext },
           ...conversationHistory,
           { role: 'user', content: prompt }
         ],
