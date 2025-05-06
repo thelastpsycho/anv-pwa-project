@@ -12,50 +12,62 @@
       </div>
 
       <div class="space-y-4">
-        <div
-          v-for="offer in offers"
-          :key="offer.id"
-          class="border rounded-lg p-4"
+        <draggable
+          v-model="offers"
+          item-key="id"
+          @end="handleDragEnd"
+          handle=".drag-handle"
         >
-          <div class="flex justify-between items-start">
-            <div class="flex gap-4">
-              <img
-                :src="offer.image"
-                :alt="offer.title"
-                class="w-24 h-24 object-cover rounded-lg"
-              />
-              <div>
-                <h3 class="font-medium">{{ offer.title }}</h3>
-                <p class="text-gray-600 text-sm">{{ offer.description }}</p>
-                <div class="mt-2 space-y-1">
-                  <span
-                    class="text-xs bg-anvaya-blue/10 text-anvaya-blue px-2 py-1 rounded-full"
+          <template #item="{ element: offer }">
+            <div
+              class="border rounded-lg p-4"
+            >
+              <div class="flex justify-between items-start">
+                <div class="flex gap-4">
+                  <img
+                    :src="offer.image"
+                    :alt="offer.title"
+                    class="w-24 h-24 object-cover rounded-lg"
+                  />
+                  <div>
+                    <h3 class="font-medium">{{ offer.title }}</h3>
+                    <p class="text-gray-600 text-sm">{{ offer.description }}</p>
+                    <div class="mt-2 space-y-1">
+                      <span
+                        class="text-xs bg-anvaya-blue/10 text-anvaya-blue px-2 py-1 rounded-full"
+                      >
+                        {{ offer.category }}
+                      </span>
+                      <p class="text-xs text-anvaya-blue mt-1">
+                        <i class="mdi mdi-calendar mr-1"></i>
+                        {{ offer.date }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button
+                    class="p-2 text-gray-400 hover:text-gray-600 cursor-move drag-handle"
                   >
-                    {{ offer.category }}
-                  </span>
-                  <p class="text-xs text-anvaya-blue mt-1">
-                    <i class="mdi mdi-calendar mr-1"></i>
-                    {{ offer.date }}
-                  </p>
+                    <i class="mdi mdi-drag-vertical"></i>
+                  </button>
+                  <button
+                    @click="editOffer(offer)"
+                    class="p-2 text-anvaya-blue hover:bg-anvaya-blue/5 rounded-lg"
+                  >
+                    <i class="mdi mdi-pencil"></i>
+                  </button>
+                  <button
+                    @click="deleteOffer(offer.id)"
+                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                  >
+                    <i class="mdi mdi-delete"></i>
+                  </button>
                 </div>
               </div>
             </div>
-            <div class="flex gap-2">
-              <button
-                @click="editOffer(offer)"
-                class="p-2 text-anvaya-blue hover:bg-anvaya-blue/5 rounded-lg"
-              >
-                <i class="mdi mdi-pencil"></i>
-              </button>
-              <button
-                @click="deleteOffer(offer.id)"
-                class="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-              >
-                <i class="mdi mdi-delete"></i>
-              </button>
-            </div>
-          </div>
-        </div>
+          </template>
+        </draggable>
       </div>
     </div>
     <EditDataModal
@@ -71,7 +83,8 @@
         price: '',
         image: '',
         date: '',
-        details: []
+        details: [],
+        sortOrder: offers.length
       }"
       :fields="{
         title: { label: 'Title', type: 'text' },
@@ -98,10 +111,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/config/firebase";
 import type { Offer } from "@/types/offers";
 import EditDataModal from "@/components/EditDataModal.vue";
+import draggable from 'vuedraggable';
 
 const offers = ref<Offer[]>([]);
 const showAddModal = ref(false);
@@ -121,11 +135,29 @@ async function loadOffers() {
             ? typeof data.details === 'string'
               ? [data.details]
               : data.details.split('').filter(Boolean)
-            : []
+            : [],
+        sortOrder: data.sortOrder || 0
       };
     }) as unknown as Offer[];
+    // Sort offers by sortOrder
+    offers.value.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
   } catch (error) {
     console.error("Error loading offers:", error);
+  }
+}
+
+async function handleDragEnd() {
+  // Update sortOrder for all offers
+  const batch = offers.value.map((offer, index) => {
+    return updateDoc(doc(db, "offers", offer.id), {
+      sortOrder: index
+    });
+  });
+  
+  try {
+    await Promise.all(batch);
+  } catch (error) {
+    console.error("Error updating sort order:", error);
   }
 }
 

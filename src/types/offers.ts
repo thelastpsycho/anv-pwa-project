@@ -7,4 +7,5 @@ export interface Offer {
   image: string;
   date: string;
   details?: string;
+  sortOrder?: number;
 }

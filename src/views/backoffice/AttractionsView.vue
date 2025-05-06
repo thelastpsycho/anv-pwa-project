@@ -4,7 +4,7 @@
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-xl font-medium">Attractions</h2>
         <button
-          @click="showAddModal = true"
+          @click="handleAdd"
           class="px-4 py-2 bg-anvaya-blue text-white rounded-lg hover:bg-anvaya-blue/90"
         >
           Add Attraction
@@ -57,12 +57,18 @@
       </div>
     </div>
     <EditDataModal
-      v-if="editingAttraction"
-      :is-open="!!editingAttraction"
+      v-if="editingAttraction || showAddModal"
+      :is-open="!!editingAttraction || showAddModal"
       title="Attraction"
       collection="attractions"
-      :document-id="editingAttraction.id"
-      :initial-data="editingAttraction"
+      :document-id="editingAttraction?.id"
+      :initial-data="editingAttraction || {
+        title: '',
+        description: '',
+        distance: '',
+        image: '',
+        category: 'Beach'
+      }"
       :fields="{
         title: { label: 'Title', type: 'text' },
         description: { label: 'Description', type: 'textarea' },
@@ -74,7 +80,7 @@
           options: ['Beach', 'Shopping', 'Entertainment'],
         },
       }"
-      @close="editingAttraction = null"
+      @close="handleModalClose"
       @saved="loadAttractions"
     />
   </div>
@@ -116,6 +122,17 @@ async function deleteAttraction(id: string) {
 
 function editAttraction(attraction: Attraction) {
   editingAttraction.value = attraction;
+  showAddModal.value = false;
+}
+
+function handleAdd() {
+  editingAttraction.value = null;
+  showAddModal.value = true;
+}
+
+function handleModalClose() {
+  showAddModal.value = false;
+  editingAttraction.value = null;
 }
 
 onMounted(() => {
