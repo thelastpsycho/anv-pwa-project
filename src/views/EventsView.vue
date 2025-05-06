@@ -13,7 +13,10 @@ async function loadOffers() {
     offers.value = querySnapshot.docs.map((doc) => ({
       ...doc.data(),
       id: doc.id,
+      sortOrder: doc.data().sortOrder || 0
     })) as unknown as Offer[];
+    // Sort offers by sortOrder
+    offers.value.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
   } catch (error) {
     console.error("Error loading offers:", error);
   }
@@ -76,11 +79,11 @@ onMounted(() => {
             </div>
           </div>
 
-          <button
+          <!-- <button
             class="w-full py-2.5 bg-anvaya-blue/10 dark:bg-anvaya-light/10 text-anvaya-blue dark:text-anvaya-light rounded-lg hover:bg-anvaya-blue/20 dark:hover:bg-anvaya-light/20 transition-colors font-medium"
           >
             Book Now
-          </button>
+          </button> -->
         </div>
       </div>
     </div>
