@@ -1,12 +1,33 @@
 {
   "name": "The Anvaya Beach Resort Bali",
   "short_name": "The Anvaya",
+  "id": "anvaya-beach-resort",
   "version": "1.0.1",
   "description": "The Anvaya Beach Resort Bali - Official Mobile App",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
+  "orientation": "any",
+  "launch_handler": {
+    "client_mode": ["auto", "focus-existing"]
+  },
+  "screenshots": [
+    {
+      "src": "/screenshots/home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Home screen of The Anvaya Beach Resort"
+    },
+    {
+      "src": "/screenshots/rooms.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Rooms and Suites"
+    }
+  ],
   "icons": [
     {
       "src": "/icons/favicon-96x96.png",
