@@ -20,13 +20,6 @@
 [functions]
   node_bundler = "esbuild" 
 
-[[redirects]]
-  from = "/odbc/*"
-  to = "http://111.68.124.187:9090/odbc/:splat"
-  status = 200
-  force = true
-  headers = {Access-Control-Allow-Origin = "*"}
-
 [[headers]]
   for = "/*"
   [headers.values]

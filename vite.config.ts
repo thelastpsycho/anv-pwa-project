@@ -8,19 +8,7 @@ import { VitePWA } from "vite-plugin-pwa";
 export default defineConfig({
   server: {
     host: true,
-    port: 5173,
-    proxy: {
-      '/odbc': {
-        target: 'http://111.68.124.187:9090',
-        changeOrigin: true,
-        secure: false,
-        configure: (proxy, _options) => {
-          proxy.on('error', (err) => {
-            console.error('Proxy error:', err);
-          });
-        }
-      }
-    }
+    port: 5173
   },
   optimizeDeps: {
     include: ["vue", "vue-router", "pinia", "@vueuse/core"],
