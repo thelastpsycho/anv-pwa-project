@@ -62,7 +62,7 @@ const route = useRoute();
           <span class="text-xs">Map</span>
         </router-link>
 
-        <!-- <router-link
+        <router-link
           to="/profile"
           class="relative flex flex-col items-center py-2 text-anvaya-blue/60 dark:text-anvaya-light/60 hover:text-anvaya-blue dark:hover:text-anvaya-light transition-colors"
           :class="{
@@ -76,7 +76,7 @@ const route = useRoute();
           ></div>
           <i class="mdi mdi-account-outline text-2xl"></i>
           <span class="text-xs">Profile</span>
-        </router-link> -->
+        </router-link>
       </div>
     </div>
   </nav>
