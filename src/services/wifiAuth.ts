@@ -3,10 +3,7 @@ import { ref } from 'vue';
 const AUTH_STORAGE_KEY = 'wifi_auth';
 const AUTH_EXPIRY_DAYS = 3;
 const AUTH_CONFIG = {
-  BASE_URL: 'https://api.hospitality.mykg.id',
-  USER_ID: 'iptv-anvaya',
-  PASSWORD: 'iptvanvaya',
-  HOTEL_ID: '103'
+  BASE_URL: 'https://pms-radius.anvayabali.com/odbc/get_wifi/'
 } as const;
 
 const isAuthenticated = ref(false);
@@ -57,91 +54,59 @@ const ADMIN_CREDENTIALS = {
   'ak': 'ak13',
 } as const;
 
-async function getAuthToken() {
-  try {
-    const response = await fetch(`${AUTH_CONFIG.BASE_URL}/api/Login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        "UserId": AUTH_CONFIG.USER_ID,
-        "UserPassword": AUTH_CONFIG.PASSWORD,
-        "Attribute": 3600,
-        "Attribute1": "__EXTENDED_TIME"
-      })
-    });
-    
-    // Check if the request was successful
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    const authToken = data.authToken; 
-
-    console.log('Auth Token:', authToken);
-    
-    return authToken; 
-  } catch (error) {
-    console.error('Error fetching auth token:', error);
-  }
-}
-  
-
-
-
 export async function authenticateWithWifi(
-  roomNumber: string,
+  username: string,
   password: string
 ): Promise<boolean> {
   try {
     // Check stored auth first
     if (loadStoredAuth()) {
+      console.log('[WifiAuth] Using stored authentication');
       return true;
     }
 
     // Check admin credentials
-    const normalizedUsername = roomNumber.toLowerCase();
+    const normalizedUsername = username.toLowerCase();
     if (normalizedUsername in ADMIN_CREDENTIALS && 
         ADMIN_CREDENTIALS[normalizedUsername as keyof typeof ADMIN_CREDENTIALS] === password) {
+      console.log('[WifiAuth] Authenticated as admin:', normalizedUsername);
       saveAuthState();
       return true;
     }
 
-
-    const token = await getAuthToken();
-
-    // Updated hotelId to 103
-    const response = await fetch(
-      `${AUTH_CONFIG.BASE_URL}/api/IpTv/GuestInformation?hotelId=${AUTH_CONFIG.HOTEL_ID}&userId=${AUTH_CONFIG.USER_ID}&roomNo=${roomNumber}`, 
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error('Failed to verify guest');
-    }
-
-    const guestData = await response.json();
+    // Fetch wifi credentials from the new API
+    console.log('[WifiAuth] Fetching wifi credentials from API:', AUTH_CONFIG.BASE_URL);
+    const response = await fetch(AUTH_CONFIG.BASE_URL);
     
-    // Verify guest credentials
-    if (guestData && guestData.roomNumber === roomNumber) {
+    if (!response.ok) {
+      console.error('[WifiAuth] Failed to fetch wifi credentials:', response.status, response.statusText);
+      throw new Error('Failed to fetch wifi credentials');
+    }
+
+    const wifiData: WifiResponse = await response.json();
+    console.log('[WifiAuth] API response data:', wifiData);
+    console.log('[WifiAuth] Input username:', username, 'Input password:', password);
+    
+    // Find matching credentials
+    const matchingCredential = wifiData.data.find(
+      cred => cred.username.trim().toLowerCase() === username.trim().toLowerCase() && 
+              cred.value === password
+    );
+    console.log('[WifiAuth] Matching credential:', matchingCredential);
+
+    if (matchingCredential) {
+      console.log('[WifiAuth] Authenticated successfully for user:', username);
       saveAuthState();
       return true;
     }
 
+    console.warn('[WifiAuth] No matching credentials found for user:', username);
     return false;
   } catch (error) {
-    console.error('Authentication error:', error);
+    console.error('[WifiAuth] Authentication error:', error);
     throw new Error('Unable to authenticate. Please try again.');
   }
 }
-
 
 export const useWifiAuth = () => {
   loadStoredAuth();
