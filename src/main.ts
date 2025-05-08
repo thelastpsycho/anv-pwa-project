@@ -11,6 +11,7 @@ import router from "./router";
 import { useAppStore } from "./stores/app";
 import type { BeforeInstallPromptEvent } from "@/types";
 import { initializeGoogleAnalytics } from './utils/analytics';
+import { initializePWA } from './services/pwa';
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -43,3 +44,6 @@ if (import.meta.env.PROD) {
 }
 
 app.mount("#app");
+
+// Initialize PWA features
+initializePWA().catch(console.error);

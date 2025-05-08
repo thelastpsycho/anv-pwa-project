@@ -1,6 +1,79 @@
 {
   "name": "The Anvaya Beach Resort Bali",
   "short_name": "The Anvaya",
+  "id": "anvaya-beach-resort",
   "version": "1.0.1",
-  "description": "The Anvaya Beach Resort Bali - Official Mobile App"
+  "description": "The Anvaya Beach Resort Bali - Official Mobile App",
+  "start_url": "/",
+  "scope": "/",
+  "scope_extensions": [
+    {
+      "origin": "https://anvayabali.com",
+      "has_origin_wildcard": false
+    },
+    {
+      "origin": "https://*.anvayabali.com",
+      "has_origin_wildcard": true
+    }
+  ],
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "orientation": "any",
+  "dir": "ltr",
+  "lang": "en-US",
+  "categories": ["travel", "lifestyle", "hotel", "resort"],
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+  "prefer_related_applications": false,
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.anvaya.resort",
+      "id": "com.anvaya.resort"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/app/anvaya-beach-resort/id123456789",
+      "id": "123456789"
+    }
+  ],
+  "launch_handler": {
+    "client_mode": ["auto", "focus-existing"]
+  },
+  "screenshots": [
+    {
+      "src": "/screenshots/home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Home screen of The Anvaya Beach Resort"
+    },
+    {
+      "src": "/screenshots/rooms.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Rooms and Suites"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/icons/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
 }
