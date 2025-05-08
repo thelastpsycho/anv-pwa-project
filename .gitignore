@@ -47,6 +47,9 @@ coverage
 .temp
 .DS_Store
 
+# Vite
+vite.config.ts.timestamp-*.mjs
+
 # Local Netlify folder
 .netlify
 
