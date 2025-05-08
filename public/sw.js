@@ -1,4 +1,6 @@
 const CACHE_NAME = 'anvaya-cache-v1';
+const SYNC_TAG = 'sync-data';
+const PERIODIC_SYNC_TAG = 'update-content';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -33,26 +35,38 @@ self.addEventListener('activate', event => {
 
 // Background sync
 self.addEventListener('sync', event => {
-  if (event.tag === 'sync-data') {
+  if (event.tag === SYNC_TAG) {
     event.waitUntil(syncData());
   }
 });
 
 // Periodic sync
 self.addEventListener('periodicsync', event => {
-  if (event.tag === 'update-content') {
+  if (event.tag === PERIODIC_SYNC_TAG) {
     event.waitUntil(updateContent());
   }
 });
 
 // Push notification
 self.addEventListener('push', event => {
+  let data = {};
+  try {
+    data = event.data.json();
+  } catch (e) {
+    data = {
+      title: 'The Anvaya Beach Resort',
+      body: event.data.text() || 'New update available',
+      icon: '/icons/web-app-manifest-192x192.png'
+    };
+  }
+
   const options = {
-    body: event.data.text(),
-    icon: '/icons/web-app-manifest-192x192.png',
+    body: data.body,
+    icon: data.icon || '/icons/web-app-manifest-192x192.png',
     badge: '/icons/favicon-96x96.png',
     vibrate: [100, 50, 100],
     data: {
+      url: data.url || '/',
       dateOfArrival: Date.now(),
       primaryKey: 1
     },
@@ -71,7 +85,7 @@ self.addEventListener('push', event => {
   };
 
   event.waitUntil(
-    self.registration.showNotification('The Anvaya Beach Resort', options)
+    self.registration.showNotification(data.title || 'The Anvaya Beach Resort', options)
   );
 });
 
@@ -81,7 +95,7 @@ self.addEventListener('notificationclick', event => {
 
   if (event.action === 'explore') {
     event.waitUntil(
-      clients.openWindow('/')
+      clients.openWindow(event.notification.data.url || '/')
     );
   }
 });
@@ -106,6 +120,10 @@ self.addEventListener('fetch', event => {
                 cache.put(event.request, responseToCache);
               });
             return response;
+          })
+          .catch(() => {
+            // If network fails, try to serve from cache
+            return caches.match(event.request);
           });
       })
   );
@@ -149,11 +167,41 @@ async function updateContent() {
     if (data.hasNewContent) {
       await self.registration.showNotification('New Content Available', {
         body: 'Check out the latest updates from The Anvaya Beach Resort',
-        icon: '/icons/web-app-manifest-192x192.png'
+        icon: '/icons/web-app-manifest-192x192.png',
+        data: {
+          url: data.url || '/',
+          dateOfArrival: Date.now()
+        }
       });
     }
+
+    // Update other dynamic content
+    await updateDynamicContent();
   } catch (error) {
     console.error('Periodic sync failed:', error);
+  }
+}
+
+// Function to update dynamic content
+async function updateDynamicContent() {
+  try {
+    // Update room availability
+    const roomsResponse = await fetch('/api/rooms/availability');
+    const roomsData = await roomsResponse.json();
+    const cache = await caches.open(CACHE_NAME);
+    await cache.put('/api/rooms/availability', new Response(JSON.stringify(roomsData)));
+
+    // Update promotions
+    const promotionsResponse = await fetch('/api/promotions');
+    const promotionsData = await promotionsResponse.json();
+    await cache.put('/api/promotions', new Response(JSON.stringify(promotionsData)));
+
+    // Update events
+    const eventsResponse = await fetch('/api/events');
+    const eventsData = await eventsResponse.json();
+    await cache.put('/api/events', new Response(JSON.stringify(eventsData)));
+  } catch (error) {
+    console.error('Dynamic content update failed:', error);
   }
 }
 
