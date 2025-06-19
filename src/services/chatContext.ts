@@ -4,6 +4,7 @@ import { db } from '@/config/firebase';
 import type { Activity } from '@/types/activities';
 import type { ChatMessage } from '@/types/chat';
 import type { Offer } from '@/types/offers';
+import type { TVChannel } from '@/types/tvChannel';
 
 interface MenuItem {
   main_title: string;
@@ -92,14 +93,16 @@ export const getDynamicContext = async (messageHistory: ChatMessage[] = []) => {
       beverageMenu,
       activitiesSnapshot,
       offersSnapshot,
-      faqSnapshot
+      faqSnapshot,
+      tvChannelsSnapshot
     ] = await Promise.all([
       fetch('https://menu.anvayabali.com/api/v1/kunyit-menus').then(res => res.json()),
       fetch('https://menu.anvayabali.com/api/v1/sands-menus').then(res => res.json()),
       fetch('https://menu.anvayabali.com/api/v1/beverage-menus').then(res => res.json()),
       getDocs(collection(db, 'activities')),
       getDocs(collection(db, 'offers')),
-      getDocs(collection(db, 'faqs'))
+      getDocs(collection(db, 'faqs')),
+      getDocs(collection(db, 'tvChannels'))
     ]);
 
     // Format all contexts
@@ -116,6 +119,10 @@ export const getDynamicContext = async (messageHistory: ChatMessage[] = []) => {
         ...doc.data(),
         id: doc.id
       })) as Offer[]),
+      tvChannelsContext: formatTvChannelsContext(tvChannelsSnapshot.docs.map(doc => ({
+        ...doc.data(),
+        id: doc.id
+      })) as TVChannel[]),
 
       // Additional contexts can be added here without modifying AI engines
       // Example: roomContext, spaContext, etc.
@@ -135,6 +142,9 @@ ${contexts.offersContext}
 Frequently Asked Questions:
 ${contexts.faqContext}
 
+TV Channel List:
+${contexts.tvChannelsContext}
+
 Chat History:
 ${contexts.conversationContext}
 `;
@@ -152,6 +162,7 @@ ${contexts.conversationContext}
       conversationContext: '',
       menusContext: '',
       offersContext: '',
+      tvChannelsContext: '',
       formattedContext: ''
     };
   }
@@ -233,4 +244,10 @@ const formatConversationContext = (messageHistory: ChatMessage[]) => {
     .filter((_, index, array) => array.length - index <= 5)
     .map(msg => `${msg.role === 'user' ? 'Guest' : 'Assistant'}: ${msg.text}`)
     .join('\n\n');
+};
+
+const formatTvChannelsContext = (channels: TVChannel[]) => {
+  if (!channels.length) return 'No TV channels available.';
+  const sorted = [...channels].sort((a, b) => a.number - b.number);
+  return sorted.map(c => `${c.number}. ${c.name}`).join('\n');
 }; 
