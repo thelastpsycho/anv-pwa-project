@@ -21,7 +21,7 @@ export async function requestNotificationPermission() {
       const registration = await navigator.serviceWorker.ready;
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: 'YOUR_VAPID_PUBLIC_KEY' // Replace with your VAPID public key
+        applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY
       });
       console.log('Push notification subscription:', subscription);
       return subscription;

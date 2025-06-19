@@ -62,6 +62,44 @@
       </div>
     </div>
 
+    <!-- TV Channel List Tab Content -->
+    <div v-else-if="activeTab === 'tv'" class="space-y-4">
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-anvaya-gray/10 dark:border-gray-700">
+        <h3 class="text-base font-medium text-anvaya-blue dark:text-anvaya-light mb-4">TV Channel List</h3>
+        <!-- TV Channel Search Bar -->
+        <div class="mb-4">
+          <div class="relative">
+            <input
+              v-model="tvSearchQuery"
+              type="text"
+              placeholder="Search channel..."
+              class="w-full px-4 py-2.5 pl-10 bg-white dark:bg-gray-800 rounded-xl border border-anvaya-gray/10 dark:border-gray-700 focus:outline-none focus:border-anvaya-blue/30 dark:focus:border-anvaya-light/30 text-sm dark:text-anvaya-light"
+            />
+            <i class="mdi mdi-magnify absolute left-3.5 top-2.5 text-anvaya-blue/60 dark:text-anvaya-light/60 text-lg"></i>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-xs text-left text-anvaya-blue dark:text-anvaya-light">
+            <thead>
+              <tr class="border-b border-anvaya-gray/10 dark:border-gray-700">
+                <th class="px-2 py-1 font-semibold">Channel</th>
+                <th class="px-2 py-1 font-semibold">Channel Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="channel in filteredTvChannels" :key="channel.number" class="border-b border-anvaya-gray/10 dark:border-gray-700">
+                <td class="px-2 py-1">{{ channel.number }}</td>
+                <td class="px-2 py-1">{{ channel.name }}</td>
+              </tr>
+              <tr v-if="filteredTvChannels.length === 0">
+                <td colspan="2" class="text-center text-gray-500 dark:text-anvaya-light py-4">No channels found.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <!-- Safety and Security Tab Content -->
     <div v-else-if="activeTab === 'safety'" class="space-y-4">
       <!-- Introduction -->
@@ -211,15 +249,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import PageHeader from "@/components/PageHeader.vue";
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '@/config/firebase';
-
-import type { FAQCategory, FAQ } from "@/types/faqs"
+import type { FAQCategory, FAQ } from "@/types/faqs";
+import { useTvChannelsStore } from '@/stores/tvChannels';
 
 const tabs = [
   { id: 'faq', label: 'FAQ' },
+  { id: 'tv', label: 'TV Channel List' },
   { id: 'safety', label: 'Safety & Security' },
   { id: 'info', label: 'Things to Know' },
   { id: 'guide', label: 'Safe Travel Guide' }
@@ -229,6 +268,17 @@ const activeTab = ref('faq');
 const searchQuery = ref("");
 const faqs = ref<FAQ[]>([]);
 const faqCategories = ref<FAQCategory[]>([]);
+
+const tvChannelsStore = useTvChannelsStore();
+const tvSearchQuery = ref("");
+const filteredTvChannels = computed(() => {
+  const query = tvSearchQuery.value.trim().toLowerCase();
+  const sorted = [...tvChannelsStore.channels].sort((a, b) => a.number - b.number);
+  if (!query) return sorted;
+  return sorted.filter(
+    c => c.name.toLowerCase().includes(query) || c.number.toString().includes(query)
+  );
+});
 
 async function loadFAQs() {
   try {
@@ -260,11 +310,17 @@ function handleTabClick(tabId: string) {
     window.open('https://anvayabali.com/hotelinformation/buku_saku.html', '_blank');
   } else {
     activeTab.value = tabId;
+    if (tabId === 'tv' && tvChannelsStore.channels.length === 0) {
+      tvChannelsStore.loadChannels();
+    }
   }
 }
 
 onMounted(() => {
   loadFAQs();
+  if (activeTab.value === 'tv') {
+    tvChannelsStore.loadChannels();
+  }
 });
 </script>
 
