@@ -117,6 +117,12 @@ const router = createRouter({
           beforeEnter: requireAuth,
         },
         {
+          path: "tv-channels",
+          name: "backoffice-tv-channels",
+          component: () => import("@/views/backoffice/TVChannelsView.vue"),
+          beforeEnter: requireAuth,
+        },
+        {
           path: "map",
           name: "backoffice-map",
           component: () => import("@/views/backoffice/MapPointsView.vue"),
