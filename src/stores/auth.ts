@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { auth, db } from "@/config/backofficeAuth";
+import { auth } from "@/config/firebase";
 import {
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,

@@ -177,11 +177,20 @@ router.beforeEach((to) => {
 
 router.afterEach((to, from) => {
   if (import.meta.env.PROD && window.gtag) {
-    window.gtag('event', 'page_view', {
-      page_title: to.meta.title || 'The Anvaya',
-      page_path: to.fullPath,
-      page_location: window.location.href,
-      from_path: from.fullPath
+    // Import the new tracking function
+    import('@/utils/analytics').then(({ trackPageView }) => {
+      trackPageView(
+        to.meta.title ? `${to.meta.title} - The Anvaya` : 'The Anvaya',
+        to.fullPath
+      );
+    }).catch(() => {
+      // Fallback to original tracking if import fails
+      window.gtag('event', 'page_view', {
+        page_title: to.meta.title || 'The Anvaya',
+        page_path: to.fullPath,
+        page_location: window.location.href,
+        from_path: from.fullPath
+      });
     });
   }
 });

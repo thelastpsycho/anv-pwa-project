@@ -160,7 +160,6 @@ import { collection, addDoc, updateDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { useAuthStore } from '@/stores/auth';
 import type { ChatMessage, ChatSession } from '@/types/chat';
-import TableReservationModal from '@/components/TableReservationModal.vue';
 
 const authStore = useAuthStore();
 const sessionId = ref<string>('');
