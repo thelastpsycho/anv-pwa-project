@@ -4,6 +4,9 @@ import {
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
   onAuthStateChanged,
+  setPersistence,
+  browserSessionPersistence,
+  browserLocalPersistence,
   type User,
 } from "firebase/auth";
 import { authenticateWithWifi } from "@/services/wifiAuth";
@@ -50,8 +53,9 @@ export const useAuthStore = defineStore("auth", {
       });
     },
 
-    async loginBackoffice(email: string, password: string) {
+    async loginBackoffice(email: string, password: string, rememberMe: boolean) {
       try {
+        await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
         const userCredential = await signInWithEmailAndPassword(
           auth,
           email,

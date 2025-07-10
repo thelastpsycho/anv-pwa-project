@@ -65,6 +65,11 @@ const router = createRouter({
       component: () => import("@/views/AroundView.vue"),
     },
     {
+      path: "/backoffice/login",
+      name: "backoffice-login",
+      component: () => import("@/views/backoffice/LoginView.vue"),
+    },
+    {
       path: "/backoffice",
       component: () => import("@/views/backoffice/BackofficeLayout.vue"),
       meta: { requiresAuth: true, requiresAdmin: true },
@@ -75,11 +80,7 @@ const router = createRouter({
           component: () => import("@/views/backoffice/DashboardView.vue"),
           beforeEnter: requireAuth,
         },
-        {
-          path: "login",
-          name: "backoffice-login",
-          component: () => import("@/views/backoffice/LoginView.vue"),
-        },
+        
         {
           path: "amenities",
           name: "backoffice-amenities",

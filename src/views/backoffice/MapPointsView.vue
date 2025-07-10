@@ -1,53 +1,66 @@
 <template>
   <div class="space-y-6">
-    <div class="bg-white p-6 rounded-lg shadow">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-medium">Map Points</h2>
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl font-semibold text-gray-800">Map Points</h1>
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <i class="mdi mdi-magnify absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          <input
+            v-model="searchQuery"
+            type="search"
+            placeholder="Search map point..."
+            class="w-full pl-10 pr-4 py-2 rounded-lg bg-white border border-gray-200 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 outline-none transition-colors text-sm"
+          />
+        </div>
         <button
           @click="handleAdd"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-anvaya-blue to-anvaya-blue/90 text-white text-sm font-medium rounded-lg hover:from-anvaya-blue/95 hover:to-anvaya-blue/85 transition-all duration-200 shadow-sm"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-anvaya-blue text-white text-sm font-medium rounded-lg hover:bg-anvaya-blue/90 transition-all duration-200 shadow-sm"
         >
           <i class="mdi mdi-plus text-lg"></i>
           <span>Add Point</span>
         </button>
       </div>
+    </div>
 
-      <div class="space-y-4">
+    <div class="bg-white p-6 rounded-lg shadow">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div
-          v-for="point in mapPoints"
+          v-for="point in filteredMapPoints"
           :key="point.id"
-          class="border rounded-lg p-4"
+          class="bg-white rounded-xl shadow-md p-3 flex flex-col group transform hover:-translate-y-1 transition-all duration-300 ease-in-out"
         >
-          <div class="flex justify-between items-start">
-            <div>
-              <h3 class="font-medium">{{ point.name }}</h3>
-              <p class="text-gray-600 text-sm">{{ point.description }}</p>
-              <div class="mt-2 space-y-1">
-                <span
-                  class="text-xs bg-anvaya-blue/10 text-anvaya-blue px-2 py-1 rounded-full"
-                >
-                  {{ point.category }}
-                </span>
-                <p class="text-xs text-anvaya-blue mt-1">
-                  <i class="mdi mdi-map-marker mr-1"></i>
-                  {{ point.coordinates.join(", ") }}
-                </p>
-              </div>
+          <div class="flex justify-between items-center mb-2">
+            <div
+              v-if="point.icon"
+              class="w-8 h-8 rounded-full bg-anvaya-blue/10 text-anvaya-blue flex items-center justify-center text-lg"
+            >
+              <i :class="['mdi', point.icon]"></i>
             </div>
-            <div class="flex gap-2">
-              <button
-                @click="editPoint(point)"
-                class="p-2 text-anvaya-blue hover:bg-anvaya-blue/5 rounded-lg"
-              >
-                <i class="mdi mdi-pencil"></i>
-              </button>
-              <button
-                @click="deletePoint(point.id)"
-                class="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-              >
-                <i class="mdi mdi-delete"></i>
-              </button>
-            </div>
+            <span
+              class="text-xs bg-anvaya-blue text-white px-2 py-0.5 rounded-full font-medium"
+            >
+              {{ point.category }}
+            </span>
+          </div>
+          <h3 class="font-semibold text-base text-gray-800 mb-0.5">{{ point.name }}</h3>
+          <p class="text-gray-600 text-xs flex-1">{{ point.description }}</p>
+          <div class="mt-2 flex items-center text-xs text-gray-500">
+            <i class="mdi mdi-map-marker mr-1.5 text-anvaya-blue"></i>
+            <span>{{ point.coordinates.join(", ") }}</span>
+          </div>
+          <div class="flex gap-1.5 mt-2 pt-2 border-t border-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <button
+              @click="editPoint(point)"
+              class="flex-1 py-1 bg-anvaya-blue/10 text-anvaya-blue rounded-lg hover:bg-anvaya-blue/20 transition-colors text-xs font-medium"
+            >
+              <i class="mdi mdi-pencil mr-1"></i> Edit
+            </button>
+            <button
+              @click="deletePoint(point.id)"
+              class="flex-1 py-1 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors text-xs font-medium"
+            >
+              <i class="mdi mdi-delete mr-1"></i> Delete
+            </button>
           </div>
         </div>
       </div>
@@ -83,19 +96,42 @@
       @close="closeModal"
       @saved="loadMapPoints"
     />
+
+    <ConfirmModal
+      :is-open="showConfirmModal"
+      title="Confirm Deletion"
+      message="Are you sure you want to delete this map point? This action cannot be undone."
+      confirm-text="Delete"
+      @confirm="handleConfirmDelete"
+      @cancel="closeConfirmModal"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/config/firebase";
 import type { MapPoint } from "@/types/map";
 import EditDataModal from "@/components/EditDataModal.vue";
+import ConfirmModal from "@/components/ConfirmModal.vue";
 
 const mapPoints = ref<MapPoint[]>([]);
 const showAddModal = ref(false);
 const editingPoint = ref<MapPoint | null>(null);
+const searchQuery = ref('');
+const showConfirmModal = ref(false);
+const pointToDeleteId = ref<string | null>(null);
+
+const filteredMapPoints = computed(() => {
+  const query = searchQuery.value.toLowerCase();
+  return mapPoints.value.filter(
+    (point) =>
+      point.name.toLowerCase().includes(query) ||
+      point.description.toLowerCase().includes(query) ||
+      point.category.toLowerCase().includes(query)
+  );
+});
 
 async function loadMapPoints() {
   try {
@@ -110,14 +146,27 @@ async function loadMapPoints() {
 }
 
 async function deletePoint(id: string) {
-  if (confirm("Are you sure you want to delete this point?")) {
+  pointToDeleteId.value = id;
+  showConfirmModal.value = true;
+  console.log("Opening confirm modal:", showConfirmModal.value);
+}
+
+async function handleConfirmDelete() {
+  if (pointToDeleteId.value) {
     try {
-      await deleteDoc(doc(db, "mapPoints", id));
+      await deleteDoc(doc(db, "mapPoints", pointToDeleteId.value));
       await loadMapPoints();
     } catch (error) {
       console.error("Error deleting point:", error);
+    } finally {
+      closeConfirmModal();
     }
   }
+}
+
+function closeConfirmModal() {
+  showConfirmModal.value = false;
+  pointToDeleteId.value = null;
 }
 
 function editPoint(point: MapPoint) {

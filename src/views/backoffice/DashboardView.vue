@@ -1,39 +1,22 @@
 <template>
   <div class="space-y-6">
-    <h1 class="text-2xl font-medium text-gray-900">Dashboard</h1>
-
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       <div
-        v-for="stat in stats"
+        v-for="(stat, index) in stats"
         :key="stat.title"
-        class="bg-white rounded-xl p-6 shadow-sm border border-gray-100"
+        class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-6"
+        :class="stat.bgColor"
       >
-        <div class="flex items-center justify-between">
-          <h3 class="text-sm font-medium text-gray-500">{{ stat.title }}</h3>
-          <i :class="[stat.icon, 'text-xl text-anvaya-blue/60']"></i>
+        <div
+          class="w-12 h-12 rounded-lg flex items-center justify-center text-white"
+          :class="stat.iconBg"
+        >
+          <i :class="['mdi', stat.icon, 'text-2xl']"></i>
         </div>
-        <p class="mt-2 text-3xl font-semibold text-gray-900">
-          {{ stat.value }}
-        </p>
-        <div class="mt-2 flex items-center text-sm">
-          <span
-            :class="[
-              stat.trend > 0 ? 'text-green-600' : 'text-red-600',
-              'flex items-center',
-            ]"
-          >
-            <i
-              :class="[
-                stat.trend > 0
-                  ? 'mdi mdi-trending-up'
-                  : 'mdi mdi-trending-down',
-                'mr-1',
-              ]"
-            ></i>
-            {{ Math.abs(stat.trend) }}%
-          </span>
-          <span class="text-gray-500 ml-2">from last month</span>
+        <div>
+          <p class="text-3xl font-semibold text-gray-800">{{ stat.value }}</p>
+          <h3 class="text-sm font-medium text-gray-500">{{ stat.title }}</h3>
         </div>
       </div>
     </div>
@@ -76,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { collection, getCountFromServer } from "firebase/firestore";
 import { db } from "@/config/firebase";
 
@@ -111,32 +94,36 @@ onMounted(() => {
   getCounts();
 });
 
-const stats = [
+const stats = computed(() => [
   {
     title: "Total Amenities",
-    value: amenitiesCount,
-    trend: 12,
-    icon: "mdi mdi-spa",
+    value: amenitiesCount.value,
+    icon: "mdi-spa",
+    bgColor: "bg-blue-50",
+    iconBg: "bg-blue-500",
   },
   {
     title: "Active Offers",
-    value: offersCount,
-    trend: -2,
-    icon: "mdi mdi-tag",
+    value: offersCount.value,
+    icon: "mdi-tag",
+    bgColor: "bg-green-50",
+    iconBg: "bg-green-500",
   },
   {
     title: "Map Points",
-    value: mapPointsCount,
-    trend: 8,
-    icon: "mdi mdi-map-marker",
+    value: mapPointsCount.value,
+    icon: "mdi-map-marker",
+    bgColor: "bg-yellow-50",
+    iconBg: "bg-yellow-500",
   },
   {
     title: "FAQs",
-    value: faqsCount,
-    trend: 4,
-    icon: "mdi mdi-frequently-asked-questions",
+    value: faqsCount.value,
+    icon: "mdi-frequently-asked-questions",
+    bgColor: "bg-indigo-50",
+    iconBg: "bg-indigo-500",
   },
-];
+]);
 
 const recentActivity = [
   {

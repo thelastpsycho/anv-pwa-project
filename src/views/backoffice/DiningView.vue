@@ -1,70 +1,79 @@
 <template>
   <div class="space-y-6">
-    <div class="bg-white p-6 rounded-lg shadow">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-medium">Dining Venues</h2>
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl font-semibold text-gray-800">Dining Venues</h1>
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <i class="mdi mdi-magnify absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          <input
+            type="search"
+            placeholder="Search venue..."
+            class="w-full pl-10 pr-4 py-2 rounded-lg bg-white border border-gray-200 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 outline-none transition-colors text-sm"
+          />
+        </div>
         <button
           @click="handleAdd"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-anvaya-blue to-anvaya-blue/90 text-white text-sm font-medium rounded-lg hover:from-anvaya-blue/95 hover:to-anvaya-blue/85 transition-all duration-200 shadow-sm"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-anvaya-blue text-white text-sm font-medium rounded-lg hover:bg-anvaya-blue/90 transition-all duration-200 shadow-sm"
         >
           <i class="mdi mdi-plus text-lg"></i>
           <span>Add Venue</span>
         </button>
       </div>
+    </div>
 
-      <div class="space-y-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div
-          v-for="venue in venues"
-          :key="venue.id"
-          class="border rounded-lg p-4"
-        >
-          <div class="flex justify-between items-start">
-            <div class="flex gap-4">
-              <img
-                :src="venue.image"
-                :alt="venue.name"
-                class="w-24 h-24 object-cover rounded-lg"
-              />
-              <div>
-                <h3 class="font-medium">{{ venue.name }}</h3>
-                <p class="text-gray-600 text-sm">{{ venue.description }}</p>
-                <div class="mt-2 space-y-1">
-                  <p class="text-xs text-anvaya-blue">
-                    <i class="mdi mdi-clock-outline mr-1"></i>
-                    {{ venue.hours }}
-                  </p>
-                  <p class="text-xs text-anvaya-blue">
-                    <i class="mdi mdi-silverware mr-1"></i>
-                    {{ venue.cuisine }}
-                  </p>
-                  <p class="text-xs text-anvaya-blue">
-                    <i class="mdi mdi-book-open-page-variant mr-1"></i>
-                    <a 
-                      v-if="venue.menuLink" 
-                      :href="venue.menuLink" 
-                      target="_blank"
-                      class="hover:underline"
-                    >
-                      View Menu
-                    </a>
-                    <span v-else class="text-gray-400">No menu available</span>
-                  </p>
-                </div>
-              </div>
+        v-for="venue in venues"
+        :key="venue.id"
+        class="bg-white rounded-xl shadow-md overflow-hidden group transform hover:-translate-y-1 transition-all duration-300 ease-in-out"
+      >
+        <div class="relative">
+          <img
+            :src="venue.image"
+            :alt="venue.name"
+            class="w-full h-48 object-cover"
+          />
+          <div
+            class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all duration-300"
+          ></div>
+          <div class="absolute top-4 right-4 flex gap-2">
+            <button
+              @click="editVenue(venue)"
+              class="p-2 bg-white/80 text-anvaya-blue rounded-lg hover:bg-white transition-colors shadow-sm"
+            >
+              <i class="mdi mdi-pencil"></i>
+            </button>
+            <button
+              @click="deleteVenue(venue.id)"
+              class="p-2 bg-white/80 text-red-600 rounded-lg hover:bg-white transition-colors shadow-sm"
+            >
+              <i class="mdi mdi-delete"></i>
+            </button>
+          </div>
+        </div>
+        <div class="p-4">
+          <h3 class="font-semibold text-lg text-gray-800">{{ venue.name }}</h3>
+          <p class="text-gray-600 text-sm mt-1">{{ venue.description }}</p>
+          <div class="mt-4 space-y-2">
+            <div class="flex items-center text-sm text-gray-500">
+              <i class="mdi mdi-clock-outline mr-2 text-anvaya-blue"></i>
+              <span>{{ venue.hours }}</span>
             </div>
-            <div class="flex gap-2">
-              <button
-                @click="editVenue(venue)"
-                class="p-2 text-anvaya-blue hover:bg-anvaya-blue/5 rounded-lg"
+            <div class="flex items-center text-sm text-gray-500">
+              <i class="mdi mdi-silverware mr-2 text-anvaya-blue"></i>
+              <span>{{ venue.cuisine }}</span>
+            </div>
+            <div class="flex items-center text-sm text-gray-500">
+              <i class="mdi mdi-book-open-page-variant-outline mr-2 text-anvaya-blue"></i>
+              <a 
+                v-if="venue.menuLink" 
+                :href="venue.menuLink" 
+                target="_blank"
+                class="hover:underline"
               >
-                <i class="mdi mdi-pencil"></i>
-              </button>
-              <button
-                @click="deleteVenue(venue.id)"
-                class="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-              >
-                <i class="mdi mdi-delete"></i>
-              </button>
+                View Menu
+              </a>
+              <span v-else class="text-gray-400">No menu available</span>
             </div>
           </div>
         </div>

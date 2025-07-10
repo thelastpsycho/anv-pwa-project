@@ -1,54 +1,55 @@
 <template>
   <div class="space-y-6">
-    <div class="bg-white p-6 rounded-lg shadow">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-medium">TV Channels</h2>
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl font-semibold text-gray-800">TV Channels</h1>
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <i class="mdi mdi-magnify absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          <input
+            v-model="searchQuery"
+            type="search"
+            placeholder="Search channel..."
+            class="w-full pl-10 pr-4 py-2 rounded-lg bg-white border border-gray-200 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 outline-none transition-colors text-sm"
+          />
+        </div>
         <button
           @click="openAddModal"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-anvaya-blue to-anvaya-blue/90 text-white text-sm font-medium rounded-lg hover:from-anvaya-blue/95 hover:to-anvaya-blue/85"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-anvaya-blue text-white text-sm font-medium rounded-lg hover:bg-anvaya-blue/90 transition-all duration-200 shadow-sm"
         >
           <i class="mdi mdi-plus text-lg"></i>
           <span>Add Channel</span>
         </button>
       </div>
-      <div class="mb-4">
-        <div class="relative">
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search channel..."
-            class="w-full px-4 py-2.5 pl-10 bg-white rounded-xl border border-anvaya-gray/10 focus:outline-none focus:border-anvaya-blue/30 text-sm"
-          />
-          <i class="mdi mdi-magnify absolute left-3.5 top-2.5 text-anvaya-blue/60 text-lg"></i>
-        </div>
-      </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow">
       <div class="overflow-x-auto">
-        <table class="min-w-full text-xs text-left text-anvaya-blue">
-          <thead>
-            <tr class="border-b border-anvaya-gray/10">
-              <th class="px-2 py-1 font-semibold">Channel</th>
-              <th class="px-2 py-1 font-semibold">Channel Name</th>
-              <th class="px-2 py-1 font-semibold w-24">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="channel in filteredChannels" :key="channel.id" class="border-b border-anvaya-gray/10">
-              <td class="px-2 py-1">{{ channel.number }}</td>
-              <td class="px-2 py-1">{{ channel.name }}</td>
-              <td class="px-2 py-1">
-                <button @click="openEditModal(channel)" class="p-1.5 text-anvaya-blue hover:bg-anvaya-blue/5 rounded-lg">
-                  <i class="mdi mdi-pencil text-sm"></i>
-                </button>
-                <button @click="deleteChannel(channel.id)" class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg">
-                  <i class="mdi mdi-delete text-sm"></i>
-                </button>
-              </td>
-            </tr>
-            <tr v-if="filteredChannels.length === 0">
-              <td colspan="3" class="text-center text-gray-500 py-4">No channels found.</td>
-            </tr>
-          </tbody>
-        </table>
+        <table class="min-w-full text-sm text-left text-gray-700">
+        <thead>
+          <tr class="border-b border-gray-200">
+            <th class="px-4 py-3 font-semibold">Channel Number</th>
+            <th class="px-4 py-3 font-semibold">Channel Name</th>
+            <th class="px-4 py-3 font-semibold text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="channel in filteredChannels" :key="channel.id" class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+            <td class="px-4 py-3">{{ channel.number }}</td>
+            <td class="px-4 py-3">{{ channel.name }}</td>
+            <td class="px-4 py-3 text-right">
+              <button @click="openEditModal(channel)" class="p-2 text-anvaya-blue hover:bg-anvaya-blue/10 rounded-lg transition-colors">
+                <i class="mdi mdi-pencil text-lg"></i>
+              </button>
+              <button @click="deleteChannel(channel.id)" class="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors">
+                <i class="mdi mdi-delete text-lg"></i>
+              </button>
+            </td>
+          </tr>
+          <tr v-if="filteredChannels.length === 0">
+            <td colspan="3" class="text-center text-gray-500 py-4">No channels found.</td>
+          </tr>
+        </tbody>
+      </table>
       </div>
     </div>
     <EditDataModal
