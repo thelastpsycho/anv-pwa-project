@@ -40,9 +40,9 @@ onUnmounted(() => {
       ></div>
 
       <!-- Modal -->
-      <div class="absolute inset-4 md:inset-12">
+      <div class="absolute inset-0 flex items-center justify-center p-4">
         <div
-          class="relative w-full h-full max-w-3xl mx-auto bg-white rounded-2xl shadow-xl"
+          class="relative w-full max-w-sm mx-auto bg-white rounded-2xl shadow-xl overflow-hidden"
           @click.stop
         >
           <!-- Header -->
@@ -59,7 +59,7 @@ onUnmounted(() => {
           </div>
 
           <!-- Content -->
-          <div class="p-4 overflow-y-auto max-h-[calc(100%-8rem)]">
+          <div class="p-4 overflow-y-auto">
             <slot></slot>
           </div>
         </div>

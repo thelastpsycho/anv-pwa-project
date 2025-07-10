@@ -12,33 +12,34 @@
             class="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
           />
         </div>
-        <!-- User Info -->
-        <div v-if="currentUser" class="flex flex-col items-center py-4 border-b">
-          <span class="text-xs text-gray-500">Logged in as</span>
-          <span class="text-sm text-gray-700 font-medium">{{ currentUser?.email }}</span>
-          <button
-            @click="handleSignOut"
-            class="mt-2 text-gray-500 hover:text-gray-700 px-3 py-1 text-sm font-medium rounded"
-          >
-            Sign Out
-          </button>
-        </div>
+        
         <!-- Navigation Links -->
-        <nav class="flex-1 overflow-y-auto py-4">
-          <RouterLink
-            v-for="link in navLinks"
-            :key="link.route"
-            :to="{ name: link.route }"
-            class="flex items-center px-6 py-2 text-sm font-medium transition-colors"
-            :class="[
-              route.name === link.route
-                ? 'text-anvaya-blue bg-anvaya-blue/10 rounded-lg'
-                : 'text-gray-600 hover:text-anvaya-blue hover:bg-anvaya-blue/5 rounded-lg',
-            ]"
-            @click="sideNavOpen = false"
-          >
-            {{ link.title }}
-          </RouterLink>
+        <nav class="flex-1 overflow-y-auto py-4 px-3">
+          <div v-for="section in navLinks" :key="section.title" class="mb-4">
+            <h3
+              v-if="section.title"
+              class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider"
+            >
+              {{ section.title }}
+            </h3>
+            <div class="mt-2 space-y-1">
+              <RouterLink
+                v-for="link in section.links"
+                :key="link.route"
+                :to="{ name: link.route }"
+                class="flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors"
+                :class="[
+                  route.name === link.route
+                    ? 'text-anvaya-blue bg-anvaya-blue/10'
+                    : 'text-gray-600 hover:text-anvaya-blue hover:bg-anvaya-blue/5',
+                ]"
+                @click="sideNavOpen = false"
+              >
+                <i :class="['mdi', link.icon, 'mr-3 text-lg']"></i>
+                <span class="hover:translate-x-0.5 transition-transform duration-200 ease-in-out">{{ link.title }}</span>
+              </RouterLink>
+            </div>
+          </div>
         </nav>
       </div>
       <!-- Mobile close button -->
@@ -52,18 +53,70 @@
     </aside>
 
     <!-- Page Content -->
-    <div class="flex-1 ml-0 sm:ml-64 transition-all duration-200">
-      <!-- Mobile menu button -->
-      <div class="sm:hidden flex items-center h-16 px-4 bg-white shadow">
-        <button
-          @click="sideNavOpen = !sideNavOpen"
-          class="text-gray-500 hover:text-gray-700"
-        >
-          <i class="mdi mdi-menu text-2xl"></i>
-        </button>
-        <span class="ml-4 text-lg font-semibold text-anvaya-blue">Backoffice</span>
-      </div>
-      <main class="py-6 px-4 sm:px-6 lg:px-8">
+    <div class="flex-1 ml-0 sm:ml-64 transition-all duration-200 flex flex-col h-full overflow-y-auto">
+      <header class="bg-white/60 backdrop-blur-lg sticky top-0 z-30">
+        <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
+          <!-- Mobile menu button -->
+          <button
+            @click="sideNavOpen = !sideNavOpen"
+            class="sm:hidden text-gray-500 hover:text-gray-700"
+          >
+            <i class="mdi mdi-menu text-2xl"></i>
+          </button>
+
+          <!-- Welcome message and Search -->
+          <div class="flex items-center gap-4">
+            <div class="hidden sm:block">
+              <h1 class="text-lg font-semibold text-gray-800">
+                Welcome back, <span class="text-anvaya-blue">{{ currentUser?.email?.split('@')[0] }}</span>
+              </h1>
+              <p class="text-xs text-gray-500">Here's what's happening today.</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <div class="relative hidden md:block">
+              <i class="mdi mdi-magnify absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+              <input
+                type="search"
+                placeholder="Search anything..."
+                class="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-50 border border-gray-200 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 outline-none transition-colors text-sm"
+              />
+            </div>
+            <!-- User Dropdown -->
+            <div v-if="currentUser" class="relative">
+              <button
+                @click="userDropdownOpen = !userDropdownOpen"
+                class="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <img
+                  src="https://www.gravatar.com/avatar/?d=mp"
+                  alt="User Avatar"
+                  class="w-8 h-8 rounded-full"
+                />
+                <span class="font-medium text-gray-700 hidden lg:block">{{ currentUser?.email?.split('@')[0] }}</span>
+                <i class="mdi mdi-chevron-down text-gray-500"></i>
+              </button>
+              <div
+                v-if="userDropdownOpen"
+                v-click-outside="() => userDropdownOpen = false"
+                class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50"
+              >
+                <div class="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
+                  {{ currentUser?.email }}
+                </div>
+                <button
+                  @click="handleSignOut"
+                  class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      <main class="flex-1 py-6 px-4 sm:px-6 lg:px-8">
         <RouterView />
       </main>
     </div>
@@ -80,6 +133,7 @@ const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 const sideNavOpen = ref(false);
+const userDropdownOpen = ref(false);
 const currentUser = ref(auth.currentUser);
 
 const isAdmin = computed(() => {
@@ -99,19 +153,42 @@ const handleSignOut = async () => {
 };
 
 const navLinks = computed(() => [
-  { title: "Dashboard", route: "backoffice-dashboard" },
-  // { title: "Migrate", route: "backoffice-migrate" },
-  { title: "Dining", route: "backoffice-dining" },
-  { title: "Wellness", route: "backoffice-wellness" },
-  { title: "Activities", route: "backoffice-activities" },
-  { title: "Whats'on", route: "backoffice-offers" },
-  { title: "FB Promo", route: "backoffice-promotions" },
-  { title: "Map", route: "backoffice-map" },
-  { title: "FAQs", route: "backoffice-faqs" },
-  { title: "TV Channels", route: "backoffice-tv-channels" },
-  { title: "Trending", route: "backoffice-trending" },
-  { title: "Around us", route: "backoffice-attractions" },
-  
-  ...(isAdmin.value ? [{ title: "Chat Logs", route: "backoffice-chat-logs" }] : []),
+  {
+    title: "",
+    links: [
+      {
+        title: "Dashboard",
+        route: "backoffice-dashboard",
+        icon: "mdi-view-dashboard-outline",
+      },
+    ],
+  },
+  {
+    title: "Content Management",
+    links: [
+      { title: "Dining", route: "backoffice-dining", icon: "mdi-silverware-fork-knife" },
+      { title: "Wellness", route: "backoffice-wellness", icon: "mdi-spa-outline" },
+      { title: "Activities", route: "backoffice-activities", icon: "mdi-run" },
+      { title: "What's On", route: "backoffice-offers", icon: "mdi-calendar-star" },
+      { title: "FB Promotions", route: "backoffice-promotions", icon: "mdi-food-takeout-box-outline" },
+      { title: "Trending", route: "backoffice-trending", icon: "mdi-chart-line" },
+      { title: "Around Us", route: "backoffice-attractions", icon: "mdi-map-marker-radius-outline" },
+      { title: "FAQs", route: "backoffice-faqs", icon: "mdi-frequently-asked-questions" },
+    ],
+  },
+  {
+    title: "Hotel Services",
+    links: [
+      { title: "Map Points", route: "backoffice-map", icon: "mdi-map-marker-outline" },
+      { title: "TV Channels", route: "backoffice-tv-channels", icon: "mdi-television" },
+    ],
+  },
+  {
+    title: "Admin",
+    links: [
+      ...(isAdmin.value ? [{ title: "Chat Logs", route: "backoffice-chat-logs", icon: "mdi-chat-processing-outline" }] : []),
+      // { title: "Migrate", route: "backoffice-migrate", icon: "mdi-database-arrow-up-outline" },
+    ],
+  },
 ]);
 </script>

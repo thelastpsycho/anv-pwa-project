@@ -1,51 +1,63 @@
 <template>
   <div class="space-y-6">
-    <div class="bg-white p-6 rounded-lg shadow">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-medium">Wellness Services</h2>
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl font-semibold text-gray-800">Wellness Services</h1>
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <i class="mdi mdi-magnify absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          <input
+            type="search"
+            placeholder="Search service..."
+            class="w-full pl-10 pr-4 py-2 rounded-lg bg-white border border-gray-200 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 outline-none transition-colors text-sm"
+          />
+        </div>
         <button
           @click="handleAdd"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-anvaya-blue to-anvaya-blue/90 text-white text-sm font-medium rounded-lg hover:from-anvaya-blue/95 hover:to-anvaya-blue/85 transition-all duration-200 shadow-sm"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-anvaya-blue text-white text-sm font-medium rounded-lg hover:bg-anvaya-blue/90 transition-all duration-200 shadow-sm"
         >
           <i class="mdi mdi-plus text-lg"></i>
           <span>Add Service</span>
         </button>
       </div>
+    </div>
 
-      <div class="space-y-4">
+    <div class="bg-white p-6 rounded-lg shadow">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div
           v-for="service in wellnessServices"
           :key="service.id"
-          class="border rounded-lg p-4"
+          class="bg-white rounded-xl shadow-md overflow-hidden group transform hover:-translate-y-1 transition-all duration-300 ease-in-out"
         >
-          <div class="flex justify-between items-start">
-            <div class="flex gap-4">
-              <img
-                :src="service.image"
-                :alt="service.title"
-                class="w-24 h-24 object-cover rounded-lg"
-              />
-              <div>
-                <h3 class="font-medium">{{ service.title }}</h3>
-                <p class="text-gray-600 text-sm">{{ service.description }}</p>
-                <p class="text-gray-500 text-sm mt-1">
-                  {{ service.operatingHours }}
-                </p>
-              </div>
-            </div>
-            <div class="flex gap-2">
+          <div class="relative">
+            <img
+              :src="service.image"
+              :alt="service.title"
+              class="w-full h-48 object-cover"
+            />
+            <div
+              class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all duration-300"
+            ></div>
+            <div class="absolute top-4 right-4 flex gap-2">
               <button
                 @click="editService(service)"
-                class="p-1.5 text-gray-500 hover:text-anvaya-blue rounded-lg hover:bg-anvaya-blue/10 transition-colors"
+                class="p-2 bg-white/80 text-anvaya-blue rounded-lg hover:bg-white transition-colors shadow-sm"
               >
-                <i class="mdi mdi-pencil text-lg"></i>
+                <i class="mdi mdi-pencil"></i>
               </button>
               <button
                 @click="deleteService(service.id)"
-                class="p-1.5 text-gray-500 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors"
+                class="p-2 bg-white/80 text-red-600 rounded-lg hover:bg-white transition-colors shadow-sm"
               >
-                <i class="mdi mdi-delete text-lg"></i>
+                <i class="mdi mdi-delete"></i>
               </button>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-semibold text-lg text-gray-800">{{ service.title }}</h3>
+            <p class="text-gray-600 text-sm mt-1">{{ service.description }}</p>
+            <div class="mt-4 flex items-center text-sm text-gray-500">
+              <i class="mdi mdi-clock-outline mr-2 text-anvaya-blue"></i>
+              <span>{{ service.operatingHours }}</span>
             </div>
           </div>
         </div>

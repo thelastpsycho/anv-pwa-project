@@ -1,24 +1,37 @@
 <template>
   <div class="space-y-6">
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl font-semibold text-gray-800">Chat Logs & Settings</h1>
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <i class="mdi mdi-magnify absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          <input
+            v-model="searchQuery"
+            type="search"
+            placeholder="Search messages..."
+            class="w-full pl-10 pr-4 py-2 rounded-lg bg-white border border-gray-200 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 outline-none transition-colors text-sm"
+          />
+        </div>
+      </div>
+    </div>
+
     <div class="bg-white p-6 rounded-lg shadow">
       <!-- Tabs -->
-      <div class="border-b mb-6">
-        <div class="flex gap-6">
-          <button
+      <div class="relative bg-gray-100 p-1 rounded-lg flex items-center mb-6">
+        <div
+          class="absolute bg-white h-full rounded-md shadow-sm transition-transform duration-300 ease-in-out"
+          :style="{ width: `${100 / tabs.length}%`, transform: `translateX(${activeTabIndex * 100}%)` }"
+        ></div>
+        <button
           v-for="tab in tabs"
           :key="tab.id"
           @click="activeTab = tab.id"
-          class="pb-3 px-1 text-sm font-medium transition-colors relative"
-          :class="[
-          activeTab === tab.id 
-          ? 'text-anvaya-blue border-b-2 border-anvaya-blue' 
-          : 'text-gray-500 hover:text-gray-700'
-          ]"
-          >
+          class="relative flex-1 px-3 py-2 rounded-lg text-sm font-medium text-center transition-colors duration-300"
+          :class="[activeTab === tab.id ? 'text-anvaya-blue' : 'text-gray-500 hover:text-gray-700']"
+        >
           {{ tab.label }}
         </button>
       </div>
-    </div>
     
     <!-- Chat Logs Tab -->
     <div v-if="activeTab === 'logs'">
@@ -421,6 +434,9 @@ const tabs = [
 { id: 'settings', label: 'Settings' }
 ];
 const activeTab = ref('logs');
+const activeTabIndex = computed(() => 
+  tabs.findIndex(tab => tab.id === activeTab.value)
+);
 const isExporting = ref(false);
 
 interface ChatExportData {

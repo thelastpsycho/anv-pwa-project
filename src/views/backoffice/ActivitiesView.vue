@@ -1,77 +1,88 @@
 <template>
   <div class="space-y-6">
-    <div class="bg-white p-6 rounded-lg shadow">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-medium">Daily Activities</h2>
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl font-semibold text-gray-800">Daily Activities</h1>
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <i class="mdi mdi-magnify absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          <input
+            type="search"
+            placeholder="Search activity..."
+            class="w-full pl-10 pr-4 py-2 rounded-lg bg-white border border-gray-200 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 outline-none transition-colors text-sm"
+          />
+        </div>
         <button
           @click="handleAdd"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-anvaya-blue to-anvaya-blue/90 text-white text-sm font-medium rounded-lg hover:from-anvaya-blue/95 hover:to-anvaya-blue/85 transition-all duration-200 shadow-sm"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-anvaya-blue text-white text-sm font-medium rounded-lg hover:bg-anvaya-blue/90 transition-all duration-200 shadow-sm"
         >
           <i class="mdi mdi-plus text-lg"></i>
           <span>Add Activity</span>
         </button>
       </div>
+    </div>
 
+    <div class="bg-white p-6 rounded-lg shadow">
       <!-- Day Filter -->
-      <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
+      <div class="relative bg-gray-100 p-1 rounded-lg flex items-center mb-6">
+        <div
+          class="absolute bg-white h-full rounded-md shadow-sm transition-transform duration-300 ease-in-out"
+          :style="{ width: `${100 / weekDays.length}%`, transform: `translateX(${selectedDayIndex * 100}%)` }"
+        ></div>
         <button
           v-for="day in weekDays"
           :key="day.value"
           @click="selectedDay = day.value"
-          :class="[
-            'px-3 py-1 rounded-lg text-sm whitespace-nowrap transition-colors',
-            selectedDay === day.value
-              ? 'bg-anvaya-blue text-white'
-              : 'bg-anvaya-blue/10 text-anvaya-blue hover:bg-anvaya-blue/20'
-          ]"
+          class="relative flex-1 px-3 py-2 rounded-lg text-sm font-medium text-center transition-colors duration-300"
+          :class="[selectedDay === day.value ? 'text-anvaya-blue' : 'text-gray-500 hover:text-gray-700']"
         >
           {{ day.label }}
         </button>
       </div>
 
       <!-- Activities List -->
-      <div class="space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div
           v-for="activity in filteredActivities"
           :key="activity.id"
-          class="border rounded-lg p-4"
+          class="bg-white rounded-xl shadow-md overflow-hidden group transform hover:-translate-y-1 transition-all duration-300 ease-in-out"
         >
-          <div class="flex justify-between items-start">
-            <div class="flex gap-4">
-              <img
-                :src="activity.image"
-                :alt="activity.title"
-                @error="handleImageError"
-                class="w-full h-48 object-cover rounded-t-lg"
-              />
-              <div>
-                <h3 class="font-medium">{{ activity.title }}</h3>
-                <p class="text-gray-600 text-sm">{{ activity.description }}</p>
-                <div class="mt-2 space-y-1">
-                  <p class="text-xs text-anvaya-blue">
-                    <i class="mdi mdi-clock-outline mr-1"></i>
-                    {{ activity.time }} ({{ activity.duration }} minutes)
-                  </p>
-                  <p class="text-xs text-anvaya-blue">
-                    <i class="mdi mdi-map-marker-outline mr-1"></i>
-                    {{ activity.location }}
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="flex gap-2">
+          <div class="relative">
+            <img
+              :src="activity.image"
+              :alt="activity.title"
+              @error="handleImageError"
+              class="w-full h-48 object-cover"
+            />
+            <div
+              class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all duration-300"
+            ></div>
+            <div class="absolute top-4 right-4 flex gap-2">
               <button
                 @click="editActivity(activity)"
-                class="p-2 text-anvaya-blue hover:bg-anvaya-blue/5 rounded-lg"
+                class="p-2 bg-white/80 text-anvaya-blue rounded-lg hover:bg-white transition-colors shadow-sm"
               >
                 <i class="mdi mdi-pencil"></i>
               </button>
               <button
                 @click="deleteActivity(activity.id)"
-                class="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                class="p-2 bg-white/80 text-red-600 rounded-lg hover:bg-white transition-colors shadow-sm"
               >
                 <i class="mdi mdi-delete"></i>
               </button>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-semibold text-lg text-gray-800">{{ activity.title }}</h3>
+            <p class="text-gray-600 text-sm mt-1">{{ activity.description }}</p>
+            <div class="mt-4 space-y-2">
+              <div class="flex items-center text-sm text-gray-500">
+                <i class="mdi mdi-clock-outline mr-2 text-anvaya-blue"></i>
+                <span>{{ activity.time }} ({{ activity.duration }} minutes)</span>
+              </div>
+              <div class="flex items-center text-sm text-gray-500">
+                <i class="mdi mdi-map-marker-outline mr-2 text-anvaya-blue"></i>
+                <span>{{ activity.location }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -138,6 +149,10 @@ const defaultActivity = {
 
 const filteredActivities = computed(() => 
   activities.value.filter(activity => activity.dayOfWeek === selectedDay.value)
+);
+
+const selectedDayIndex = computed(() => 
+  weekDays.findIndex(day => day.value === selectedDay.value)
 );
 
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1520&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';

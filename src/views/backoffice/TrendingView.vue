@@ -1,58 +1,68 @@
 <template>
   <div class="space-y-6">
-    <div class="bg-white p-6 rounded-lg shadow">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-medium">Trending Content</h2>
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl font-semibold text-gray-800">Trending Content</h1>
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <i class="mdi mdi-magnify absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          <input
+            type="search"
+            placeholder="Search trending..."
+            class="w-full pl-10 pr-4 py-2 rounded-lg bg-white border border-gray-200 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 outline-none transition-colors text-sm"
+          />
+        </div>
         <button
           @click="handleAdd"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-anvaya-blue to-anvaya-blue/90 text-white text-sm font-medium rounded-lg hover:from-anvaya-blue/95 hover:to-anvaya-blue/85 transition-all duration-200 shadow-sm"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-anvaya-blue text-white text-sm font-medium rounded-lg hover:bg-anvaya-blue/90 transition-all duration-200 shadow-sm"
         >
           <i class="mdi mdi-plus text-lg"></i>
           <span>Add Content</span>
         </button>
       </div>
+    </div>
 
-      <div class="space-y-4">
+    <div class="bg-white p-6 rounded-lg shadow">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div
           v-for="item in trendingItems"
           :key="item.id"
-          class="border rounded-lg p-4"
+          class="bg-white rounded-xl shadow-md overflow-hidden group transform hover:-translate-y-1 transition-all duration-300 ease-in-out"
         >
-          <div class="flex justify-between items-start">
-            <div class="flex gap-4">
-              <img
-                :src="item.image"
-                :alt="item.title"
-                class="w-24 h-24 object-cover rounded-lg"
-              />
-              <div>
-                <h3 class="font-medium">{{ item.title }}</h3>
-                <p class="text-gray-600 text-sm">{{ item.description }}</p>
-                <div class="mt-2 space-y-1">
-                  <p class="text-xs text-anvaya-blue">
-                    <i class="mdi mdi-clock-outline mr-1"></i>
-                    {{ item.validUntil }}
-                  </p>
-                  <p class="text-xs text-anvaya-blue">
-                    <i class="mdi mdi-tag-outline mr-1"></i>
-                    {{ item.type }}
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="flex gap-2">
+          <div class="relative">
+            <img
+              :src="item.image"
+              :alt="item.title"
+              class="w-full h-48 object-cover"
+            />
+            <div
+              class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all duration-300"
+            ></div>
+            <div class="absolute top-4 right-4 flex gap-2">
               <button
                 @click="editItem(item)"
-                class="p-2 text-anvaya-blue hover:bg-anvaya-blue/5 rounded-lg"
+                class="p-2 bg-white/80 text-anvaya-blue rounded-lg hover:bg-white transition-colors shadow-sm"
               >
                 <i class="mdi mdi-pencil"></i>
               </button>
               <button
                 @click="deleteItem(item.id)"
-                class="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                class="p-2 bg-white/80 text-red-600 rounded-lg hover:bg-white transition-colors shadow-sm"
               >
                 <i class="mdi mdi-delete"></i>
               </button>
+            </div>
+            <span
+              class="absolute bottom-4 left-4 text-xs bg-anvaya-blue text-white px-2 py-1 rounded-full"
+            >
+              {{ item.type }}
+            </span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-semibold text-lg text-gray-800">{{ item.title }}</h3>
+            <p class="text-gray-600 text-sm mt-1">{{ item.description }}</p>
+            <div class="mt-4 flex items-center text-sm text-gray-500">
+              <i class="mdi mdi-clock-outline mr-2 text-anvaya-blue"></i>
+              <span>{{ item.validUntil }}</span>
             </div>
           </div>
         </div>

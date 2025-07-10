@@ -8,6 +8,7 @@ import { createPinia } from "pinia";
 
 import App from "./App.vue";
 import router from "./router";
+import clickOutside from "./directives/click-outside";
 import { useAppStore } from "./stores/app";
 import type { BeforeInstallPromptEvent } from "@/types";
 import { initializeGoogleAnalytics } from './utils/analytics';
@@ -37,6 +38,7 @@ window.addEventListener("online", () => appStore.updateOnlineStatus(true));
 window.addEventListener("offline", () => appStore.updateOnlineStatus(false));
 
 app.use(router);
+app.directive('click-outside', clickOutside);
 
 // Add this after creating the app but before mounting
 if (import.meta.env.PROD) {

@@ -1,74 +1,80 @@
 <template>
   <div class="space-y-6">
-    <div class="bg-white p-6 rounded-lg shadow">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-medium">FAQs</h2>
-        <div class="flex gap-2">
-          <button
-            @click="handleAdd"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-anvaya-blue to-anvaya-blue/90 text-white text-sm font-medium rounded-lg hover:from-anvaya-blue/95 hover:to-anvaya-blue/85"
-          >
-            <i class="mdi mdi-plus text-lg"></i>
-            <span>Add Category</span>
-          </button>
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl font-semibold text-gray-800">Frequently Asked Questions</h1>
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <i class="mdi mdi-magnify absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          <input
+            type="search"
+            placeholder="Search FAQ..."
+            class="w-full pl-10 pr-4 py-2 rounded-lg bg-white border border-gray-200 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 outline-none transition-colors text-sm"
+          />
         </div>
-      </div>
-
-      <div class="space-y-4">
-        <div
-          v-for="category in faqCategories"
-          :key="category.id"
-          class="border rounded-lg p-4"
+        <button
+          @click="handleAdd"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-anvaya-blue text-white text-sm font-medium rounded-lg hover:bg-anvaya-blue/90 transition-all duration-200 shadow-sm"
         >
-          <div class="flex justify-between items-start mb-4">
-            <h3 class="font-medium">{{ category.title }}</h3>
-            <div class="flex gap-2">
-              <button
-                @click="() => handleAddFAQ(category.id)"
-                class="p-2 text-anvaya-blue hover:bg-anvaya-blue/5 rounded-lg"
-              >
-                <i class="mdi mdi-plus"></i>
-              </button>
-              <button
-                @click="editCategory(category)"
-                class="p-2 text-anvaya-blue hover:bg-anvaya-blue/5 rounded-lg"
-              >
-                <i class="mdi mdi-pencil"></i>
-              </button>
-              <button
-                @click="deleteCategory(category.id)"
-                class="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-              >
-                <i class="mdi mdi-delete"></i>
-              </button>
-            </div>
-          </div>
+          <i class="mdi mdi-plus text-lg"></i>
+          <span>Add Category</span>
+        </button>
+      </div>
+    </div>
 
-          <div class="space-y-2">
-            <div
-              v-for="faq in category.faqs"
-              :key="faq.id"
-              class="bg-gray-50 p-3 rounded-lg"
+    <div class="space-y-4">
+        <div
+        v-for="category in faqCategories"
+        :key="category.id"
+        class="bg-white rounded-xl shadow-md"
+      >
+        <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+          <h3 class="font-semibold text-lg text-gray-800">{{ category.title }}</h3>
+          <div class="flex gap-2">
+            <button
+              @click="() => handleAddFAQ(category.id)"
+              class="p-2 bg-gray-100 text-anvaya-blue rounded-lg hover:bg-gray-200 transition-colors"
             >
-              <div class="flex justify-between items-start">
-                <div>
-                  <p class="font-medium text-sm">{{ faq.question }}</p>
-                  <p class="text-gray-600 text-sm mt-1">{{ faq.answer }}</p>
-                </div>
-                <div class="flex gap-2">
-                  <button
-                    @click="editFAQ(category.id, faq)"
-                    class="p-1.5 text-anvaya-blue hover:bg-anvaya-blue/5 rounded-lg"
-                  >
-                    <i class="mdi mdi-pencil text-sm"></i>
-                  </button>
-                  <button
-                    @click="deleteFAQ(category.id, faq.id)"
-                    class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg"
-                  >
-                    <i class="mdi mdi-delete text-sm"></i>
-                  </button>
-                </div>
+              <i class="mdi mdi-plus"></i>
+            </button>
+            <button
+              @click="editCategory(category)"
+              class="p-2 bg-gray-100 text-anvaya-blue rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              <i class="mdi mdi-pencil"></i>
+            </button>
+            <button
+              @click="deleteCategory(category.id)"
+              class="p-2 bg-gray-100 text-red-600 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              <i class="mdi mdi-delete"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="divide-y divide-gray-100">
+          <div
+            v-for="faq in category.faqs"
+            :key="faq.id"
+            class="p-4 group"
+          >
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="font-medium text-gray-800">{{ faq.question }}</p>
+                <p class="text-gray-600 text-sm mt-1">{{ faq.answer }}</p>
+              </div>
+              <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button
+                  @click="editFAQ(category.id, faq)"
+                  class="p-1.5 bg-gray-100 text-anvaya-blue rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  <i class="mdi mdi-pencil text-sm"></i>
+                </button>
+                <button
+                  @click="deleteFAQ(category.id, faq.id)"
+                  class="p-1.5 bg-gray-100 text-red-600 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  <i class="mdi mdi-delete text-sm"></i>
+                </button>
               </div>
             </div>
           </div>
