@@ -7,6 +7,7 @@
           <i class="mdi mdi-magnify absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
           <input
             type="search"
+            v-model="searchQuery"
             placeholder="Search FAQ..."
             class="w-full pl-10 pr-4 py-2 rounded-lg bg-white border border-gray-200 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 outline-none transition-colors text-sm"
           />
@@ -23,7 +24,7 @@
 
     <div class="space-y-4">
         <div
-        v-for="category in faqCategories"
+        v-for="category in filteredFaqCategories"
         :key="category.id"
         class="bg-white rounded-xl shadow-md"
       >
@@ -122,7 +123,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import {
   collection,
   getDocs,
@@ -139,6 +140,24 @@ const showAddModal = ref(false);
 const editingCategory = ref<FAQCategory | null>(null);
 const editingFAQ = ref<FAQ | null>(null);
 const currentCategoryId = ref<string>("");
+const searchQuery = ref("");
+
+const filteredFaqCategories = computed(() => {
+  if (!searchQuery.value) {
+    return faqCategories.value;
+  }
+  const searchLower = searchQuery.value.toLowerCase();
+  return faqCategories.value
+    .map((category) => {
+      const filteredFaqs = category.faqs.filter(
+        (faq) =>
+          faq.question.toLowerCase().includes(searchLower) ||
+          faq.answer.toLowerCase().includes(searchLower)
+      );
+      return { ...category, faqs: filteredFaqs };
+    })
+    .filter((category) => category.faqs.length > 0 || category.title.toLowerCase().includes(searchLower));
+});
 
 async function loadFAQs() {
   try {
