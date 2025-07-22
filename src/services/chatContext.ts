@@ -25,6 +25,10 @@ interface FAQData {
   }>;
 }
 
+// Add cache variables at the top
+let cachedDynamicContext: { formattedContext: string, activitiesContext: string, faqContext: string, conversationContext: string, menusContext: string, offersContext: string, tvChannelsContext: string, timestamp: number } | null = null;
+const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes
+
 // Get current time information
 const getCurrentTimeInfo = () => {
   const now = new Date();
@@ -85,6 +89,43 @@ Current Time Information:
 
 // Get dynamic context (activities and FAQs)
 export const getDynamicContext = async (messageHistory: ChatMessage[] = []) => {
+  const now = Date.now();
+  if (
+    cachedDynamicContext &&
+    (now - cachedDynamicContext.timestamp < CACHE_DURATION_MS)
+  ) {
+    // Use cached context, but update conversation context with latest messages
+    const updatedConversationContext = formatConversationContext(messageHistory);
+    const formattedContext = `
+Available Activities:
+${cachedDynamicContext.activitiesContext}
+
+Restaurant Menus:
+${cachedDynamicContext.menusContext}
+
+Current Offers:
+${cachedDynamicContext.offersContext}
+
+Frequently Asked Questions:
+${cachedDynamicContext.faqContext}
+
+TV Channel List:
+${cachedDynamicContext.tvChannelsContext}
+
+Chat History:
+${updatedConversationContext}
+`;
+    return {
+      activitiesContext: cachedDynamicContext.activitiesContext,
+      faqContext: cachedDynamicContext.faqContext,
+      conversationContext: updatedConversationContext,
+      menusContext: cachedDynamicContext.menusContext,
+      offersContext: cachedDynamicContext.offersContext,
+      tvChannelsContext: cachedDynamicContext.tvChannelsContext,
+      formattedContext
+    };
+  }
+
   try {
     // Fetch all dynamic data in parallel
     const [
@@ -106,52 +147,61 @@ export const getDynamicContext = async (messageHistory: ChatMessage[] = []) => {
     ]);
 
     // Format all contexts
-    const contexts = {
-      // Core contexts (used by AI engines)
-      activitiesContext: formatActivitiesContext(activitiesSnapshot.docs.map(doc => ({
-        ...doc.data(),
-        id: doc.id
-      })) as Activity[]),
-      faqContext: formatFAQContext(faqSnapshot),
-      conversationContext: formatConversationContext(messageHistory),
-      menusContext: formatMenusContext(kunyitMenu, sandsMenu, beverageMenu),
-      offersContext: formatOffersContext(offersSnapshot.docs.map(doc => ({
-        ...doc.data(),
-        id: doc.id
-      })) as Offer[]),
-      tvChannelsContext: formatTvChannelsContext(tvChannelsSnapshot.docs.map(doc => ({
-        ...doc.data(),
-        id: doc.id
-      })) as TVChannel[]),
+    const activitiesContext = formatActivitiesContext(activitiesSnapshot.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id
+    })) as Activity[]);
+    const faqContext = formatFAQContext(faqSnapshot);
+    const conversationContext = formatConversationContext(messageHistory);
+    const menusContext = formatMenusContext(kunyitMenu, sandsMenu, beverageMenu);
+    const offersContext = formatOffersContext(offersSnapshot.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id
+    })) as Offer[]);
+    const tvChannelsContext = formatTvChannelsContext(tvChannelsSnapshot.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id
+    })) as TVChannel[]);
 
-      // Additional contexts can be added here without modifying AI engines
-      // Example: roomContext, spaContext, etc.
-    };
-
-    // Format the complete dynamic context string
     const formattedContext = `
 Available Activities:
-${contexts.activitiesContext}
+${activitiesContext}
 
 Restaurant Menus:
-${contexts.menusContext}
+${menusContext}
 
 Current Offers:
-${contexts.offersContext}
+${offersContext}
 
 Frequently Asked Questions:
-${contexts.faqContext}
+${faqContext}
 
 TV Channel List:
-${contexts.tvChannelsContext}
+${tvChannelsContext}
 
 Chat History:
-${contexts.conversationContext}
+${conversationContext}
 `;
 
+    // Cache the dynamic context
+    cachedDynamicContext = {
+      formattedContext,
+      activitiesContext,
+      faqContext,
+      conversationContext,
+      menusContext,
+      offersContext,
+      tvChannelsContext,
+      timestamp: now
+    };
+
     return {
-      // Return both the individual contexts and the formatted string
-      ...contexts,
+      activitiesContext,
+      faqContext,
+      conversationContext,
+      menusContext,
+      offersContext,
+      tvChannelsContext,
       formattedContext
     };
   } catch (error) {

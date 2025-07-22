@@ -9,7 +9,7 @@ import {
   browserLocalPersistence,
   type User,
 } from "firebase/auth";
-import { authenticateWithWifi } from "@/services/wifiAuth";
+import { authenticateWithWifi, useWifiAuth } from "@/services/wifiAuth";
 
 interface ProfileUser {
   roomNumber: string;
@@ -41,6 +41,12 @@ export const useAuthStore = defineStore("auth", {
 
   actions: {
     async init() {
+      const wifiAuth = useWifiAuth();
+      if (wifiAuth.isAuthenticated && wifiAuth.roomNumber) {
+        this.profileUser = { roomNumber: wifiAuth.roomNumber };
+        this.isBackoffice = false;
+      }
+
       return new Promise((resolve) => {
         onAuthStateChanged(auth, (user) => {
           if (user) {

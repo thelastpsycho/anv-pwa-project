@@ -12,20 +12,24 @@ const isAuthenticated = ref(false);
 const loadStoredAuth = () => {
   const stored = localStorage.getItem(AUTH_STORAGE_KEY);
   if (stored) {
-    const { expiry } = JSON.parse(stored);
-    if (new Date().getTime() < expiry) {
-      isAuthenticated.value = true;
-      return true;
+    try {
+      const { expiry, roomNumber } = JSON.parse(stored);
+      if (new Date().getTime() < expiry) {
+        isAuthenticated.value = true;
+        return { roomNumber };
+      }
+    } catch (e) {
+      console.error("Error parsing stored auth:", e);
     }
     localStorage.removeItem(AUTH_STORAGE_KEY);
   }
-  return false;
+  return null;
 };
 
 // Save auth state with expiry
-const saveAuthState = () => {
+const saveAuthState = (roomNumber: string) => {
   const expiry = new Date().getTime() + (AUTH_EXPIRY_DAYS * 24 * 60 * 60 * 1000);
-  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ expiry }));
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ expiry, roomNumber }));
   isAuthenticated.value = true;
 };
 
@@ -70,7 +74,7 @@ export async function authenticateWithWifi(
     if (normalizedUsername in ADMIN_CREDENTIALS && 
         ADMIN_CREDENTIALS[normalizedUsername as keyof typeof ADMIN_CREDENTIALS] === password) {
       console.log('[WifiAuth] Authenticated as admin:', normalizedUsername);
-      saveAuthState();
+      saveAuthState(username);
       return true;
     }
 
@@ -96,7 +100,7 @@ export async function authenticateWithWifi(
 
     if (matchingCredential) {
       console.log('[WifiAuth] Authenticated successfully for user:', username);
-      saveAuthState();
+      saveAuthState(username);
       return true;
     }
 
@@ -109,8 +113,9 @@ export async function authenticateWithWifi(
 }
 
 export const useWifiAuth = () => {
-  loadStoredAuth();
+  const authData = loadStoredAuth();
   return {
-    isAuthenticated,
+    isAuthenticated: isAuthenticated.value,
+    roomNumber: authData?.roomNumber || null
   };
 };

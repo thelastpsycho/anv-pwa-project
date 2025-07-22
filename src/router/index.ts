@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
-import { requireAuth } from "./guards";
+import { useAuthStore } from "@/stores/auth";
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,7 +20,7 @@ const router = createRouter({
       path: "/live-chat",
       name: "live-chat",
       component: () => import("@/views/LiveChatView.vue"),
-      beforeEnter: requireAuth,
+      meta: { requiresAuth: true },
     },
     {
       path: "/map",
@@ -78,85 +79,86 @@ const router = createRouter({
           path: "",
           name: "backoffice-dashboard",
           component: () => import("@/views/backoffice/DashboardView.vue"),
-          beforeEnter: requireAuth,
+          meta: { requiresAuth: true },
         },
         
         {
           path: "amenities",
           name: "backoffice-amenities",
           component: () => import("@/views/backoffice/AmenitiesView.vue"),
-          beforeEnter: requireAuth,
+          meta: { requiresAuth: true },
         },
         {
           path: "migrate",
           name: "backoffice-migrate",
           component: () => import("@/views/backoffice/MigrateView.vue"),
-          beforeEnter: requireAuth,
+          meta: { requiresAuth: true },
         },
         {
           path: "activities",
           name: "backoffice-activities",
           component: () => import("@/views/backoffice/ActivitiesView.vue"),
-          beforeEnter: requireAuth,
+          meta: { requiresAuth: true },
         },
         {
           path: "attractions",
           name: "backoffice-attractions",
           component: () => import("@/views/backoffice/AttractionsView.vue"),
-          beforeEnter: requireAuth,
+          meta: { requiresAuth: true },
         },
         {
           path: "dining",
           name: "backoffice-dining",
           component: () => import("@/views/backoffice/DiningView.vue"),
-          beforeEnter: requireAuth,
+          meta: { requiresAuth: true },
         },
         {
           path: "faqs",
           name: "backoffice-faqs",
           component: () => import("@/views/backoffice/FAQsView.vue"),
-          beforeEnter: requireAuth,
+          meta: { requiresAuth: true },
         },
         {
           path: "tv-channels",
           name: "backoffice-tv-channels",
           component: () => import("@/views/backoffice/TVChannelsView.vue"),
-          beforeEnter: requireAuth,
+          meta: { requiresAuth: true },
         },
         {
           path: "map",
           name: "backoffice-map",
           component: () => import("@/views/backoffice/MapPointsView.vue"),
-          beforeEnter: requireAuth,
+          meta: { requiresAuth: true },
         },
         {
           path: "offers",
           name: "backoffice-offers",
           component: () => import("@/views/backoffice/OffersView.vue"),
-          beforeEnter: requireAuth,
+          meta: { requiresAuth: true },
         },
         {
           path: "wellness",
           name: "backoffice-wellness",
           component: () => import("@/views/backoffice/WellnessView.vue"),
-          beforeEnter: requireAuth,
+          meta: { requiresAuth: true },
         },
         {
           path: "promotions",
           name: "backoffice-promotions",
           component: () => import("@/views/backoffice/PromotionsView.vue"),
-          beforeEnter: requireAuth,
+          meta: { requiresAuth: true },
         },
         {
           path: "trending",
           name: "backoffice-trending",
           component: () => import("@/views/backoffice/TrendingView.vue"),
-          beforeEnter: requireAuth,
+          meta: { requiresAuth: true },
         },
         {
           path: "chat-logs",
           name: "backoffice-chat-logs",
-          component: () => import("@/views/backoffice/ChatLogsView.vue")
+          component: () => import("@/views/backoffice/ChatLogsView.vue"),
+          meta: { requiresAuth: true }
         },
         // Add more routes for other data management
       ],
@@ -166,6 +168,27 @@ const router = createRouter({
       redirect: "/backoffice",
     },
   ],
+});
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+
+  console.log(`[Router Guard] Navigating from: ${from.fullPath}`);
+  console.log(`[Router Guard] Navigating to: ${to.fullPath}`);
+  console.log(`[Router Guard] Target route meta:`, to.meta);
+  console.log(`[Router Guard] Target route query:`, to.query);
+  console.log(`[Router Guard] Is authenticated:`, authStore.isAuthenticated);
+
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    const redirectPath = to.fullPath;
+    const targetLoginRoute = to.path.startsWith('/backoffice') ? '/backoffice/login' : '/profile';
+    
+    console.log(`[Router Guard] Auth required, not authenticated. Redirecting to ${targetLoginRoute} with query:`, { redirect: redirectPath });
+    next({ path: targetLoginRoute, query: { redirect: redirectPath } });
+  } else {
+    console.log(`[Router Guard] Authentication not required or already authenticated. Proceeding.`);
+    next();
+  }
 });
 
 // Add this page tracking

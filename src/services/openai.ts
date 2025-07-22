@@ -15,6 +15,9 @@ export async function generateOpenAIResponse(
     const BASE_CONTEXT = getBaseContext();
     const { formattedContext } = await getDynamicContext(messageHistory);
 
+    // Merge base and dynamic context into a single system prompt
+    const systemPrompt = `${BASE_CONTEXT}\n\n${formattedContext}`;
+
     // Format conversation history for OpenAI
     const conversationHistory = messageHistory
       .slice(-5)
@@ -23,12 +26,25 @@ export async function generateOpenAIResponse(
         content: msg.text
       }));
 
-    // Log the complete context being sent to OpenAI
+    // Simple token estimation: 1 token ≈ 4 characters
+    const systemPromptTokens = Math.round(systemPrompt.length / 4);
+    const conversationTokens = conversationHistory.reduce((sum, msg) => sum + Math.round(msg.content.length / 4), 0);
+    const userPromptTokens = Math.round(prompt.length / 4);
+    const totalTokens = systemPromptTokens + conversationTokens + userPromptTokens;
+
+    // Log context only
     console.log('Complete OpenAI Context:', {
-      baseContext: BASE_CONTEXT,
-      dynamicContext: formattedContext,
+      systemPrompt,
       conversationHistory,
       userPrompt: prompt
+    });
+
+    // Log token usage separately
+    console.log('OpenAI Token Usage:', {
+      systemPromptTokens,
+      conversationTokens,
+      userPromptTokens,
+      totalTokens
     });
 
     const response = await fetch(API_URL, {
@@ -38,14 +54,13 @@ export async function generateOpenAIResponse(
         'Authorization': `Bearer ${OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'gpt-4-turbo-preview',
+        model: 'gpt-3.5-turbo',
         messages: [
-          { role: 'system', content: BASE_CONTEXT },
-          { role: 'system', content: formattedContext },
+          { role: 'system', content: systemPrompt },
           ...conversationHistory,
           { role: 'user', content: prompt }
         ],
-        temperature: 0.3,
+        temperature: 0.7,
         max_tokens: 150,
         top_p: 0.6
       })

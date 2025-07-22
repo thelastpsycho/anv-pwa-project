@@ -313,7 +313,7 @@ async function sendMessage() {
 
     // Get current engine setting
     const settingsDoc = await getDoc(doc(db, 'settings', 'chat'));
-    const engine = settingsDoc.data()?.engine || 'gemini';
+    const engine = settingsDoc.data()?.engine || 'openai';
     
     // Get response from AI
     const response = await (engine === 'gemini' 
