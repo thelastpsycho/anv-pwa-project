@@ -7,6 +7,7 @@
           <i class="mdi mdi-magnify absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
           <input
             type="search"
+            v-model="searchQuery"
             placeholder="Search activity..."
             class="w-full pl-10 pr-4 py-2 rounded-lg bg-white border border-gray-200 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 outline-none transition-colors text-sm"
           />
@@ -136,6 +137,7 @@ const activities = ref([]);
 const selectedDay = ref('monday');
 const showAddModal = ref(false);
 const editingActivity = ref(null);
+const searchQuery = ref('');
 
 const defaultActivity = {
   title: '',
@@ -147,9 +149,17 @@ const defaultActivity = {
   dayOfWeek: 'monday'
 };
 
-const filteredActivities = computed(() => 
-  activities.value.filter(activity => activity.dayOfWeek === selectedDay.value)
-);
+const filteredActivities = computed(() => {
+  const dayFiltered = activities.value.filter(activity => activity.dayOfWeek === selectedDay.value);
+  if (!searchQuery.value) {
+    return dayFiltered;
+  }
+  const searchLower = searchQuery.value.toLowerCase();
+  return dayFiltered.filter(activity => 
+    activity.title.toLowerCase().includes(searchLower) ||
+    activity.description.toLowerCase().includes(searchLower)
+  );
+});
 
 const selectedDayIndex = computed(() => 
   weekDays.findIndex(day => day.value === selectedDay.value)

@@ -7,6 +7,7 @@
           <i class="mdi mdi-magnify absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
           <input
             type="search"
+            v-model="searchQuery"
             placeholder="Search promotion..."
             class="w-full pl-10 pr-4 py-2 rounded-lg bg-white border border-gray-200 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 outline-none transition-colors text-sm"
           />
@@ -24,7 +25,7 @@
     <div class="bg-white p-6 rounded-lg shadow">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div
-          v-for="promo in promotions"
+          v-for="promo in filteredPromotions"
           :key="promo.id"
           class="bg-white rounded-xl shadow-md overflow-hidden group transform hover:-translate-y-1 transition-all duration-300 ease-in-out"
         >
@@ -101,7 +102,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/config/firebase";
 import type { FBPromotion } from "@/types/promotions";
@@ -110,6 +111,19 @@ import EditDataModal from "@/components/EditDataModal.vue";
 const promotions = ref<FBPromotion[]>([]);
 const showAddModal = ref(false);
 const editingPromotion = ref<FBPromotion | null>(null);
+const searchQuery = ref("");
+
+const filteredPromotions = computed(() => {
+  if (!searchQuery.value) {
+    return promotions.value;
+  }
+  const searchLower = searchQuery.value.toLowerCase();
+  return promotions.value.filter(
+    (promo) =>
+      promo.title.toLowerCase().includes(searchLower) ||
+      promo.description.toLowerCase().includes(searchLower)
+  );
+});
 
 async function loadPromotions() {
   try {

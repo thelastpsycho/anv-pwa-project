@@ -132,7 +132,7 @@
 import { ref, onMounted } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import PageHeader from "@/components/PageHeader.vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 
 const authStore = useAuthStore();
 const roomNumber = ref("");
@@ -141,8 +141,14 @@ const error = ref("");
 const showPassword = ref(false);
 const isLoaded = ref(false);
 const router = useRouter();
+const route = useRoute();
+
+// Capture the redirect path when the component is created
+const redirectPath = ref(route.query.redirect as string | undefined);
 
 onMounted(() => {
+  // Optional: Log to confirm the path is captured on component mount
+  console.log("Login view mounted. Redirect path:", redirectPath.value);
   setTimeout(() => {
     isLoaded.value = true;
   }, 100);
@@ -180,20 +186,11 @@ const togglePassword = () => {
 };
 
 const handleLoginSuccess = () => {
-  const lastPath = localStorage.getItem("lastPath");
-  if (lastPath) {
-    localStorage.removeItem("lastPath");
-    try {
-      router.push({ path: lastPath }).catch(() => {
-        console.error("Failed to navigate to:", lastPath);
-        router.push("/");
-      });
-    } catch (error) {
-      console.error("Navigation error:", error);
-      router.push("/");
-    }
-    return;
+  // Use the captured redirect path
+  if (redirectPath.value) {
+    router.push(redirectPath.value);
+  } else {
+    router.push("/");
   }
-  router.push("/");
 };
 </script>
