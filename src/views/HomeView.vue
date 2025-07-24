@@ -3,6 +3,7 @@ import { ref, onMounted, computed, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
+import SubscriptionForm from "@/components/SubscriptionForm.vue";
 import type { SpecialOffer } from "@/types/specialOffers";
 import type { TrendingItem } from "@/types/trending";
 import { collection, getDocs } from "firebase/firestore";
@@ -625,7 +626,9 @@ async function loadTrendingItems() {
       </div>
     </div>
 
-    <div class="h-20"></div>
+    <div class="mt-8">
+      <SubscriptionForm />
+    </div>
   </div>
 </template>
 
