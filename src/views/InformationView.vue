@@ -50,9 +50,7 @@
           <h3 class="font-medium text-anvaya-blue dark:text-anvaya-light mb-2">
             {{ item.question }}
           </h3>
-          <p class="text-sm text-gray-600 dark:text-gray-400">
-            {{ item.answer }}
-          </p>
+          <p class="text-sm text-gray-600 dark:text-gray-400" v-html="linkify(item.answer)"></p>
           <div class="mt-2 flex items-center gap-2">
             <span class="text-xs px-2 py-0.5 bg-anvaya-blue/10 dark:bg-anvaya-light/10 text-anvaya-blue dark:text-anvaya-light rounded-full">
               {{ item.category }}
@@ -304,6 +302,17 @@ const filteredFAQs = computed(() => {
       item.answer.toLowerCase().includes(query)
   );
 });
+
+// Turn plain URLs into clickable links. Keeps original text for non-URLs.
+function linkify(text: string): string {
+  if (!text) return "";
+  const urlRegex = /(https?:\/\/[^\s)]+|www\.[^\s)]+)/gi;
+  return text.replace(urlRegex, (match: string) => {
+    const hasProtocol = /^https?:\/\//i.test(match);
+    const href = hasProtocol ? match : `https://${match}`;
+    return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="text-anvaya-blue underline">${match}</a>`;
+  });
+}
 
 function handleTabClick(tabId: string) {
   if (tabId === 'guide') {
