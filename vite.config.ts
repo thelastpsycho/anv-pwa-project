@@ -3,6 +3,7 @@ import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { VitePWA } from "vite-plugin-pwa";
+import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -30,6 +31,7 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    visualizer({ filename: "stats.html", open: true }),
     VitePWA({
       registerType: "autoUpdate",
       devOptions: {
