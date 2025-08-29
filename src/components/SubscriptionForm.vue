@@ -51,6 +51,21 @@
                 </div>
               </div>
 
+              <!-- Terms and Conditions Agreement -->
+              <div class="w-full mt-1">
+                <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                  By clicking "Subscribe", you agree to the 
+                  <router-link 
+                    to="/terms-and-conditions" 
+                    class="text-anvaya-blue dark:text-anvaya-light hover:underline font-medium"
+                    target="_blank"
+                  >
+                    Terms and Conditions
+                  </router-link>
+                  and consent to receive marketing communications from The Anvaya Bali.
+                </p>
+              </div>
+
               <!-- Mailchimp hidden fields -->
               <div hidden>
                 <input type="hidden" name="tags" value="2558060" />
