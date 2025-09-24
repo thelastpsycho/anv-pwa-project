@@ -12,8 +12,8 @@
           />
         </div>
         <button
-          @click="showAddModal = true"
           class="inline-flex items-center gap-2 px-4 py-2 bg-anvaya-blue text-white text-sm font-medium rounded-lg hover:bg-anvaya-blue/90 transition-all duration-200 shadow-sm"
+          @click="showAddModal = true"
         >
           <i class="mdi mdi-plus text-lg"></i>
           <span>Add Amenity</span>
@@ -35,14 +35,14 @@
             </div>
             <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <button
-                @click="editAmenity(amenity)"
                 class="p-2 bg-gray-100 text-anvaya-blue rounded-lg hover:bg-gray-200 transition-colors"
+                @click="editAmenity(amenity)"
               >
                 <i class="mdi mdi-pencil"></i>
               </button>
               <button
-                @click="deleteAmenity(amenity.id)"
                 class="p-2 bg-gray-100 text-red-600 rounded-lg hover:bg-gray-200 transition-colors"
+                @click="deleteAmenity(amenity.id)"
               >
                 <i class="mdi mdi-delete"></i>
               </button>

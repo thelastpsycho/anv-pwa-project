@@ -4,18 +4,31 @@ import { useRoute } from "vue-router";
 import BottomNav from "@/components/BottomNav.vue";
 import SplashScreen from "@/components/SplashScreen.vue";
 import PWAUpdateNotification from "@/components/PWAUpdateNotification.vue";
+import SearchOverlay from "@/components/SearchOverlay.vue";
 import { useAppStore } from "@/stores/app";
+import { useSearchStore } from "@/stores/search";
+import { searchIndexService } from "@/services/searchIndex";
 import CookieConsent from "@/components/CookieConsent.vue";
 import { trackEvent } from '@/utils/analytics';
 
 const showContent = ref(false);
 const appStore = useAppStore();
+const searchStore = useSearchStore();
 const route = useRoute();
 
 const isBackoffice = computed(() => route.path.startsWith("/backoffice"));
 
-onMounted(() => {
+onMounted(async () => {
   appStore.initTheme();
+
+  // Initialize search index
+  try {
+    const searchIndex = await searchIndexService.initializeSearchIndex();
+    searchStore.initializeSearchIndex(searchIndex);
+  } catch (error) {
+    console.error('Failed to initialize search index:', error);
+  }
+
   if (isBackoffice.value) {
     showContent.value = true;
   }
@@ -42,6 +55,7 @@ trackEvent('user_action', 'button_click', 'login_button');
         </router-view>
       </main>
       <BottomNav v-if="!isBackoffice" />
+      <SearchOverlay />
       <PWAUpdateNotification />
       <CookieConsent />
     </div>

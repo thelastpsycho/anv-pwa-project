@@ -25,9 +25,9 @@
         <button
           v-for="tab in tabs"
           :key="tab.id"
-          @click="activeTab = tab.id"
           class="relative flex-1 px-3 py-2 rounded-lg text-sm font-medium text-center transition-colors duration-300"
           :class="[activeTab === tab.id ? 'text-anvaya-blue' : 'text-gray-500 hover:text-gray-700']"
+          @click="activeTab = tab.id"
         >
           {{ tab.label }}
         </button>
@@ -39,8 +39,8 @@
         <h2 class="text-lg font-medium">Chat Logs</h2>
         <div class="flex items-center">
           <input
-          type="search"
           v-model="searchQuery"
+          type="search"
           placeholder="Search messages..."
           class="px-3 py-1.5 text-xs rounded-lg border border-gray-200 focus:outline-none focus:border-anvaya-blue/30"
           />
@@ -109,18 +109,18 @@
   </span>
   <div class="flex gap-2">
     <button
-    @click="currentPage--"
     :disabled="currentPage === 1"
     class="px-2 py-1 rounded border disabled:opacity-50"
     :class="currentPage === 1 ? 'text-gray-400' : 'hover:bg-gray-50'"
+    @click="currentPage--"
     >
     Previous
   </button>
   <button
-  @click="currentPage++"
   :disabled="endIndex >= filteredSessions.length"
   class="px-2 py-1 rounded border disabled:opacity-50"
   :class="endIndex >= filteredSessions.length ? 'text-gray-400' : 'hover:bg-gray-50'"
+  @click="currentPage++"
   >
   Next
 </button>
@@ -137,9 +137,9 @@
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-sm font-medium text-gray-700">Chat Availability</h3>
         <button
-          @click="toggleChatAvailability"
           class="relative w-11 h-6 flex items-center rounded-full transition-colors duration-300"
           :class="isChatEnabled ? 'bg-green-500/20' : 'bg-gray-200'"
+          @click="toggleChatAvailability"
         >
           <span
             class="absolute left-0.5 w-5 h-5 rounded-full transition-all duration-300 shadow-sm"
@@ -159,9 +159,9 @@
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-sm font-medium text-gray-700">Chat Logging</h3>
         <button
-          @click="toggleLogging"
           class="relative w-11 h-6 flex items-center rounded-full transition-colors duration-300"
           :class="isLoggingEnabled ? 'bg-green-500/20' : 'bg-gray-200'"
+          @click="toggleLogging"
         >
           <span
             class="absolute left-0.5 w-5 h-5 rounded-full transition-all duration-300 shadow-sm"
@@ -187,9 +187,9 @@
           <p class="text-xs text-gray-500 mt-1">Downloads all chat history in JSON format</p>
         </div>
         <button
-          @click="exportChatLogs"
           class="px-4 py-2 bg-anvaya-blue text-white text-sm rounded-lg hover:bg-anvaya-blue/90 transition-colors flex items-center gap-2"
           :disabled="isExporting"
+          @click="exportChatLogs"
         >
           <i class="mdi mdi-download"></i>
           {{ isExporting ? 'Exporting...' : 'Export JSON' }}
@@ -207,8 +207,8 @@
         <button
         v-for="option in cleanupOptions"
         :key="option.days"
-        @click="confirmCleanup(option.days, option.label)"
         class="px-4 py-2 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 flex items-center gap-2"
+        @click="confirmCleanup(option.days, option.label)"
         >
         <i class="mdi mdi-delete-clock text-gray-500"></i>
         Older than {{ option.label }}

@@ -13,8 +13,8 @@
           />
         </div>
         <button
-          @click="openAddModal"
           class="inline-flex items-center gap-2 px-4 py-2 bg-anvaya-blue text-white text-sm font-medium rounded-lg hover:bg-anvaya-blue/90 transition-all duration-200 shadow-sm"
+          @click="openAddModal"
         >
           <i class="mdi mdi-plus text-lg"></i>
           <span>Add Channel</span>
@@ -37,10 +37,10 @@
             <td class="px-4 py-3">{{ channel.number }}</td>
             <td class="px-4 py-3">{{ channel.name }}</td>
             <td class="px-4 py-3 text-right">
-              <button @click="openEditModal(channel)" class="p-2 text-anvaya-blue hover:bg-anvaya-blue/10 rounded-lg transition-colors">
+              <button class="p-2 text-anvaya-blue hover:bg-anvaya-blue/10 rounded-lg transition-colors" @click="openEditModal(channel)">
                 <i class="mdi mdi-pencil text-lg"></i>
               </button>
-              <button @click="deleteChannel(channel.id)" class="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors">
+              <button class="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors" @click="deleteChannel(channel.id)">
                 <i class="mdi mdi-delete text-lg"></i>
               </button>
             </td>

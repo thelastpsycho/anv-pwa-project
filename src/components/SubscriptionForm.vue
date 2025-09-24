@@ -4,9 +4,9 @@
       <div class="p-4">
         <div id="mc_embed_signup">
           <form
+            id="mc-embedded-subscribe-form"
             action="https://anvayabali.us15.list-manage.com/subscribe/post?u=12495703fa3cb1ec5555971b7&id=070125699b&f_id=0041a5e0f0"
             method="post"
-            id="mc-embedded-subscribe-form"
             name="mc-embedded-subscribe-form"
             class="validate"
             target="_blank"
@@ -24,25 +24,25 @@
               <!-- Input Group -->
               <div class="w-full">
                 <div id="mce-responses" class="w-full mb-2">
-                  <div class="response text-red-500/80 dark:text-red-400/80 text-xs" id="mce-error-response" style="display: none"></div>
-                  <div class="response text-green-600/80 dark:text-green-500/80 text-xs" id="mce-success-response" style="display: none"></div>
+                  <div id="mce-error-response" class="response text-red-500/80 dark:text-red-400/80 text-xs" style="display: none"></div>
+                  <div id="mce-success-response" class="response text-green-600/80 dark:text-green-500/80 text-xs" style="display: none"></div>
                 </div>
                 <div class="mc-field-group">
                   <label for="mce-EMAIL" class="sr-only">Email Address</label>
                   <div class="relative flex w-full">
                     <input
+                      id="mce-EMAIL"
                       type="email"
                       name="EMAIL"
                       class="required email w-full px-4 py-2.5 rounded-xl border border-anvaya-gray/50 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-anvaya-blue/50 dark:focus:ring-anvaya-light/50 bg-white/50 dark:bg-gray-700/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all duration-200"
-                      id="mce-EMAIL"
                       required
                       placeholder="Enter your email address"
                       value=""
                     />
                     <button
+                      id="mc-embedded-subscribe"
                       type="submit"
                       name="subscribe"
-                      id="mc-embedded-subscribe"
                       class="absolute right-1 top-1 bottom-1 py-2 px-5 bg-anvaya-blue text-white rounded-xl hover:bg-anvaya-blue/90 focus:outline-none focus:ring-2 focus:ring-anvaya-blue transition-all duration-200 font-medium text-sm"
                     >
                       Subscribe
@@ -124,8 +124,8 @@ onMounted(() => {
     };
     mailchimpScript.onload = () => {
       (function ($: any) {
-        window.fnames = new Array();
-        window.ftypes = new Array();
+        window.fnames = [];
+        window.ftypes = [];
         window.fnames[0] = 'EMAIL';
         window.ftypes[0] = 'email';
       })(window.jQuery);

@@ -8,13 +8,13 @@
         <button
           v-for="tab in tabs"
           :key="tab.id"
-          @click="handleTabClick(tab.id)"
           :class="[
             'px-4 py-2 rounded-lg text-sm whitespace-nowrap transition-colors',
             activeTab === tab.id
               ? 'bg-anvaya-blue text-white'
               : 'bg-anvaya-blue/10 text-anvaya-blue hover:bg-anvaya-blue/20'
           ]"
+          @click="handleTabClick(tab.id)"
         >
           {{ tab.label }}
         </button>

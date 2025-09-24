@@ -65,8 +65,8 @@
             ></div>
             <div class="absolute top-3 right-3">
               <button
-                @click="selectedPromo = null"
                 class="p-1.5 rounded-full bg-black/20 text-white hover:bg-black/40 transition-colors"
+                @click="selectedPromo = null"
               >
                 <i class="mdi mdi-close text-lg"></i>
               </button>
@@ -156,8 +156,8 @@
               View Menu
             </a>
             <button
-              @click="handleReserveClick(venue)"
               class="flex-1 py-2.5 bg-anvaya-blue text-white rounded-lg hover:bg-anvaya-blue/90 transition-colors font-medium"
+              @click="handleReserveClick(venue)"
             >
               Reserve Table
             </button>

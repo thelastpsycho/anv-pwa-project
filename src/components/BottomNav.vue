@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
+import SearchBar from "@/components/SearchBar.vue";
 
 const route = useRoute();
 </script>
@@ -31,6 +32,8 @@ const route = useRoute();
           <i class="mdi mdi-home-outline text-2xl"></i>
           <span class="text-xs">Home</span>
         </router-link>
+
+        <SearchBar />
 
         <router-link
           to="/chat"

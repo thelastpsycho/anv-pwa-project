@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="handleLogin" class="space-y-4">
+  <form class="space-y-4" @submit.prevent="handleLogin">
     <div>
       <label>Room Number</label>
       <input v-model="roomNumber" type="text" required />

@@ -39,7 +39,8 @@ onMounted(() => {
   <div class="wellness min-h-screen bg-white dark:bg-gray-900">
     <PageHeader title="Wellness & Spa" />
 
-    <div class="px-4 pb-12 space-y-6"
+    <div
+class="px-4 pb-12 space-y-6"
       :class="[
         'opacity-0 translate-y-5 transition-all duration-600 ease-out',
         isLoaded ? 'opacity-100 translate-y-0' : '',
@@ -114,8 +115,8 @@ onMounted(() => {
 
             <button
               v-if="service.hasBooking"
-              @click="handleBookNow(service.title)"
               class="w-full py-3 bg-anvaya-blue/10 dark:bg-anvaya-light/10 text-anvaya-blue dark:text-anvaya-light rounded-lg hover:bg-anvaya-blue/20 dark:hover:bg-anvaya-light/20 transition-colors font-medium text-sm"
+              @click="handleBookNow(service.title)"
             >
               Book Session
             </button>

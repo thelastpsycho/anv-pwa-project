@@ -18,8 +18,8 @@ const goBack = () => {
   >
     <div class="flex items-center gap-3 px-4 py-3">
       <button
-        @click="goBack"
         class="p-2 -ml-2 rounded-lg hover:bg-anvaya-blue/5 dark:hover:bg-anvaya-light/5 text-anvaya-blue dark:text-anvaya-light transition-colors"
+        @click="goBack"
       >
         <i class="mdi mdi-arrow-left text-xl"></i>
       </button>

@@ -12,8 +12,8 @@
             {{ isEdit ? "Edit" : "Add" }} {{ title }}
           </h3>
           <button
-            @click="$emit('close')"
             class="p-2 text-gray-500 hover:text-gray-700 rounded-lg"
+            @click="$emit('close')"
           >
             <i class="mdi mdi-close"></i>
           </button>
@@ -21,7 +21,7 @@
       </div>
 
       <div class="p-4 overflow-y-auto flex-1">
-        <form @submit.prevent="handleSubmit" class="space-y-3">
+        <form class="space-y-3" @submit.prevent="handleSubmit">
           <div v-for="(field, key) in fields" :key="key">
             <label
               class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1"
@@ -65,8 +65,8 @@
           <div class="flex justify-end gap-2">
             <button
               type="button"
-              @click="$emit('close')"
               class="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300"
+              @click="$emit('close')"
             >
               Cancel
             </button>

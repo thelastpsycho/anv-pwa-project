@@ -13,6 +13,7 @@
     "moduleResolution": "Node",
     "types": ["node"],
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "lib": ["ESNext"]
   }
 }
