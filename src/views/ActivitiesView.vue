@@ -8,13 +8,13 @@
         <button
           v-for="day in weekDays"
           :key="day.value"
-          @click="selectedDay = day.value"
           :class="[
             'px-3 py-1.5 text-sm rounded-lg whitespace-nowrap transition-colors',
             selectedDay === day.value
               ? 'bg-anvaya-blue text-white'
               : 'bg-anvaya-blue/10 text-anvaya-blue hover:bg-anvaya-blue/20'
           ]"
+          @click="selectedDay = day.value"
         >
           {{ day.label }}
         </button>
@@ -26,13 +26,13 @@
       <button
         v-for="period in timePeriods"
         :key="period.value"
-        @click="selectedPeriod = period.value"
         :class="[
           'px-2.5 py-1 rounded-lg text-[10px] whitespace-nowrap transition-colors flex-1',
           selectedPeriod === period.value
             ? 'bg-anvaya-blue text-white'
             : 'bg-anvaya-blue/10 text-anvaya-blue hover:bg-anvaya-blue/20'
         ]"
+        @click="selectedPeriod = period.value"
       >
         {{ period.label }}
       </button>
@@ -49,8 +49,8 @@
           <img
             :src="activity.image"
             :alt="activity.title"
-            @error="handleImageError"
             class="w-full h-full object-cover"
+            @error="handleImageError"
           />
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
           <div class="absolute bottom-4 left-4 right-4">

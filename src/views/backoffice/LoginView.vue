@@ -4,16 +4,16 @@
   >
     <div class="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden">
       <div class="p-8 pt-8 pb-10">
-        <form @submit.prevent="handleLogin" class="space-y-6">
+        <form class="space-y-6" @submit.prevent="handleLogin">
           <div>
             <div class="relative">
               <i
                 class="mdi mdi-email-outline absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
               ></i>
               <input
+                id="email"
                 v-model="email"
                 type="email"
-                id="email"
                 required
                 class="w-full pl-10 pr-4 py-2.5 rounded-lg bg-gray-50 border border-gray-200 focus:border-anvaya-blue focus:ring-1 focus:ring-anvaya-blue/20 outline-none transition-colors text-sm"
                 placeholder="Email Address"
@@ -27,17 +27,17 @@
                 class="mdi mdi-lock-outline absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
               ></i>
               <input
+                id="password"
                 v-model="password"
                 :type="showPassword ? 'text' : 'password'"
-                id="password"
                 required
                 class="w-full pl-10 pr-12 py-2.5 rounded-lg bg-gray-50 border border-gray-200 focus:border-anvaya-blue focus:ring-1 focus:ring-anvaya-blue/20 outline-none transition-colors text-sm"
                 placeholder="Password"
               />
               <button
                 type="button"
-                @click="showPassword = !showPassword"
                 class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                @click="showPassword = !showPassword"
               >
                 <i
                   :class="[showPassword ? 'mdi mdi-eye-off-outline' : 'mdi mdi-eye-outline']"
@@ -50,9 +50,9 @@
             <div class="flex items-center">
               <input
                 id="remember-me"
+                v-model="rememberMe"
                 name="remember-me"
                 type="checkbox"
-                v-model="rememberMe"
                 class="h-4 w-4 text-anvaya-blue focus:ring-anvaya-blue border-gray-300 rounded"
               />
               <label for="remember-me" class="ml-2 block text-sm text-gray-900">

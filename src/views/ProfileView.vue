@@ -12,7 +12,7 @@
       <div v-if="!authStore.isAuthenticated" class="mt-8">
         <!-- Login Form -->
         <div class="max-w-sm mx-auto">
-          <form @submit.prevent="handleLogin" class="space-y-4">
+          <form class="space-y-4" @submit.prevent="handleLogin">
             <div class="relative">
               <div class="relative">
                 <i
@@ -115,8 +115,8 @@
 
           <div class="space-y-3">
             <button
-              @click="handleLogout"
               class="w-full py-3 bg-anvaya-blue/10 dark:bg-anvaya-light/10 text-anvaya-blue dark:text-anvaya-light rounded-lg hover:bg-anvaya-blue/20 dark:hover:bg-anvaya-light/20 transition-colors font-medium flex items-center justify-center gap-2"
+              @click="handleLogout"
             >
               <i class="mdi mdi-logout"></i>
               <span>Logout</span>

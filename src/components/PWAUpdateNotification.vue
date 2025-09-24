@@ -12,9 +12,9 @@
       </span>
     </div>
     <button
-      @click="updateApp"
       :disabled="updating"
       class="px-4 py-2 bg-anvaya-blue text-white rounded-lg text-sm hover:bg-anvaya-blue/90 transition-colors disabled:opacity-50"
+      @click="updateApp"
     >
       {{ updating ? "Updating..." : "Update" }}
     </button>

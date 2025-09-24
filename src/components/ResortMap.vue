@@ -4,9 +4,9 @@
 
     <!-- Location Button -->
     <button
-      @click="centerOnLocation"
       class="absolute bottom-4 right-4 z-[400] p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
       :class="{ 'text-anvaya-blue': isLocating }"
+      @click="centerOnLocation"
     >
       <i class="mdi mdi-crosshairs-gps text-lg"></i>
     </button>
@@ -18,18 +18,18 @@
           <button
             v-for="category in categories"
             :key="category"
-            @click="toggleCategory(category)"
             class="p-1.5 rounded-full text-xs whitespace-nowrap flex items-center transition-all duration-200 relative group"
             :class="[
               activeCategories.includes(category)
                 ? 'bg-anvaya-blue text-white'
                 : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300',
             ]"
+            @click="toggleCategory(category)"
           >
             <i :class="[getCategoryIcon(category), 'text-base']"></i>
             <span 
-              class="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center text-[9px] rounded-full bg-anvaya-blue text-white"
               v-if="getPointCount(category) > 0"
+              class="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center text-[9px] rounded-full bg-anvaya-blue text-white"
             >
               {{ getPointCount(category) }}
             </span>

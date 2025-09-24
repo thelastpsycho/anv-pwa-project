@@ -112,8 +112,8 @@
       <!-- Back Button -->
       <div class="text-center mt-8">
         <button 
-          @click="$router.go(-1)" 
-          class="inline-flex items-center px-6 py-3 bg-anvaya-blue text-white rounded-xl hover:bg-anvaya-blue/90 focus:outline-none focus:ring-2 focus:ring-anvaya-blue transition-all duration-200 font-medium"
+          class="inline-flex items-center px-6 py-3 bg-anvaya-blue text-white rounded-xl hover:bg-anvaya-blue/90 focus:outline-none focus:ring-2 focus:ring-anvaya-blue transition-all duration-200 font-medium" 
+          @click="$router.go(-1)"
         >
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>

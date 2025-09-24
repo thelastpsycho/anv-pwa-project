@@ -27,14 +27,14 @@
         </div>
         <div class="flex items-center justify-end gap-3">
           <button
-            @click="declineCookies"
             class="px-4 py-2 text-xs font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+            @click="declineCookies"
           >
             Decline All
           </button>
           <button
-            @click="acceptCookies"
             class="px-4 py-2 bg-anvaya-blue text-white text-xs font-medium rounded-lg hover:bg-anvaya-blue/90 transition-colors shadow-sm"
+            @click="acceptCookies"
           >
             Accept All
           </button>

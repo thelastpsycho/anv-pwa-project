@@ -4,14 +4,14 @@
       <p class="text-gray-700 mb-6">{{ message }}</p>
       <div class="flex justify-end gap-3">
         <button
-          @click="cancel"
           class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+          @click="cancel"
         >
           Cancel
         </button>
         <button
-          @click="confirm"
           class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          @click="confirm"
         >
           {{ confirmText }}
         </button>

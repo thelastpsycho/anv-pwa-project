@@ -13,8 +13,8 @@
           />
         </div>
         <button
-          @click="handleAdd"
           class="inline-flex items-center gap-2 px-4 py-2 bg-anvaya-blue text-white text-sm font-medium rounded-lg hover:bg-anvaya-blue/90 transition-all duration-200 shadow-sm"
+          @click="handleAdd"
         >
           <i class="mdi mdi-plus text-lg"></i>
           <span>Add Point</span>
@@ -50,14 +50,14 @@
           </div>
           <div class="flex gap-1.5 mt-2 pt-2 border-t border-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <button
-              @click="editPoint(point)"
               class="flex-1 py-1 bg-anvaya-blue/10 text-anvaya-blue rounded-lg hover:bg-anvaya-blue/20 transition-colors text-xs font-medium"
+              @click="editPoint(point)"
             >
               <i class="mdi mdi-pencil mr-1"></i> Edit
             </button>
             <button
-              @click="deletePoint(point.id)"
               class="flex-1 py-1 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors text-xs font-medium"
+              @click="deletePoint(point.id)"
             >
               <i class="mdi mdi-delete mr-1"></i> Delete
             </button>

@@ -190,8 +190,8 @@ const handleSubmit = async () => {
                 Date
               </label>
               <input
-                type="date"
                 v-model="reservation.date"
+                type="date"
                 class="w-full px-2 py-1.5 text-sm rounded-lg border"
               />
             </div>
@@ -200,8 +200,8 @@ const handleSubmit = async () => {
                 Time
               </label>
               <input
-                type="time"
                 v-model="reservation.time"
+                type="time"
                 class="w-full px-2 py-1.5 text-sm rounded-lg border"
               />
             </div>
@@ -213,8 +213,8 @@ const handleSubmit = async () => {
               Number of Guests
             </label>
             <input
-              type="number"
               v-model="reservation.guests"
+              type="number"
               class="w-full px-2 py-1.5 text-sm rounded-lg border"
             />
           </div>
@@ -234,14 +234,14 @@ const handleSubmit = async () => {
         <!-- Footer -->
         <div class="p-4 pt-3 border-t dark:border-gray-700 flex justify-end gap-2">
           <button
-            @click="$emit('close')"
             class="px-3 py-1.5 text-xs rounded-lg border hover:bg-gray-50"
+            @click="$emit('close')"
           >
             Cancel
           </button>
           <button
-            @click="handleSubmit"
             class="px-3 py-1.5 text-xs bg-anvaya-blue text-white rounded-lg hover:bg-anvaya-blue/90"
+            @click="handleSubmit"
           >
             Confirm Reservation
           </button>

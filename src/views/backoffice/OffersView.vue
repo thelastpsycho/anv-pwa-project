@@ -12,8 +12,8 @@
           />
         </div>
         <button
-          @click="handleAdd"
           class="inline-flex items-center gap-2 px-4 py-2 bg-anvaya-blue text-white text-sm font-medium rounded-lg hover:bg-anvaya-blue/90 transition-all duration-200 shadow-sm"
+          @click="handleAdd"
         >
           <i class="mdi mdi-plus text-lg"></i>
           <span>Add Offer</span>
@@ -25,9 +25,9 @@
       <draggable
         v-model="offers"
         item-key="id"
-        @end="handleDragEnd"
         handle=".drag-handle"
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        @end="handleDragEnd"
       >
         <template #item="{ element: offer }">
           <div
@@ -49,14 +49,14 @@
                   <i class="mdi mdi-drag-vertical"></i>
                 </button>
                 <button
-                  @click="editOffer(offer)"
                   class="p-2 bg-white/80 text-anvaya-blue rounded-lg hover:bg-white transition-colors shadow-sm"
+                  @click="editOffer(offer)"
                 >
                   <i class="mdi mdi-pencil"></i>
                 </button>
                 <button
-                  @click="deleteOffer(offer.id)"
                   class="p-2 bg-white/80 text-red-600 rounded-lg hover:bg-white transition-colors shadow-sm"
+                  @click="deleteOffer(offer.id)"
                 >
                   <i class="mdi mdi-delete"></i>
                 </button>

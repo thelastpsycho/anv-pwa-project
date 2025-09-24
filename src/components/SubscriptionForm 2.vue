@@ -3,9 +3,9 @@
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
       <div id="mc_embed_signup">
         <form
+          id="mc-embedded-subscribe-form"
           action="https://anvayabali.us15.list-manage.com/subscribe/post?u=12495703fa3cb1ec5555971b7&amp;id=070125699b&amp;f_id=0041a5e0f0"
           method="post"
-          id="mc-embedded-subscribe-form"
           name="mc-embedded-subscribe-form"
           class="validate"
           target="_blank"
@@ -26,10 +26,10 @@
                     <i class="mdi mdi-email-outline text-anvaya-blue/60 dark:text-anvaya-light/60 text-xl" aria-hidden="true"></i>
                   </div>
                   <input
+                    id="mce-EMAIL"
                     type="email"
                     name="EMAIL"
                     class="required email w-full pl-10 pr-4 py-3 rounded-lg border border-anvaya-gray/10 dark:border-gray-700 focus:outline-none focus:border-anvaya-blue/30 dark:focus:border-anvaya-light/30 bg-white/50 dark:bg-gray-800/50 text-anvaya-blue dark:text-anvaya-light"
-                    id="mce-EMAIL"
                     required
                     placeholder="Your email address"
                     value=""
@@ -38,9 +38,9 @@
                 <div class="optionalParent">
                   <div class="clear foot">
                     <button
+                      id="mc-embedded-subscribe"
                       type="submit"
                       name="subscribe"
-                      id="mc-embedded-subscribe"
                       class="button w-full sm:w-auto py-3 px-6 bg-anvaya-blue text-white rounded-lg hover:bg-anvaya-blue/90 transition-colors font-medium flex items-center justify-center"
                     >
                       <span>Subscribe</span>
@@ -55,8 +55,8 @@
               <input type="hidden" name="tags" value="2558060" />
             </div>
             <div id="mce-responses" class="clear foot mt-4 w-full max-w-lg">
-              <div class="response text-red-500 p-3 rounded-lg bg-red-50 dark:bg-red-500/10 dark:text-red-400" id="mce-error-response" style="display: none"></div>
-              <div class="response text-green-500 p-3 rounded-lg bg-green-50 dark:bg-green-500/10 dark:text-green-400" id="mce-success-response" style="display: none"></div>
+              <div id="mce-error-response" class="response text-red-500 p-3 rounded-lg bg-red-50 dark:bg-red-500/10 dark:text-red-400" style="display: none"></div>
+              <div id="mce-success-response" class="response text-green-500 p-3 rounded-lg bg-green-50 dark:bg-green-500/10 dark:text-green-400" style="display: none"></div>
             </div>
             <div style="position: absolute; left: -5000px;" aria-hidden="true">
               <input type="text" name="b_12495703fa3cb1ec5555971b7_070125699b" tabindex="-1" value="" />
@@ -96,8 +96,8 @@ onMounted(() => {
   script.onload = () => {
     // Mailchimp validation script loaded
     (function ($: any) {
-      window.fnames = new Array();
-      window.ftypes = new Array();
+      window.fnames = [];
+      window.ftypes = [];
       fnames[0] = "EMAIL";
       ftypes[0] = "email";
       fnames[2] = "LNAME";

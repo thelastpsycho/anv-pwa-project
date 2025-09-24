@@ -39,16 +39,16 @@
               <div>
                 <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
                 <input
-                  type="date"
                   v-model="bookingForm.date"
+                  type="date"
                   class="w-full px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 />
               </div>
               <div>
                 <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Time</label>
                 <input
-                  type="time"
                   v-model="bookingForm.time"
+                  type="time"
                   class="w-full px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 />
               </div>
@@ -59,8 +59,8 @@
               <div>
                 <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
                 <input
-                  type="text"
                   v-model="bookingForm.name"
+                  type="text"
                   class="w-full px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 />
               </div>
@@ -68,16 +68,16 @@
                 <div class="col-span-2">
                   <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Guests</label>
                   <input
-                    type="number"
                     v-model="bookingForm.guests"
+                    type="number"
                     class="w-full px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   />
                 </div>
                 <div class="col-span-5">
                   <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
                   <input
-                    type="tel"
                     v-model="bookingForm.phone"
+                    type="tel"
                     placeholder="+62"
                     class="w-full px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   />
@@ -85,8 +85,8 @@
                 <div class="col-span-5">
                   <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
                   <input
-                    type="email"
                     v-model="bookingForm.email"
+                    type="email"
                     class="w-full px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   />
                 </div>
@@ -102,14 +102,14 @@
             </div>
             <div class="flex justify-end gap-2">
               <button
-                @click="showBookingForm = false"
                 class="px-3 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                @click="showBookingForm = false"
               >
                 Cancel
               </button>
               <button
-                @click="handleBookingSubmit"
                 class="px-3 py-1 text-xs bg-anvaya-blue text-white rounded-lg hover:bg-anvaya-blue/90"
+                @click="handleBookingSubmit"
               >
                 Confirm
               </button>
@@ -130,7 +130,7 @@
 
         <!-- Input Area -->
         <div class="border-t dark:border-gray-800 pt-4">
-          <form @submit.prevent="sendMessage" class="flex gap-2">
+          <form class="flex gap-2" @submit.prevent="sendMessage">
             <input
               v-model="newMessage"
               type="text"

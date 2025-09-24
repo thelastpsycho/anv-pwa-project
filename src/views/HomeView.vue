@@ -360,8 +360,8 @@ async function loadTrendingItems() {
           <div class="flex flex-col items-center">
             <!-- Theme Toggle -->
             <button
-              @click="toggleDarkMode"
               class="p-2 rounded-lg hover:bg-anvaya-blue/5 dark:hover:bg-anvaya-light/5 transition-colors"
+              @click="toggleDarkMode"
             >
               <i
                 :class="[
@@ -532,8 +532,8 @@ async function loadTrendingItems() {
             class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
           ></div>
           <button
-            @click="selectedOffer = null"
             class="absolute top-4 right-4 p-2 rounded-full bg-black/20 text-white hover:bg-black/40 transition-colors"
+            @click="selectedOffer = null"
           >
             <i class="mdi mdi-close text-lg"></i>
           </button>
@@ -615,8 +615,8 @@ async function loadTrendingItems() {
             </div>
           </div>
           <button
-            @click="handleOfferAction(selectedOffer)"
             class="w-full py-3 bg-anvaya-blue text-white rounded-lg hover:bg-anvaya-blue/90 transition-colors"
+            @click="handleOfferAction(selectedOffer)"
           >
             {{
               selectedOffer.type === "activity" ? "Book Now" : "View Details"

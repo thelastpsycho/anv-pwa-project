@@ -6,10 +6,10 @@
         <!-- Logo -->
         <div class="flex items-center justify-center h-16 border-b">
           <img
-            @click="router.push('/')"
             src="https://www.theanvayabali.com/wp-content/themes/wcl/images/logo-theanvaya.svg"
             alt="The Anvaya Logo"
             class="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+            @click="router.push('/')"
           />
         </div>
         
@@ -44,9 +44,9 @@
       </div>
       <!-- Mobile close button -->
       <button
+        v-if="sideNavOpen"
         class="absolute top-4 right-4 sm:hidden text-gray-500 hover:text-gray-700"
         @click="sideNavOpen = false"
-        v-if="sideNavOpen"
       >
         <i class="mdi mdi-close text-2xl"></i>
       </button>
@@ -58,8 +58,8 @@
         <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
           <!-- Mobile menu button -->
           <button
-            @click="sideNavOpen = !sideNavOpen"
             class="sm:hidden text-gray-500 hover:text-gray-700"
+            @click="sideNavOpen = !sideNavOpen"
           >
             <i class="mdi mdi-menu text-2xl"></i>
           </button>
@@ -86,8 +86,8 @@
             <!-- User Dropdown -->
             <div v-if="currentUser" class="relative">
               <button
-                @click="userDropdownOpen = !userDropdownOpen"
                 class="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                @click="userDropdownOpen = !userDropdownOpen"
               >
                 <img
                   src="https://www.gravatar.com/avatar/?d=mp"
@@ -106,8 +106,8 @@
                   {{ currentUser?.email }}
                 </div>
                 <button
-                  @click="handleSignOut"
                   class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  @click="handleSignOut"
                 >
                   Sign Out
                 </button>

@@ -10,9 +10,9 @@
         </p>
 
         <button
-          @click="handleMigration"
           :disabled="loading"
           class="px-4 py-2 bg-anvaya-blue text-white rounded-lg hover:bg-anvaya-blue/90 disabled:opacity-50"
+          @click="handleMigration"
         >
           {{ loading ? "Migrating..." : "Start Migration" }}
         </button>
@@ -27,9 +27,9 @@
       <div class="mt-8">
         <h3 class="text-lg font-semibold mb-2">Migrate TV Channel List</h3>
         <button
-          @click="migrateTvChannels"
           class="px-4 py-2 bg-anvaya-blue text-white rounded-lg hover:bg-anvaya-blue/90"
           :disabled="migrating"
+          @click="migrateTvChannels"
         >
           {{ migrating ? 'Migrating...' : 'Migrate TV Channels' }}
         </button>

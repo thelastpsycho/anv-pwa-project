@@ -12,8 +12,8 @@
         </p>
       </div>
       <button
-        @click="handleLogout"
         class="p-2 rounded-lg hover:bg-anvaya-blue/5 dark:hover:bg-anvaya-light/5 text-anvaya-blue dark:text-anvaya-light"
+        @click="handleLogout"
       >
         <i class="mdi mdi-logout text-xl"></i>
       </button>

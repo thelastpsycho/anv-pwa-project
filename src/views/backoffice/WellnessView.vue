@@ -12,8 +12,8 @@
           />
         </div>
         <button
-          @click="handleAdd"
           class="inline-flex items-center gap-2 px-4 py-2 bg-anvaya-blue text-white text-sm font-medium rounded-lg hover:bg-anvaya-blue/90 transition-all duration-200 shadow-sm"
+          @click="handleAdd"
         >
           <i class="mdi mdi-plus text-lg"></i>
           <span>Add Service</span>
@@ -39,14 +39,14 @@
             ></div>
             <div class="absolute top-4 right-4 flex gap-2">
               <button
-                @click="editService(service)"
                 class="p-2 bg-white/80 text-anvaya-blue rounded-lg hover:bg-white transition-colors shadow-sm"
+                @click="editService(service)"
               >
                 <i class="mdi mdi-pencil"></i>
               </button>
               <button
-                @click="deleteService(service.id)"
                 class="p-2 bg-white/80 text-red-600 rounded-lg hover:bg-white transition-colors shadow-sm"
+                @click="deleteService(service.id)"
               >
                 <i class="mdi mdi-delete"></i>
               </button>
@@ -66,11 +66,11 @@
 
     <EditDataModal
       v-if="showAddModal || editingService"
-      :isOpen="showAddModal || !!editingService"
+      :is-open="showAddModal || !!editingService"
       :title="editingService ? 'Edit Service' : 'Add New Service'"
       collection="wellness"
       :document-id="editingService?.id"
-      :initialData="editingService || {}"
+      :initial-data="editingService || {}"
       :fields="{
         title: { type: 'text', label: 'Title' },
         description: { type: 'textarea', label: 'Description' },
