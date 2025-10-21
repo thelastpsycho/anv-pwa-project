@@ -217,16 +217,6 @@
   </div>
 </div>
 
-<div>
-  <h3 class="text-sm font-medium text-gray-700 mb-4">Chat Engine</h3>
-  <div class="flex bg-gray-100 rounded-lg p-1 w-fit">
-    <select v-model="selectedEngine" @change="updateEngine(selectedEngine)">
-      <option value="gemini">Gemini</option>
-      <option value="openai">OpenAI</option>
-      <option value="deepseek">DeepSeek</option>
-    </select>
-  </div>
-</div>
 </div>
 </div>
   </div>
@@ -257,7 +247,6 @@ const currentPage = ref(1);
 const itemsPerPage = 10;
 const isChatEnabled = ref(true);
 const isLoggingEnabled = ref(true);
-const selectedEngine = ref('gemini');
 const showCleanupMenu = ref(false);
 const cleanupOptions = [
 { days: 7, label: '1 week' },
@@ -352,8 +341,7 @@ async function loadSettings() {
     if (settings) {
       isChatEnabled.value = settings.enabled ?? true;
       isLoggingEnabled.value = settings.logging ?? true;
-      selectedEngine.value = settings.engine ?? 'gemini';
-    }
+      }
   } catch (error) {
     console.error('Error loading chat settings:', error);
   }
@@ -385,20 +373,6 @@ async function toggleLogging() {
   }
 }
 
-async function updateAIEngine() {
-  try {
-    await setDoc(doc(db, 'settings', 'chat'), {
-      enabled: isChatEnabled.value,
-      logging: isLoggingEnabled.value,
-      engine: selectedEngine.value
-    }, { merge: true });
-  } catch (error) {
-    console.error('Error updating AI engine:', error);
-    // Revert on error
-    const settings = await getDoc(doc(db, 'settings', 'chat'));
-    selectedEngine.value = settings.data()?.engine || 'gemini';
-  }
-}
 
 async function cleanupOldLogs(days: number) {
   try {
@@ -496,10 +470,6 @@ async function exportChatLogs() {
   }
 }
 
-async function updateEngine(engine: string) {
-  selectedEngine.value = engine;
-  await updateAIEngine();
-}
 
 onMounted(() => {
   loadChatSessions();

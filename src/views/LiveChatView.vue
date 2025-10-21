@@ -153,9 +153,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
 import PageHeader from '@/components/PageHeader.vue';
-import { generateGeminiResponse } from '@/services/gemini';
-import { generateOpenAIResponse } from '@/services/openai';
-import { generateDeepSeekResponse } from '@/services/deepseek';
+import { generateN8nResponse } from '@/services/n8n';
 import { collection, addDoc, updateDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { useAuthStore } from '@/stores/auth';
@@ -311,19 +309,8 @@ async function sendMessage() {
       }
     }
 
-    // Get current engine setting
-    const settingsDoc = await getDoc(doc(db, 'settings', 'chat'));
-    const engine = settingsDoc.data()?.engine || 'openai';
-    
-    // Get response from AI
-    const response = await (engine === 'gemini' 
-      ? generateGeminiResponse(messageToSend, messages.value)
-      : engine === 'deepseek'
-        ? generateDeepSeekResponse(messageToSend, messages.value)
-        : generateOpenAIResponse(messageToSend, messages.value).catch(error => {
-            console.error('OpenAI error, falling back to Gemini:', error);
-            return generateGeminiResponse(messageToSend, messages.value);
-          }));
+    // Get response from n8n
+    const response = await generateN8nResponse(messageToSend, messages.value, sessionId.value);
     
     const aiMessage = {
       id: (Date.now() + 1).toString(),
@@ -354,7 +341,7 @@ async function sendMessage() {
     });
     scrollToBottom();
     
-    // End the session if Gemini is unavailable
+    // End the session if n8n is unavailable
     if (sessionId.value) {
       updateDoc(doc(db, 'chatSessions', sessionId.value), {
         status: 'ended',
