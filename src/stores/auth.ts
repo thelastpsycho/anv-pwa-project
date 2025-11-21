@@ -42,7 +42,9 @@ export const useAuthStore = defineStore("auth", {
   actions: {
     async init() {
       const wifiAuth = useWifiAuth();
+      console.log("[AuthStore] Initializing - WiFi auth:", wifiAuth);
       if (wifiAuth.isAuthenticated && wifiAuth.roomNumber) {
+        console.log("[AuthStore] Setting profile user from WiFi auth:", wifiAuth.roomNumber);
         this.profileUser = { roomNumber: wifiAuth.roomNumber };
         this.isBackoffice = false;
       }

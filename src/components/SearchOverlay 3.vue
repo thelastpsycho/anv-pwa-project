@@ -31,16 +31,7 @@
 
           <!-- Search Suggestions -->
           <div v-if="showSuggestions && searchQuery" class="search-suggestions">
-            <!-- Loading State -->
-            <div v-if="searchStore.isSearching" class="search-suggestions__section">
-              <div class="search-suggestion">
-                <i class="mdi mdi-loading search-suggestion__icon loading-spinner"></i>
-                <span class="search-suggestion__text">Searching...</span>
-              </div>
-            </div>
-
-            <!-- Suggestions -->
-            <div v-else class="search-suggestions__section">
+            <div class="search-suggestions__section">
               <h3 class="search-suggestions__title">Suggestions</h3>
               <div
                 v-for="(suggestion, index) in searchStore.suggestions"
@@ -215,18 +206,12 @@ const handleSearchInput = () => {
     showSuggestions.value = true;
     selectedSuggestionIndex.value = -1;
 
-    // Show loading state immediately for better UX
-    if (searchStore.searchIndex.length > 0) {
-      searchStore.isSearching = true;
-    }
-
     debounceTimeout.value = window.setTimeout(() => {
       performSearch();
-    }, 500);
+    }, 300);
   } else {
     showSuggestions.value = false;
     searchStore.setSearchResults([]);
-    searchStore.isSearching = false;
   }
 };
 

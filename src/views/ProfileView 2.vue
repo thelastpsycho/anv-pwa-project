@@ -148,8 +148,7 @@ const redirectPath = ref(route.query.redirect as string | undefined);
 
 onMounted(() => {
   // Optional: Log to confirm the path is captured on component mount
-  console.log("[ProfileView] Component mounted. Current route query:", route.query);
-  console.log("[ProfileView] Redirect path captured:", redirectPath.value);
+  console.log("Login view mounted. Redirect path:", redirectPath.value);
   setTimeout(() => {
     isLoaded.value = true;
   }, 100);
@@ -187,16 +186,10 @@ const togglePassword = () => {
 };
 
 const handleLoginSuccess = () => {
-  console.log("[ProfileView] Login success - Redirect path:", redirectPath.value);
-  console.log("[ProfileView] Auth store authenticated:", authStore.isAuthenticated);
-  console.log("[ProfileView] Auth store profile user:", authStore.profileUser);
-
   // Use the captured redirect path
   if (redirectPath.value) {
-    console.log("[ProfileView] Redirecting to:", redirectPath.value);
     router.push(redirectPath.value);
   } else {
-    console.log("[ProfileView] No redirect path, going to home");
     router.push("/");
   }
 };

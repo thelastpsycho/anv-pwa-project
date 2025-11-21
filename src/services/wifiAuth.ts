@@ -1,36 +1,58 @@
 import { ref } from 'vue';
 
 const AUTH_STORAGE_KEY = 'wifi_auth';
-const AUTH_EXPIRY_DAYS = 3;
+const AUTH_EXPIRY_HOURS = 1;
 const AUTH_CONFIG = {
   BASE_URL: 'https://pms-radius.anvayabali.com/odbc/get_wifi/'
 } as const;
 
 const isAuthenticated = ref(false);
+let cachedAuthData: { roomNumber: string } | null = null;
 
 // Load auth state from storage
 const loadStoredAuth = () => {
+  // Return cached data if available to avoid re-reading localStorage
+  if (cachedAuthData) {
+    return cachedAuthData;
+  }
+
   const stored = localStorage.getItem(AUTH_STORAGE_KEY);
   if (stored) {
     try {
       const { expiry, roomNumber } = JSON.parse(stored);
-      if (new Date().getTime() < expiry) {
+      const currentTime = new Date().getTime();
+
+      console.log(`[WifiAuth] Checking stored auth - Current: ${currentTime}, Expiry: ${expiry}, Valid: ${currentTime < expiry}`);
+
+      if (currentTime < expiry) {
         isAuthenticated.value = true;
-        return { roomNumber };
+        cachedAuthData = { roomNumber };
+        return cachedAuthData;
+      } else {
+        console.log(`[WifiAuth] Session expired, removing stored auth`);
+        localStorage.removeItem(AUTH_STORAGE_KEY);
       }
     } catch (e) {
       console.error("Error parsing stored auth:", e);
+      localStorage.removeItem(AUTH_STORAGE_KEY);
     }
-    localStorage.removeItem(AUTH_STORAGE_KEY);
   }
+
+  isAuthenticated.value = false;
+  cachedAuthData = null;
   return null;
 };
 
+// Initialize auth state immediately when module loads
+const initialAuth = loadStoredAuth();
+
 // Save auth state with expiry
 const saveAuthState = (roomNumber: string) => {
-  const expiry = new Date().getTime() + (AUTH_EXPIRY_DAYS * 24 * 60 * 60 * 1000);
+  const expiry = new Date().getTime() + (AUTH_EXPIRY_HOURS * 60 * 60 * 1000);
+  console.log(`[WifiAuth] Saving auth state - Room: ${roomNumber}, Expiry: ${expiry}`);
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ expiry, roomNumber }));
   isAuthenticated.value = true;
+  cachedAuthData = { roomNumber };
 };
 
 interface WifiCredential {
@@ -113,7 +135,9 @@ export async function authenticateWithWifi(
 }
 
 export const useWifiAuth = () => {
-  const authData = loadStoredAuth();
+  // Use cached data if available, otherwise load from storage
+  const authData = cachedAuthData || loadStoredAuth();
+  console.log(`[WifiAuth] useWifiAuth called - Is authenticated: ${isAuthenticated.value}, Room: ${authData?.roomNumber || null}`);
   return {
     isAuthenticated: isAuthenticated.value,
     roomNumber: authData?.roomNumber || null
