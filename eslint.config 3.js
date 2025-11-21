@@ -8,34 +8,15 @@ export default [
   js.configs.recommended,
   ...vue.configs['flat/recommended'],
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ['**/*.{js,jsx,ts,tsx,vue}'],
     languageOptions: {
-      parser: typescriptParser,
+      parser: vue.parser,
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
         ecmaFeatures: {
           jsx: true,
         },
-      },
-    },
-    plugins: {
-      '@typescript-eslint': typescript,
-    },
-    rules: {
-      ...typescript.configs.recommended.rules,
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-unused-vars': 'warn',
-      'no-undef': 'off',
-    },
-  },
-  {
-    files: ['**/*.vue'],
-    languageOptions: {
-      parser: vue.parser,
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
         parser: typescriptParser,
       },
     },
@@ -43,21 +24,10 @@ export default [
       '@typescript-eslint': typescript,
     },
     rules: {
+      ...typescript.configs.recommended.rules,
       'vue/multi-word-component-names': 'off',
-    },
-  },
-  {
-    files: ['**/*.{js,jsx}'],
-    languageOptions: {
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-        ecmaFeatures: {
-          jsx: true,
-        },
-      },
-    },
-    rules: {
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': 'warn',
       'no-undef': 'off',
     },
   },

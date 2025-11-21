@@ -24,7 +24,7 @@ ${reservation.specialRequests ? `\n💬 Special Requests:\n${reservation.special
 _This reservation was made through The Anvaya Mobile App_`;
 
   const encodedMessage = encodeURIComponent(message);
-  const whatsappNumber = "62811389938"; // The Anvaya's WhatsApp number
+  const whatsappNumber = "6281138200477"; // The Anvaya's WhatsApp number
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   const cleanNumber = whatsappNumber.replace(/\D/g, "");
 

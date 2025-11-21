@@ -7,6 +7,7 @@ import PWAUpdateNotification from "@/components/PWAUpdateNotification.vue";
 import SearchOverlay from "@/components/SearchOverlay.vue";
 import { useAppStore } from "@/stores/app";
 import { useSearchStore } from "@/stores/search";
+import { useAuthStore } from "@/stores/auth";
 import { searchIndexService } from "@/services/searchIndex";
 import CookieConsent from "@/components/CookieConsent.vue";
 import { trackEvent } from '@/utils/analytics';
@@ -20,6 +21,10 @@ const isBackoffice = computed(() => route.path.startsWith("/backoffice"));
 
 onMounted(async () => {
   appStore.initTheme();
+
+  // Initialize auth store
+  const authStore = useAuthStore();
+  await authStore.init();
 
   // Initialize search index
   try {
