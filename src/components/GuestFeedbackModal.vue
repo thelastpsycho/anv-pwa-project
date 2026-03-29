@@ -51,7 +51,7 @@ const handleSubmit = () => {
     setTimeout(() => {
       showThankYou.value = false;
       emit("close");
-    }, 2000);
+    }, 4000);
   }, 500);
 };
 </script>

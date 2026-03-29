@@ -7,8 +7,8 @@
     leave-from-class="transform translate-y-0 opacity-100"
     leave-to-class="transform translate-y-full opacity-0"
   >
-    <div 
-      v-if="!hasConsent" 
+    <div
+      v-if="showConsent"
       class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-6 z-50"
     >
       <div class="flex flex-col gap-4">
@@ -48,19 +48,29 @@
 import { ref, onMounted } from 'vue';
 
 const hasConsent = ref(true);
+const showConsent = ref(false);
 
 function acceptCookies() {
   localStorage.setItem('cookie-consent', 'accepted');
   hasConsent.value = true;
+  showConsent.value = false;
 }
 
 function declineCookies() {
   localStorage.setItem('cookie-consent', 'declined');
   hasConsent.value = true;
+  showConsent.value = false;
 }
 
 onMounted(() => {
   const consent = localStorage.getItem('cookie-consent');
   hasConsent.value = !!consent;
+
+  // Delay showing cookie consent to let feedback modal appear first
+  if (!consent) {
+    setTimeout(() => {
+      showConsent.value = true;
+    }, 5000); // 5 second delay
+  }
 });
 </script> 
