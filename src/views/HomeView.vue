@@ -670,13 +670,14 @@ async function loadTrendingItems() {
     <div class="mt-8">
       <SubscriptionForm />
     </div>
-
-    <GuestFeedbackModal 
-      :show="showFeedbackModal" 
-      @close="showFeedbackModal = false" 
-      @submit="handleFeedbackSubmit"
-    />
   </div>
+
+  <!-- Move modal outside the transformed container -->
+  <GuestFeedbackModal
+    :show="showFeedbackModal"
+    @close="showFeedbackModal = false"
+    @submit="handleFeedbackSubmit"
+  />
 </template>
 
 <style>
