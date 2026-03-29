@@ -58,7 +58,12 @@
 import { ref, onMounted } from "vue";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/config/firebase";
-import type { Amenity } from "@/data/amenities";
+
+interface Amenity {
+  id: string;
+  title: string;
+  description: string;
+}
 
 const amenities = ref<Amenity[]>([]);
 const showAddModal = ref(false);

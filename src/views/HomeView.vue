@@ -4,14 +4,36 @@ import { useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
 import SubscriptionForm from "@/components/SubscriptionForm.vue";
+import GuestFeedbackModal from "@/components/GuestFeedbackModal.vue";
 import type { SpecialOffer } from "@/types/specialOffers";
 import type { TrendingItem } from "@/types/trending";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "@/config/firebase";
 
 const isLoaded = ref(false);
 const authStore = useAuthStore();
 const trendingItems = ref<TrendingItem[]>([]);
+const showFeedbackModal = ref(false);
+
+const handleFeedbackSubmit = async (payload: { missingFacility: string; whyImprove: string }) => {
+  try {
+    await fetch("https://workflow.anvayabali.com/webhook/75295790-e259-46c2-8ee5-dd9abd61a6c6", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        mainQuestion: payload.missingFacility,
+        followUp: payload.whyImprove,
+        timestamp: new Date().toISOString()
+      })
+    });
+  } catch (error) {
+    console.error("Error submitting guest feedback:", error);
+  } finally {
+    showFeedbackModal.value = false;
+  }
+};
 let weatherInterval: number;
 
 const weatherCodes: Record<number, string> = {
@@ -146,6 +168,25 @@ const fetchWeather = async () => {
 onMounted(() => {
   setTimeout(() => {
     isLoaded.value = true;
+    
+    // Automatically trigger the modal on every load if enabled in settings
+    getDoc(doc(db, "settings", "general"))
+      .then((settingsDoc) => {
+        let isEnabled = true; // Default to true
+        if (settingsDoc.exists()) {
+          const data = settingsDoc.data();
+          if (typeof data.enableFeedbackModal !== "undefined") {
+            isEnabled = data.enableFeedbackModal;
+          }
+        }
+        
+        if (isEnabled) {
+          setTimeout(() => {
+            showFeedbackModal.value = true;
+          }, 2000); // 2 second delay after initial load
+        }
+      })
+      .catch(err => console.error("Error checking settings:", err));
   }, 100);
   
   fetchWeather();
@@ -629,6 +670,12 @@ async function loadTrendingItems() {
     <div class="mt-8">
       <SubscriptionForm />
     </div>
+
+    <GuestFeedbackModal 
+      :show="showFeedbackModal" 
+      @close="showFeedbackModal = false" 
+      @submit="handleFeedbackSubmit"
+    />
   </div>
 </template>
 

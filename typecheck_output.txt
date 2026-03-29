@@ -1,0 +1,47 @@
+
+> pwa-anvaya@0.0.0 type-check
+> vue-tsc --build
+
+node_modules/@tsconfig/node22/tsconfig.json(6,13): error TS6046: Argument for '--lib' option must be: 'es5', 'es6', 'es2015', 'es7', 'es2016', 'es2017', 'es2018', 'es2019', 'es2020', 'es2021', 'es2022', 'es2023', 'esnext', 'dom', 'dom.iterable', 'dom.asynciterable', 'webworker', 'webworker.importscripts', 'webworker.iterable', 'webworker.asynciterable', 'scripthost', 'es2015.core', 'es2015.collection', 'es2015.generator', 'es2015.iterable', 'es2015.promise', 'es2015.proxy', 'es2015.reflect', 'es2015.symbol', 'es2015.symbol.wellknown', 'es2016.array.include', 'es2016.intl', 'es2017.date', 'es2017.object', 'es2017.sharedmemory', 'es2017.string', 'es2017.intl', 'es2017.typedarrays', 'es2018.asyncgenerator', 'es2018.asynciterable', 'es2018.intl', 'es2018.promise', 'es2018.regexp', 'es2019.array', 'es2019.object', 'es2019.string', 'es2019.symbol', 'es2019.intl', 'es2020.bigint', 'es2020.date', 'es2020.promise', 'es2020.sharedmemory', 'es2020.string', 'es2020.symbol.wellknown', 'es2020.intl', 'es2020.number', 'es2021.promise', 'es2021.string', 'es2021.weakref', 'es2021.intl', 'es2022.array', 'es2022.error', 'es2022.intl', 'es2022.object', 'es2022.sharedmemory', 'es2022.string', 'es2022.regexp', 'es2023.array', 'es2023.collection', 'es2023.intl', 'esnext.array', 'esnext.collection', 'esnext.symbol', 'esnext.asynciterable', 'esnext.intl', 'esnext.disposable', 'esnext.bigint', 'esnext.string', 'esnext.promise', 'esnext.weakref', 'esnext.decorators', 'esnext.object', 'esnext.regexp', 'esnext.iterator', 'decorators', 'decorators.legacy'.
+src/components/BackofficeLogin.vue(29,16): error TS2554: Expected 3 arguments, but got 2.
+src/components/BaseCard.vue(6,18): error TS2339: Property 'image' does not exist on type 'CreateComponentPublicInstanceWithMixins<ToResolvedProps<{}, {}>, {}, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, PublicProps, ... 16 more ..., {}>'.
+src/components/BaseCard.vue(6,31): error TS2339: Property 'title' does not exist on type 'CreateComponentPublicInstanceWithMixins<ToResolvedProps<{}, {}>, {}, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, PublicProps, ... 16 more ..., {}>'.
+src/components/BaseCard.vue(15,12): error TS2339: Property 'title' does not exist on type 'CreateComponentPublicInstanceWithMixins<ToResolvedProps<{}, {}>, {}, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, PublicProps, ... 16 more ..., {}>'.
+src/components/BaseCard.vue(18,12): error TS2339: Property 'description' does not exist on type 'CreateComponentPublicInstanceWithMixins<ToResolvedProps<{}, {}>, {}, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, PublicProps, ... 16 more ..., {}>'.
+src/components/SubscriptionForm 2.vue(101,7): error TS2552: Cannot find name 'fnames'. Did you mean 'frames'?
+src/components/SubscriptionForm 2.vue(102,7): error TS2304: Cannot find name 'ftypes'.
+src/components/SubscriptionForm 2.vue(103,7): error TS2552: Cannot find name 'fnames'. Did you mean 'frames'?
+src/components/SubscriptionForm 2.vue(104,7): error TS2304: Cannot find name 'ftypes'.
+src/components/SubscriptionForm 2.vue(105,7): error TS2552: Cannot find name 'fnames'. Did you mean 'frames'?
+src/components/SubscriptionForm 2.vue(106,7): error TS2304: Cannot find name 'ftypes'.
+src/components/SubscriptionForm 2.vue(107,7): error TS2552: Cannot find name 'fnames'. Did you mean 'frames'?
+src/components/SubscriptionForm 2.vue(108,7): error TS2304: Cannot find name 'ftypes'.
+src/components/SubscriptionForm 2.vue(109,7): error TS2552: Cannot find name 'fnames'. Did you mean 'frames'?
+src/components/SubscriptionForm 2.vue(110,7): error TS2304: Cannot find name 'ftypes'.
+src/components/SubscriptionForm 2.vue(111,7): error TS2304: Cannot find name 'fnames'.
+src/components/SubscriptionForm 2.vue(112,7): error TS2304: Cannot find name 'ftypes'.
+src/components/SubscriptionForm 2.vue(113,7): error TS2304: Cannot find name 'fnames'.
+src/components/SubscriptionForm 2.vue(114,7): error TS2304: Cannot find name 'ftypes'.
+src/views/backoffice/ActivitiesView.vue(47,26): error TS2339: Property 'id' does not exist on type 'never'.
+src/views/backoffice/ActivitiesView.vue(52,30): error TS2339: Property 'image' does not exist on type 'never'.
+src/views/backoffice/ActivitiesView.vue(53,30): error TS2339: Property 'title' does not exist on type 'never'.
+src/views/backoffice/ActivitiesView.vue(69,49): error TS2339: Property 'id' does not exist on type 'never'.
+src/views/backoffice/ActivitiesView.vue(76,73): error TS2339: Property 'title' does not exist on type 'never'.
+src/views/backoffice/ActivitiesView.vue(77,63): error TS2339: Property 'description' does not exist on type 'never'.
+src/views/backoffice/ActivitiesView.vue(81,35): error TS2339: Property 'time' does not exist on type 'never'.
+src/views/backoffice/ActivitiesView.vue(81,56): error TS2339: Property 'duration' does not exist on type 'never'.
+src/views/backoffice/ActivitiesView.vue(85,35): error TS2339: Property 'location' does not exist on type 'never'.
+src/views/backoffice/ActivitiesView.vue(99,38): error TS2339: Property 'id' does not exist on type 'never'.
+src/views/backoffice/ActivitiesView.vue(153,68): error TS2339: Property 'dayOfWeek' does not exist on type 'never'.
+src/views/backoffice/ActivitiesView.vue(159,14): error TS2339: Property 'title' does not exist on type 'never'.
+src/views/backoffice/ActivitiesView.vue(160,14): error TS2339: Property 'description' does not exist on type 'never'.
+src/views/backoffice/ActivitiesView.vue(175,5): error TS2322: Type '{ id: string; }[]' is not assignable to type 'never[]'.
+  Type '{ id: string; }' is not assignable to type 'never'.
+src/views/backoffice/ActivitiesView.vue(196,23): error TS7006: Parameter 'activity' implicitly has an 'any' type.
+src/views/backoffice/ActivitiesView.vue(209,27): error TS7006: Parameter 'data' implicitly has an 'any' type.
+src/views/backoffice/ActivitiesView.vue(212,67): error TS2339: Property 'id' does not exist on type 'never'.
+src/views/backoffice/AmenitiesView.vue(61,30): error TS2307: Cannot find module '@/data/amenities' or its corresponding type declarations.
+src/views/backoffice/DiningView.vue(69,29): error TS2339: Property 'menuLink' does not exist on type '{ id: string; name: string; description: string; image: string; hours: string; dress: string; cuisine: string; capacity: string; additionalInfo?: string | undefined; logo?: string | undefined; }'.
+src/views/backoffice/DiningView.vue(70,30): error TS2339: Property 'menuLink' does not exist on type '{ id: string; name: string; description: string; image: string; hours: string; dress: string; cuisine: string; capacity: string; additionalInfo?: string | undefined; logo?: string | undefined; }'.
+src/views/RestaurantView.vue(151,28): error TS2339: Property 'menuLink' does not exist on type '{ id: string; name: string; description: string; image: string; hours: string; dress: string; cuisine: string; capacity: string; additionalInfo?: string | undefined; logo?: string | undefined; }'.
+src/views/RestaurantView.vue(154,65): error TS2339: Property 'menuLink' does not exist on type '{ id: string; name: string; description: string; image: string; hours: string; dress: string; cuisine: string; capacity: string; additionalInfo?: string | undefined; logo?: string | undefined; }'.

@@ -123,6 +123,19 @@ import { collection, getDocs, deleteDoc, doc, updateDoc, addDoc } from 'firebase
 import { db } from '@/config/firebase';
 import EditDataModal from '@/components/EditDataModal.vue';
 
+interface Activity {
+  id: string;
+  title: string;
+  description: string;
+  time: string;
+  duration: number;
+  location: string;
+  image: string;
+  dayOfWeek: string;
+  createdAt?: any;
+  updatedAt?: any;
+}
+
 const weekDays = [
   { value: 'monday', label: 'Monday' },
   { value: 'tuesday', label: 'Tuesday' },
@@ -133,10 +146,10 @@ const weekDays = [
   { value: 'sunday', label: 'Sunday' },
 ];
 
-const activities = ref([]);
+const activities = ref<Activity[]>([]);
 const selectedDay = ref('monday');
 const showAddModal = ref(false);
-const editingActivity = ref(null);
+const editingActivity = ref<Activity | null>(null);
 const searchQuery = ref('');
 
 const defaultActivity = {
@@ -175,7 +188,7 @@ async function loadActivities() {
     activities.value = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
-    }));
+    })) as Activity[];
     console.log('Activities loaded:', activities.value);
   } catch (error) {
     console.error('Error loading activities:', error);
@@ -193,7 +206,7 @@ async function deleteActivity(id: string) {
   }
 }
 
-function editActivity(activity) {
+function editActivity(activity: Activity) {
   editingActivity.value = activity;
 }
 
@@ -206,7 +219,7 @@ function handleModalClose() {
   editingActivity.value = null;
 }
 
-async function handleSave(data) {
+async function handleSave(data: Partial<Activity>) {
   try {
     if (editingActivity.value) {
       await updateDoc(doc(db, 'activities', editingActivity.value.id), {

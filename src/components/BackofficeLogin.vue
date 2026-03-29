@@ -26,7 +26,7 @@ const error = ref("");
 
 async function handleLogin() {
   try {
-    await auth.loginBackoffice(email.value, password.value);
+    await auth.loginBackoffice(email.value, password.value, false);
     router.push("/backoffice/dashboard"); // or your desired route
   } catch (err) {
     error.value = "Invalid email or password";

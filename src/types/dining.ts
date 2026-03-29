@@ -9,6 +9,7 @@ export interface DiningVenue {
   capacity: string;
   additionalInfo?: string;
   logo?: string;
+  menuLink?: string;
 }
 
 export interface TableReservation {

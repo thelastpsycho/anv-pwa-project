@@ -19,7 +19,7 @@ const pinia = createPinia();
 app.use(pinia);
 
 // Initialize store
-const appStore = useAppStore();
+const appStore = useAppStore(pinia);
 
 // PWA install prompt handler
 window.addEventListener("beforeinstallprompt", (event: Event) => {

@@ -21,3 +21,11 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+defineProps<{
+  image: string;
+  title?: string;
+  description?: string;
+}>()
+</script>

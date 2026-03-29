@@ -1,0 +1,6 @@
+
+> pwa-anvaya@0.0.0 type-check
+> vue-tsc --build
+
+src/views/backoffice/ActivitiesView.vue(124,8): error TS2300: Duplicate identifier 'EditDataModal'.
+src/views/backoffice/ActivitiesView.vue(126,8): error TS2300: Duplicate identifier 'EditDataModal'.

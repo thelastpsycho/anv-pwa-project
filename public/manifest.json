@@ -26,7 +26,12 @@
   "orientation": "any",
   "dir": "ltr",
   "lang": "en-US",
-  "categories": ["travel", "lifestyle", "hotel", "resort"],
+  "categories": [
+    "travel",
+    "lifestyle",
+    "hotel",
+    "resort"
+  ],
   "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
   "prefer_related_applications": false,
   "related_applications": [
@@ -42,7 +47,10 @@
     }
   ],
   "launch_handler": {
-    "client_mode": ["auto", "focus-existing"]
+    "client_mode": [
+      "auto",
+      "focus-existing"
+    ]
   },
   "screenshots": [
     {
