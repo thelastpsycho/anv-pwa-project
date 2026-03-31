@@ -67,6 +67,14 @@ const router = createRouter({
       component: () => import("@/views/AroundView.vue"),
     },
     {
+      path: "/survey",
+      name: "survey",
+      component: () => import("@/views/SurveyView.vue"),
+      meta: {
+        title: "Guest Feedback Survey",
+      },
+    },
+    {
       path: "/terms-and-conditions",
       name: "terms-and-conditions",
       component: () => import("@/views/TermsAndConditionsView.vue"),
