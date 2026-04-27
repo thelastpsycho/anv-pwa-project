@@ -38,7 +38,9 @@ export default defineConfig({
         enabled: false,
       },
       workbox: {
-        sourcemap: false
+        sourcemap: false,
+        // Disable legacy prerendering
+        navigateFallback: null,
       },
       manifest: {
         name: "The Anvaya App",
@@ -58,7 +60,7 @@ export default defineConfig({
         ],
       },
       includeAssets: ['favicon.ico', 'robots.txt'],
-      injectRegister: 'auto',
+      // Remove deprecated injectRegister option
       injectManifest: {
         injectionPoint: undefined,
       },

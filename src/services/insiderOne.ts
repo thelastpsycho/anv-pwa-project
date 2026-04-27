@@ -23,7 +23,7 @@ interface InsiderUser {
     email_optin: boolean;
     gdpr_optin: boolean;
     custom?: {
-      lead_source: string;
+      lead_source: string[];
       [key: string]: unknown;
     };
     [key: string]: unknown;
@@ -64,7 +64,7 @@ export async function submitEmailToInsider(email: string): Promise<{ success: bo
             email_optin: true,
             gdpr_optin: true,
             custom: {
-              lead_source: 'anvaya-app',
+              lead_source: ['anvaya-app'],
             },
           },
           events: [
