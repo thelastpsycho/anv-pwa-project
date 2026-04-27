@@ -46,11 +46,6 @@ interface InsiderResponse {
   };
 }
 
-/**
- * Submit email to Insider One with lead source tracking
- * @param email - User's email address
- * @returns Promise with success status and message
- */
 export async function submitEmailToInsider(email: string): Promise<{ success: boolean; message: string }> {
   try {
     const payload: InsiderRequest = {
